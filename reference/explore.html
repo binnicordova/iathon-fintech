@@ -290,7 +290,7 @@
     <div class="stat"><div class="big">up to 3 days</div><small>from confirmed payment to the receipt</small></div>
     <div class="stat"><div class="big">20 min</div><small>target, from confirmation to receipt</small></div>
   </div>
-  <div class="note info"><b>Three decisions already made:</b> (1) a person validates every payment; (2) the Dashboard, the company’s current system, is not changed and only imports and exports orders; (3) the chat on WhatsApp is a core way in, with an AI assistant doing the talking; other AI is optional and used only where similar companies already use it. The numbers above come from the team’s diagnosis notes and I have not verified them.</div>
+  <div class="note info"><b>Three decisions already made:</b> (1) a person validates every payment; (2) the Dashboard, the company’s current system, is not changed and only imports and exports orders; (3) the chat is a core way in, with one AI assistant doing the talking on both WhatsApp and inside the app (same service, same steps, same data; only the channel differs); other AI is optional and used only where similar companies already use it. The numbers above come from the team’s diagnosis notes and I have not verified them.</div>
 </section>
 
 <!-- ============ TODAY ============ -->
@@ -411,7 +411,7 @@
   <div class="tw"><table>
     <thead><tr><th>#</th><th>Who</th><th>What happens</th></tr></thead>
     <tbody>
-      <tr><td class="n">1</td><td>Client</td><td>Quotes with the current exchange rate, in one of three ways: the Web App form, a WhatsApp chat, or the assistant inside the Web App. See <a href="#screens">What people see</a>.</td></tr>
+      <tr><td class="n">1</td><td>Client</td><td>Quotes with the current exchange rate, in one of three ways: the Web App form, a WhatsApp chat, or the assistant inside the Web App (the same assistant as on WhatsApp). See <a href="#screens">What people see</a>.</td></tr>
       <tr><td class="n">2</td><td>Client</td><td>Gives the source of funds, source account, operation number and destination account, pays, and sends the proof photo, by form or by chat. All three ways save the same data in the database, one record per sale (“IV”, Intención de Venta).</td></tr>
       <tr><td class="n">3</td><td>Validator</td><td>Sees the pending operations in the VIEW, checks the bank (target about 15 minutes) and approves.</td></tr>
       <tr><td class="n">4</td><td>Operator</td><td>Marks the approved operations in the VIEW and exports a file of orders.</td></tr>
@@ -429,7 +429,7 @@
   <div class="kicker">4 · What people see</div>
   <h2>The client’s Web App and the team’s VIEW</h2>
   <h3>Client: three ways in</h3>
-  <p class="lead" style="margin-bottom:12px">All three save the same data in the same database, so the team always works from one VIEW. The chat is a core way in, with the AI assistant doing the talking. The assistant never approves anything: the validator does.</p>
+  <p class="lead" style="margin-bottom:12px">All three save the same data in the same database, so the team always works from one VIEW. The chat is a core way in, with the AI assistant doing the talking. It is one assistant service behind both chat channels: the WhatsApp chat and the assistant inside the Web App run the same steps and save the same data, and only the channel differs. The assistant never approves anything: the validator does.</p>
   <div class="tabs" role="tablist">
     <button type="button" role="tab" aria-selected="true" data-tab="tab-form">Web App form</button>
     <button type="button" role="tab" aria-selected="false" data-tab="tab-wa">WhatsApp chat</button>
@@ -557,7 +557,7 @@
           <div class="kv"><span>Comisión</span><b>—</b></div><div class="kv"><span>Tasa de cambio</span><b>1 BRL = — PEN</b></div>
           <div class="btn">Continuar con el formulario</div>
           <div class="btn ai">🤖 Hablar con el asistente</div>
-        </div><p class="caption">The calculator offers the form or the assistant.</p></div>
+        </div><p class="caption">The calculator offers the form or the assistant. This is the same assistant and flow as the WhatsApp chat, in a different channel.</p></div>
 
       <div class="phone"><div class="step-n"><i>2</i>Talk</div>
         <div class="screen">
@@ -686,7 +686,7 @@
   <div class="tw"><table>
     <thead><tr><th></th><th>What it does</th><th>Seen in similar companies</th><th>Limits</th></tr></thead>
     <tbody>
-      <tr><td class="n">A1</td><td><b>Chat assistant (core).</b> Talks with the client on WhatsApp and inside the Web App, asks one question at a time, fills in the same data as the form, collects the proof photo and operation number, answers “where is my order?”, and hands over to a person when asked or when unsure.</td><td>Félix Pago sends remittances through a WhatsApp chatbot (<a href="https://stripe.com/ie/customers/felix">Stripe case study</a>). Rextie, a Peruvian exchange house, has a chatbot, “Lucía” (<a href="https://andina.pe/ingles/noticia-casa-cambio-digital-utiliza-chatbots-para-dar-asesoria-financiera-712151.aspx">Andina</a>, undated).</td><td>Automating WhatsApp needs the official WhatsApp business service; the site only opens a plain chat link today. Rates, fees and account numbers always come from the system, never from the assistant’s own words.</td></tr>
+      <tr><td class="n">A1</td><td><b>Chat assistant (core).</b> One service, two channels: talks with the client on WhatsApp and inside the Web App with the same steps, asks one question at a time, fills in the same data as the form, collects the proof photo and operation number, answers “where is my order?”, and hands over to a person when asked or when unsure.</td><td>Félix Pago sends remittances through a WhatsApp chatbot (<a href="https://stripe.com/ie/customers/felix">Stripe case study</a>). Rextie, a Peruvian exchange house, has a chatbot, “Lucía” (<a href="https://andina.pe/ingles/noticia-casa-cambio-digital-utiliza-chatbots-para-dar-asesoria-financiera-712151.aspx">Andina</a>, undated).</td><td>Automating WhatsApp needs the official WhatsApp business service; the site only opens a plain chat link today. Rates, fees and account numbers always come from the system, never from the assistant’s own words.</td></tr>
       <tr><td class="n">A2</td><td><b>Rejection explainer (in Fact, optional).</b> Says in plain words why the tax authority rejected an order and what to check.</td><td><b>None found: experimental.</b> The problem is real: some Brazilian rejections are generic, for example code E8214 (<a href="https://ajuda.omie.com.br/pt-BR/articles/17300437-e8214-rejeicao-nfs-e-a-mensagem-enviada-contem-dados-invalidos-ou-incorretos">Omie help</a>).</td><td>Build it only if real rejections show it is needed. It never edits tax data.</td></tr>
     </tbody>
   </table></div>
@@ -703,7 +703,7 @@
       <ul class="clean">
         <li><b>Web App:</b> quote, data, pay, upload proof, status.</li>
         <li><b>A database</b> that keeps everything: clients and accounts, quotes, operations, proof photos, who validated and when, billing batches and invoices.</li>
-        <li><b>The chat assistant:</b> on WhatsApp and inside the Web App, for quote, data, proof and status, saving the same data as the form. Until the official WhatsApp account is ready, use a test number or Telegram.</li>
+        <li><b>The chat assistant:</b> one service on WhatsApp and inside the Web App (same flow in both), for quote, data, proof and status, saving the same data as the form. Until the official WhatsApp account is ready, use a test number or Telegram.</li>
         <li><b>The VIEW:</b> see the photo, set the status, mark and export orders.</li>
         <li><b>The Dashboard</b> imports that file as today, with no change.</li>
         <li><b>Fact:</b> imports the set, registers each sale in test mode, saves the XML, builds the PDF and emails it.</li>
