@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kambista Benchmark</title>
+<style>
+  :root {
+    --bg: #f4f5f8;
+    --surface: #ffffff;
+    --ink: #0a1128;
+    --muted: #5d6578;
+    --line: #dfe2ea;
+    --navy: #07102a;
+    --teal: #00dcc0;
+    --teal-ink: #007d6c;
+    --warn-bg: #fff3e8;
+    --warn-ink: #8a4a00;
+    --info-bg: #e3efff;
+    --info-ink: #1a3d86;
+    --gap-bg: #fdecec;
+    --gap-ink: #9b1c1c;
+    --shadow: 0 1px 2px rgba(10,17,40,.06), 0 6px 20px rgba(10,17,40,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0b1020;
+      --surface: #131a30;
+      --ink: #eaeefb;
+      --muted: #9aa4bf;
+      --line: #263052;
+      --teal-ink: #35e6cf;
+      --warn-bg: #3a2a14;
+      --warn-ink: #ffc98a;
+      --info-bg: #14264d;
+      --info-ink: #a9c6ff;
+      --gap-bg: #3b1a1d;
+      --gap-ink: #ffb4b4;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 20px rgba(0,0,0,.35);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  a { color: var(--teal-ink); }
+  code { font: .88em ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--line); padding: 1px 6px; border-radius: 5px; }
+
+  header.top { background: var(--navy); color: #fff; padding: 36px 16px 28px; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+  header.top .wrap { padding: 0; }
+  header.top h1 { margin: 0 0 6px; font-size: clamp(26px, 5vw, 38px); letter-spacing: -.01em; }
+  header.top h1 span { color: var(--teal); }
+  header.top p { margin: 0; color: #b8c2de; max-width: 70ch; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 18px; font-size: 13px; color: #b8c2de; }
+  .meta b { color: #fff; font-weight: 600; }
+
+  nav.toc { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+  nav.toc .wrap { display: flex; gap: 4px; overflow-x: auto; padding-top: 8px; padding-bottom: 8px; }
+  nav.toc a { white-space: nowrap; text-decoration: none; color: var(--muted); font-size: 14px; padding: 6px 12px; border-radius: 999px; }
+  nav.toc a:hover { background: var(--line); color: var(--ink); }
+
+  section { padding: 40px 0 8px; }
+  h2 { font-size: 24px; margin: 0 0 6px; letter-spacing: -.01em; }
+  .lead { color: var(--muted); margin: 0 0 22px; max-width: 75ch; }
+  h3 { margin: 0 0 6px; font-size: 18px; }
+
+  /* flow map */
+  .flowmap { display: flex; align-items: stretch; gap: 0; overflow-x: auto; padding: 4px 2px 14px; }
+  .node { flex: 0 0 auto; min-width: 150px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; box-shadow: var(--shadow); text-decoration: none; color: inherit; display: block; }
+  .node small { display: block; color: var(--muted); font-size: 12px; }
+  .node b { display: block; font-size: 15px; margin: 2px 0; }
+  .node.gap { border-style: dashed; background: var(--gap-bg); }
+  .arrow { flex: 0 0 28px; align-self: center; text-align: center; color: var(--muted); font-size: 20px; }
+  .tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; }
+  .tag.ok { background: #d6f7ef; color: #00574a; }
+  .tag.gap { background: var(--gap-bg); color: var(--gap-ink); border: 1px solid currentColor; }
+  .tag.skip { background: var(--warn-bg); color: var(--warn-ink); }
+  @media (prefers-color-scheme: dark) { .tag.ok { background: #0c3a35; color: #5af0da; } }
+
+  /* step block */
+  .step { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); padding: 22px; margin: 0 0 22px; }
+  .step-head { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; flex-wrap: wrap; }
+  .num { flex: 0 0 auto; width: 34px; height: 34px; border-radius: 50%; background: var(--navy); color: var(--teal); display: grid; place-items: center; font-weight: 700; }
+  .step-head h3 { margin: 0; font-size: 20px; }
+  .step > p.what { margin: 6px 0 16px; color: var(--muted); max-width: 80ch; }
+
+  .shots { display: flex; gap: 16px; overflow-x: auto; padding: 4px 2px 12px; scroll-snap-type: x proximity; }
+  figure { margin: 0; flex: 0 0 auto; width: 210px; scroll-snap-align: start; }
+  figure button { all: unset; cursor: zoom-in; display: block; border-radius: 16px; overflow: hidden; border: 1px solid var(--line); box-shadow: var(--shadow); line-height: 0; }
+  figure button:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+  figure img { width: 100%; height: auto; display: block; background: #ddd; }
+  figcaption { font-size: 13px; color: var(--muted); margin-top: 8px; line-height: 1.4; }
+  figcaption b { color: var(--ink); display: block; }
+
+  .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 8px; }
+  .box { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 14.5px; }
+  .box h4 { margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .box ul { margin: 0; padding-left: 18px; }
+  .box li { margin: 2px 0; }
+
+  .note { border-radius: 12px; padding: 10px 14px; margin-top: 14px; font-size: 14.5px; }
+  .note.warn { background: var(--warn-bg); color: var(--warn-ink); }
+  .note.info { background: var(--info-bg); color: var(--info-ink); }
+  .note.gap { background: var(--gap-bg); color: var(--gap-ink); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); background: color-mix(in srgb, var(--line) 40%, transparent); }
+  tr:last-child td { border-bottom: 0; }
+  .tablewrap { overflow-x: auto; }
+
+  .timeline { list-style: none; margin: 8px 0 0; padding: 0; border-left: 2px dashed var(--line); margin-left: 8px; }
+  .timeline li { position: relative; padding: 0 0 12px 18px; }
+  .timeline li::before { content: ""; position: absolute; left: -7px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--navy); border: 2px solid var(--teal); }
+
+  footer { padding: 30px 0 60px; color: var(--muted); font-size: 13px; }
+
+  /* lightbox */
+  dialog { border: 0; padding: 0; background: transparent; max-width: 96vw; max-height: 96vh; }
+  dialog::backdrop { background: rgba(5,8,20,.82); }
+  dialog img { max-height: 92vh; max-width: 92vw; border-radius: 14px; display: block; margin: 0 auto; }
+  dialog p { color: #dfe5f7; text-align: center; margin: 8px 0 0; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <p style="margin:0 0 10px"><a href="explore.html" style="color:#7fe9da">← Back to the BRASPER presentation</a></p>
+    <h1>Kambista <span>exchange flow</span></h1>
+    <p>How a user converts dollars to soles (or the reverse) in the Android app today: every screen, field, rule and message captured from a real device run, plus the screens around the flow.</p>
+    <div class="meta">
+      <span><b>App</b> com.kambista.kambista</span>
+      <span><b>Version</b> 2.0.218 (code 391)</span>
+      <span><b>Device</b> Samsung SM-A266M, 1080×2340</span>
+      <span><b>Captured</b> Sat 10 Oct 2026, 17:01–17:06</span>
+      <span><b>Language</b> Spanish (Peru)</span>
+    </div>
+  </div>
+</header>
+
+<nav class="toc"><div class="wrap">
+  <a href="#map">Flow map</a>
+  <a href="#main">Main flow</a>
+  <a href="#variants">Sell direction</a>
+  <a href="#after">After the operation</a>
+  <a href="#tabs">Other tabs</a>
+  <a href="#rules">Rules &amp; copy</a>
+  <a href="#gaps">Not captured</a>
+  <a href="#log">Capture log</a>
+</div></nav>
+
+<main class="wrap">
+
+<section id="map">
+  <h2>Flow map</h2>
+  <p class="lead">One exchange is a three-step wizard (<i>Datos → Transferencia → Constancia</i>) started from the Inicio calculator. The user sends the money from their own bank outside the app, then reports it back. Click a node to jump to it.</p>
+  <div class="flowmap">
+    <a class="node" href="#s0"><small>Tab · Inicio</small><b>Calculator</b><span class="tag ok">captured</span></a><div class="arrow">→</div>
+    <a class="node" href="#s1"><small>Wizard 1 of 3</small><b>Datos</b><span class="tag ok">captured</span></a><div class="arrow">→</div>
+    <a class="node" href="#s2"><small>Wizard 2 of 3</small><b>Transferencia</b><span class="tag ok">captured</span></a><div class="arrow">→</div>
+    <a class="node gap" href="#gaps"><small>Wizard 3 of 3</small><b>Constancia</b><span class="tag skip">not entered</span></a><div class="arrow">→</div>
+    <a class="node" href="#after"><small>Tab · Historial</small><b>En proceso</b><span class="tag ok">empty state</span></a><div class="arrow">→</div>
+    <a class="node" href="#after"><small>Tab · Historial</small><b>Finalizada + receipts</b><span class="tag ok">captured</span></a>
+  </div>
+  <div class="note info"><b>Off-ramp:</b> pressing back on the Transferencia step shows “Tienes una operación en curso ¿Deseas cancelarla?”. Cancelling returns to the calculator with the amounts kept (100 → 342.00).</div>
+</section>
+
+<section id="main">
+  <h2>Main flow: Dollars → Soles</h2>
+  <p class="lead">Run with $100 at the <b>Compra 3.420</b> rate. Origin bank BCP, destination “Sueldo Soles” (Scotiabank), source of funds “Ahorros”. Those picks were arbitrary; they only exist to reach the next screen.</p>
+
+  <!-- STEP 0 -->
+  <article class="step" id="s0">
+    <div class="step-head"><div class="num">0</div><h3>Inicio: the calculator</h3></div>
+    <p class="what">Entry point and default tab. The user chooses the direction, types an amount and sees the converted amount live.</p>
+    <div class="shots">
+      <figure><button data-full="screenshots/00-home-top.png" data-cap="Home, top of page"><img loading="lazy" src="screenshots/00-home-top.png" alt="Home screen top"></button><figcaption><b>Top of home</b>Greeting, Koinks coupon banner, “¿Cuándo recibo mi dinero?”, rate tabs, calculator.</figcaption></figure>
+      <figure><button data-full="screenshots/01-home-calculator.png" data-cap="Calculator and Iniciar operación"><img loading="lazy" src="screenshots/01-home-calculator.png" alt="Calculator"></button><figcaption><b>Calculator</b>Amount in, amount out, Koinks, coupon, preferential-rate link, start button.</figcaption></figure>
+      <figure><button data-full="screenshots/01b-home-bank-coverage.png" data-cap="Bank coverage and timing, below the fold"><img loading="lazy" src="screenshots/01b-home-bank-coverage.png" alt="Bank coverage"></button><figcaption><b>Below the fold</b>Which banks are instant (15 min) vs deferred (1 business day), plus limits.</figcaption></figure>
+    </div>
+    <div class="cols">
+      <div class="box"><h4>User does</h4><ul>
+        <li>Picks <b>Compra 3.420</b> (they send USD) or <b>Venta 3.460</b> (they send PEN)</li>
+        <li>Types “¿Cuánto envías?”; “Entonces recibes” updates (100 USD → 342.00 PEN)</li>
+        <li>Optionally swaps currencies with the circular arrows</li>
+        <li>Optionally enters a coupon and taps <b>APLICAR</b></li>
+        <li>Taps <b>INICIAR OPERACIÓN</b></li>
+      </ul></div>
+      <div class="box"><h4>Also on screen</h4><ul>
+        <li>Koinks counter beside the calculator (150 for this amount, so it looks like the reward for this operation, not the balance)</li>
+        <li>“¿Monto mayor a $5.000 o S/18.000? Click para Tipo de Cambio Preferencial”</li>
+        <li>Floating WhatsApp button (dismissible) and a scroll-to-top button</li>
+        <li>Bottom tabs: Inicio · Historial · Cuentas · Koinks · Perfil</li>
+      </ul></div>
+    </div>
+  </article>
+
+  <!-- STEP 1 -->
+  <article class="step" id="s1">
+    <div class="step-head"><div class="num">1</div><h3>Datos: “Completa los datos”</h3><span class="tag ok">wizard 1 / 3</span></div>
+    <p class="what">After INICIAR OPERACIÓN a brand logo loading overlay appears for ~2–3 s, then the form. Three required selections gate the CONTINUAR button (pale until all are set, teal when complete).</p>
+    <div class="shots">
+      <figure><button data-full="screenshots/02a-loading-overlay.png" data-cap="Loading overlay"><img loading="lazy" src="screenshots/02a-loading-overlay.png" alt="Loading overlay"></button><figcaption><b>Loading</b>Logo spinner over the form.</figcaption></figure>
+      <figure><button data-full="screenshots/02b-step1-datos.png" data-cap="Empty form"><img loading="lazy" src="screenshots/02b-step1-datos.png" alt="Empty form"></button><figcaption><b>Empty form</b>Summary card + three dropdowns, CONTINUAR disabled.</figcaption></figure>
+      <figure><button data-full="screenshots/03-step1-origin-dropdown.png" data-cap="Origin bank sheet"><img loading="lazy" src="screenshots/03-step1-origin-dropdown.png" alt="Origin bank list"></button><figcaption><b>Origin bank</b>Bottom sheet of banks with logos (BCP, Interbank, BBVA, BanBif, Scotiabank, Falabella, Pichincha, Comercio, …).</figcaption></figure>
+      <figure><button data-full="screenshots/04-step1-origin-selected.png" data-cap="Origin bank chosen"><img loading="lazy" src="screenshots/04-step1-origin-selected.png" alt="Origin selected"></button><figcaption><b>Origin chosen</b>Field shows logo + bank name.</figcaption></figure>
+      <figure><button data-full="screenshots/05-step1-destination-dropdown.png" data-cap="Destination account sheet"><img loading="lazy" src="screenshots/05-step1-destination-dropdown.png" alt="Destination sheet"></button><figcaption><b>Destination account</b>Titled “Cuenta Soles”: only the user’s saved soles accounts + <i>Agregar cuenta</i>.</figcaption></figure>
+      <figure><button data-full="screenshots/06-step1-funds-origin-dropdown.png" data-cap="Source of funds sheet"><img loading="lazy" src="screenshots/06-step1-funds-origin-dropdown.png" alt="Source of funds"></button><figcaption><b>Origen de fondos</b>Ahorros, Donación/Sorteo, Venta de bien mueble / inmueble, Herencia, Venta de Oro, No Especificado.</figcaption></figure>
+      <figure><button data-full="screenshots/07-step1-form-complete.png" data-cap="Complete form"><img loading="lazy" src="screenshots/07-step1-form-complete.png" alt="Complete form"></button><figcaption><b>Ready</b>All three set; CONTINUAR turns teal.</figcaption></figure>
+    </div>
+    <div class="cols">
+      <div class="box"><h4>Summary card (read-only)</h4><ul>
+        <li>Tú envías $ 100.00 · Tú recibes S/ 342.00</li>
+        <li>Koinks 150 · Tipo de cambio utilizado 3.420</li>
+        <li>Blue banner: “recibirás tu dinero en 15 minutos aproximadamente”</li>
+      </ul></div>
+      <div class="box"><h4>Fields</h4><ul>
+        <li>¿Desde qué banco nos envías tu dinero? → bank list</li>
+        <li>¿En qué cuenta deseas recibir tu dinero? → saved accounts for the receive currency</li>
+        <li>Origen de fondos → compliance declaration</li>
+      </ul></div>
+    </div>
+    <div class="note warn"><b>Rule shown inline:</b> “ambas cuentas (origen y destino) deben estar a tu nombre. Kambista no transfiere a cuentas de terceros.”</div>
+  </article>
+
+  <!-- STEP 2 -->
+  <article class="step" id="s2">
+    <div class="step-head"><div class="num">2</div><h3>Transferencia: “Transfiere a Kambista”</h3><span class="tag ok">wizard 2 / 3</span></div>
+    <p class="what">CONTINUAR registers the operation and shows where to send the money. The user leaves the app, makes a bank transfer to Kambista, then comes back.</p>
+    <div class="shots">
+      <figure><button data-full="screenshots/08-step2-transferencia.png" data-cap="First view with out-of-hours toast"><img loading="lazy" src="screenshots/08-step2-transferencia.png" alt="Transfer step first view"></button><figcaption><b>First view</b>Out-of-hours toast overlaps the account card.</figcaption></figure>
+      <figure><button data-full="screenshots/09-step2-coachmark-cuenta-correcta.png" data-cap="Coach mark: correct account"><img loading="lazy" src="screenshots/09-step2-coachmark-cuenta-correcta.png" alt="Coach mark"></button><figcaption><b>Coach mark</b>“Transfiere a la cuenta correcta” → ENTENDIDO. Blocks scrolling until dismissed.</figcaption></figure>
+      <figure><button data-full="screenshots/10-step2-transferencia-top.png" data-cap="Instructions and account data"><img loading="lazy" src="screenshots/10-step2-transferencia-top.png" alt="Instructions"></button><figcaption><b>Instructions</b>Two numbered steps, then the account card.</figcaption></figure>
+      <figure><button data-full="screenshots/11-step2-transferencia-scroll1.png" data-cap="Account card and actions"><img loading="lazy" src="screenshots/11-step2-transferencia-scroll1.png" alt="Account card and actions"></button><figcaption><b>Account + actions</b>Copy icons, reminder, “Detalle de tu operación”, YA HICE MI OPERACIÓN.</figcaption></figure>
+      <figure><button data-full="screenshots/12-step2-detalle-operacion.png" data-cap="Operation detail modal (account number masked)"><img loading="lazy" src="screenshots/12-step2-detalle-operacion.png" alt="Operation detail modal"></button><figcaption><b>Detalle de tu operación</b>Origin bank, destination account (masked here), amounts, rate.</figcaption></figure>
+      <figure><button data-full="screenshots/13-step2-back-prompt.png" data-cap="Back button prompt"><img loading="lazy" src="screenshots/13-step2-back-prompt.png" alt="Cancel prompt"></button><figcaption><b>Back → cancel prompt</b>CANCELAR OPERACIÓN or Continuar.</figcaption></figure>
+      <figure><button data-full="screenshots/14-after-cancel.png" data-cap="After cancelling"><img loading="lazy" src="screenshots/14-after-cancel.png" alt="After cancel"></button><figcaption><b>After cancel</b>Back on the calculator, values preserved.</figcaption></figure>
+    </div>
+    <div class="cols">
+      <div class="box"><h4>Instructions shown</h4><ul>
+        <li>1. Transfiere <b>100.00 dólares</b> desde tu banco <b>BCP</b> a nuestra cuenta bancaria.</li>
+        <li>2. Guarda el <b>número de operación</b> para el siguiente paso.</li>
+        <li>Timer line: “El tipo de cambio podría actualizarse a las: 17:18”</li>
+      </ul></div>
+      <div class="box"><h4>Kambista account card</h4><ul>
+        <li>Titular: Kambista SAC</li>
+        <li>Monto a transferir (copy icon)</li>
+        <li>Banco: BCP (matches the user’s origin bank in this run)</li>
+        <li>Tipo de cuenta: Corriente · Dólares, with a warning to use the <b>DÓLARES</b> account</li>
+        <li>Número de cuenta (copy) · RUC Kambista (copy)</li>
+        <li>“Kambista NO realiza cobros automáticos de tus cuentas.”</li>
+      </ul></div>
+    </div>
+    <div class="note warn"><b>Out-of-hours behaviour:</b> captured on a Saturday at 17:03. A dismissible toast said “¡Te encuentras fuera de horario! Tu operación se verificará el lunes, 12/10/2026 a las 09:00 am”.</div>
+  </article>
+
+  <!-- STEP 3 -->
+  <article class="step" id="s3">
+    <div class="step-head"><div class="num">3</div><h3>Constancia</h3><span class="tag skip">not entered</span></div>
+    <p class="what">The third wizard step is labelled “Constancia”, reached from <b>YA HICE MI OPERACIÓN</b>. It was deliberately not opened: that button tells Kambista a real bank transfer was made, which was not the case. See <a href="#gaps">Not captured</a>.</p>
+  </article>
+</section>
+
+<section id="variants">
+  <h2>Sell direction: Soles → Dollars</h2>
+  <p class="lead">Same calculator, other rate tab. Only the tab and currencies flip; the wizard after it is the same shape (not walked through).</p>
+  <article class="step">
+    <div class="shots">
+      <figure><button data-full="screenshots/15-home-venta-tab.png" data-cap="Venta tab"><img loading="lazy" src="screenshots/15-home-venta-tab.png" alt="Venta tab"></button><figcaption><b>Venta 3.460</b>Envías 100 Soles → recibes 28.90 Dólares; Koinks reward drops to 43.</figcaption></figure>
+    </div>
+    <div class="note info">100 ÷ 3.460 = 28.90, so Venta divides and Compra multiplies. The Historial examples below were sell-direction (Enviaste S/ …, Recibiste $ …).</div>
+  </article>
+</section>
+
+<section id="after">
+  <h2>After the operation: Historial</h2>
+  <p class="lead">Where a user tracks an exchange and gets receipts.</p>
+  <article class="step">
+    <div class="shots">
+      <figure><button data-full="screenshots/16-tab-historial.png" data-cap="Historial, En proceso, empty"><img loading="lazy" src="screenshots/16-tab-historial.png" alt="Historial empty"></button><figcaption><b>En proceso</b>Empty (“No hay operaciones”) right after cancelling, confirming the cancel removed it.</figcaption></figure>
+      <figure><button data-full="screenshots/20-historial-finalizadas.png" data-cap="Historial, Finalizadas"><img loading="lazy" src="screenshots/20-historial-finalizadas.png" alt="Finalizadas list"></button><figcaption><b>Finalizadas</b>Cards: operation id (copy), Boletas download, sent/received, Koinks, date | rate, Ver detalle.</figcaption></figure>
+      <figure><button data-full="screenshots/21-historial-detalle.png" data-cap="Finished transaction detail (account numbers masked)"><img loading="lazy" src="screenshots/21-historial-detalle.png" alt="Finished transaction detail"></button><figcaption><b>Transacción finalizada</b>Summary, 4-stage timeline, BOLETA PDF / XML.</figcaption></figure>
+    </div>
+    <h3 style="margin-top:14px">Operation lifecycle (from a finished operation)</h3>
+    <ul class="timeline">
+      <li><b>Operación registrada</b> 15:20 · user completed the wizard</li>
+      <li><b>Verificamos tu transferencia</b> 15:42 · Kambista confirmed the incoming deposit</li>
+      <li><b>Enviamos tu dinero</b> 15:43 · payout to the user’s account</li>
+      <li><b>Recibiste tu dinero</b> 15:43 · done, 23 minutes end-to-end</li>
+    </ul>
+  </article>
+</section>
+
+<section id="tabs">
+  <h2>Other tabs</h2>
+  <p class="lead">Supporting screens a user touches around the exchange.</p>
+  <article class="step">
+    <div class="shots">
+      <figure><button data-full="screenshots/17-tab-cuentas.png" data-cap="Cuentas (account numbers masked)"><img loading="lazy" src="screenshots/17-tab-cuentas.png" alt="Cuentas"></button><figcaption><b>Cuentas</b>Saved bank accounts, filter, edit/delete per card, “+” to add. These feed the destination dropdown.</figcaption></figure>
+      <figure><button data-full="screenshots/18-tab-koinks.png" data-cap="Koinks"><img loading="lazy" src="screenshots/18-tab-koinks.png" alt="Koinks"></button><figcaption><b>Koinks</b>Balance (322), “¿Cómo funcionan?”, swipeable coupons (20 PIPS = 2000, 30 PIPS = 6000, …), history.</figcaption></figure>
+      <figure><button data-full="screenshots/19-tab-perfil.png" data-cap="Perfil"><img loading="lazy" src="screenshots/19-tab-perfil.png" alt="Perfil"></button><figcaption><b>Perfil</b>Datos personales, Refiere y gana, Alertas de tipo de cambio, Contáctanos, Información legal, Libro de reclamaciones, Cerrar sesión.</figcaption></figure>
+    </div>
+    <div class="note info">Koinks connect back to the flow: the calculator shows the Koinks tied to the amount, and the home banner “¡Gana CUPONES! Canjea tus Koinks y ahorra” points to redeeming them. Inferred, not tested: redeemed coupons are used in the calculator’s coupon field.</div>
+  </article>
+</section>
+
+<section id="rules">
+  <h2>Rules, limits &amp; copy seen in the flow</h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Topic</th><th>What the app says</th><th>Where</th></tr></thead>
+    <tbody>
+      <tr><td>Account ownership</td><td>Origin and destination accounts must be in the user’s name; no third-party transfers.</td><td>Datos</td></tr>
+      <tr><td>Instant transfers (~15 min)</td><td>Todo el Perú: BCP, Interbank. Lima: BanBif, Pichincha (Mon–Fri), BBVA, Scotiabank and others.</td><td>Home, below fold</td></tr>
+      <tr><td>Deferred (1 business day)</td><td>Lima: BBVA, Scotiabank and other banks.</td><td>Home, below fold</td></tr>
+      <tr><td>Limits</td><td>BCP, Interbank, Pichincha, BanBif: no limit. Other banks up to $10,000 or S/30,000.</td><td>Home, below fold</td></tr>
+      <tr><td>Preferential rate</td><td>For amounts over $5,000 or S/18,000, via a link on the calculator.</td><td>Home</td></tr>
+      <tr><td>Rate refresh</td><td>“El tipo de cambio podría actualizarse a las: HH:MM” (17:18 when captured at 17:03, so ~15 min).</td><td>Transferencia</td></tr>
+      <tr><td>Correct currency account</td><td>Kambista has soles and dollars accounts; send to the one matching the currency being exchanged.</td><td>Transferencia (coach mark + warning)</td></tr>
+      <tr><td>No auto-debit</td><td>Kambista never charges the user’s accounts automatically; the user initiates the transfer.</td><td>Transferencia</td></tr>
+      <tr><td>Business hours</td><td>Outside hours the operation is verified at the next opening (Mon 09:00 in the capture).</td><td>Transferencia toast</td></tr>
+      <tr><td>Receipts</td><td>Boleta PDF and XML for finished operations.</td><td>Historial</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="gaps">
+  <h2>Not captured (to explore next)</h2>
+  <p class="lead">Left out on purpose or not reached. Each would need either a real transfer or a side effect on the account.</p>
+  <div class="cols">
+    <div class="box"><h4>Skipped to avoid side effects</h4><ul>
+      <li><b>Constancia step</b> and what YA HICE MI OPERACIÓN asks for (likely an operation number or voucher; unverified)</li>
+      <li>“Agregar cuenta” form and edit/delete account</li>
+      <li>Applying a coupon, “Tipo de Cambio Preferencial”, CANJEAR on Koinks</li>
+    </ul></div>
+    <div class="box"><h4>Not opened</h4><ul>
+      <li>“¿Cuándo recibo mi dinero?” chip</li>
+      <li>Datos personales, Refiere y gana, Alertas de tipo de cambio, Cambiar perfil</li>
+      <li>Login / registration / identity verification (the device was already signed in)</li>
+    </ul></div>
+    <div class="box"><h4>Not triggered</h4><ul>
+      <li>Validation and error states (empty amount, over the limit, minimum amount)</li>
+      <li>Behaviour inside business hours (the capture was on a Saturday evening)</li>
+      <li>A Venta (soles → dollars) run through the wizard</li>
+      <li>An operation sitting in “En proceso”</li>
+    </ul></div>
+  </div>
+</section>
+
+<section id="log">
+  <h2>Capture log</h2>
+  <p class="lead">What was actually done on the device, for transparency.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Time</th><th>Action</th><th>Effect</th></tr></thead>
+    <tbody>
+      <tr><td>17:01–17:02</td><td>Browsed home, tapped INICIAR OPERACIÓN, filled the three dropdowns (BCP · Sueldo Soles · Ahorros)</td><td>None; form state only</td></tr>
+      <tr><td>17:03</td><td>Pressed CONTINUAR (approved in chat)</td><td><b>Created a pending operation</b> of $100 → S/342.00</td></tr>
+      <tr><td>17:04</td><td>Opened “Detalle de tu operación”, pressed back, chose <b>CANCELAR OPERACIÓN</b></td><td>Operation cancelled; Historial → En proceso is empty</td></tr>
+      <tr><td>17:04–17:06</td><td>Opened Venta tab, Historial, Cuentas, Koinks, Perfil, one finished operation’s detail</td><td>Read-only</td></tr>
+      <tr><td>—</td><td><b>Not pressed:</b> YA HICE MI OPERACIÓN, Agregar cuenta, any delete/edit, any coupon action</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note info">Personal bank-account numbers in screenshots 12, 17 and 21 were masked with black bars. Kambista’s own receiving account and RUC in 08, 10, 11 and 13 are shown as the app displays them.</div>
+</section>
+
+</main>
+
+<footer><div class="wrap">Generated from device screenshots in <code>reference/screenshots/</code>. Tap any screenshot to enlarge.</div></footer>
+
+<dialog id="lb"><img id="lbimg" alt=""><p id="lbcap"></p></dialog>
+<script>
+  const lb = document.getElementById('lb'), img = document.getElementById('lbimg'), cap = document.getElementById('lbcap');
+  document.querySelectorAll('figure button').forEach(b => b.addEventListener('click', () => {
+    img.src = b.dataset.full; img.alt = b.dataset.cap || ''; cap.textContent = b.dataset.cap || ''; lb.showModal();
+  }));
+  lb.addEventListener('click', () => lb.close());
+</script>
+</body>
+</html>

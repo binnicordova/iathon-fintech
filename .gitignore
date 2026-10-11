@@ -1,0 +1,16 @@
+.DS_Store
+reference.zip
+__MACOSX/
+
+# Expo / React Native (app code will live at the repo root)
+node_modules/
+.expo/
+dist/
+web-build/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+.env*.local
+npm-debug.*

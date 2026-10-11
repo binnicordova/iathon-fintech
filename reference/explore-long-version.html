@@ -1,0 +1,1130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BRASPER Operation Flow</title>
+<style>
+  :root {
+    --bg: #f3f6fd;
+    --surface: #ffffff;
+    --ink: #0d1733;
+    --muted: #55607c;
+    --line: #dbe2f2;
+    --brand: #1a5cff;
+    --brand-ink: #1346c9;
+    --cyan: #00d5ff;
+    --wa: #1faa59;
+    --navy: #0a1a4d;
+    --soft: #eaf0ff;
+    --warn-bg: #fff3e4;
+    --warn-ink: #8a4a00;
+    --bad-bg: #fdebec;
+    --bad-ink: #9b1c1c;
+    --ok-bg: #e2f7ea;
+    --ok-ink: #11643a;
+    --shadow: 0 1px 2px rgba(13,23,51,.06), 0 8px 24px rgba(13,23,51,.07);
+    --ai: #6d3fd1; --ai-bg: #f1ebff; --ai-ink: #4b25a8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #080e22; --surface: #101936; --ink: #e9eeff; --muted: #9aa7cc; --line: #243059;
+      --brand: #5b8bff; --brand-ink: #9db9ff; --soft: #16224b; --navy: #060c24;
+      --warn-bg: #3a2a14; --warn-ink: #ffc98a; --bad-bg: #3b1a1d; --bad-ink: #ffb4b4;
+      --ok-bg: #0f3322; --ok-ink: #7be6a8;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+      --ai: #a58bff; --ai-bg: #1f1840; --ai-ink: #cdbfff;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 70px; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  a { color: var(--brand-ink); }
+  code { font: .88em ui-monospace, Menlo, monospace; background: var(--soft); padding: 1px 6px; border-radius: 5px; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+
+  /* hero */
+  header.hero { background: linear-gradient(135deg, #1a5cff 0%, #0a1a4d 100%); color: #fff; padding: 44px 0 36px; }
+  header.hero .eyebrow { color: #7fe9ff; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: 13px; }
+  header.hero h1 { margin: 6px 0 10px; font-size: clamp(28px, 5.4vw, 46px); line-height: 1.1; letter-spacing: -.015em; }
+  header.hero h1 em { font-style: normal; color: #7fe9ff; }
+  header.hero p { max-width: 68ch; color: #d3defc; margin: 0 0 6px; font-size: 17px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .chip { font-size: 13px; padding: 5px 12px; border-radius: 999px; background: rgba(255,255,255,.14); color: #fff; }
+  .chip a { color: #fff; }
+
+  nav.toc { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+  nav.toc .wrap { display: flex; gap: 2px; overflow-x: auto; padding-top: 8px; padding-bottom: 8px; }
+  nav.toc a { white-space: nowrap; text-decoration: none; color: var(--muted); font-size: 14px; padding: 6px 12px; border-radius: 999px; }
+  nav.toc a:hover { background: var(--soft); color: var(--ink); }
+
+  section { padding: 44px 0 6px; }
+  .kicker { color: var(--brand-ink); font-weight: 700; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
+  h2 { font-size: clamp(22px, 3.4vw, 30px); margin: 2px 0 6px; letter-spacing: -.01em; }
+  h3 { margin: 0 0 6px; font-size: 18px; }
+  .lead { color: var(--muted); max-width: 78ch; margin: 0 0 22px; }
+
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); padding: 22px; margin-bottom: 22px; }
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+  .mini { border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; background: var(--surface); }
+  .mini h4 { margin: 0 0 4px; font-size: 15px; }
+  .mini p { margin: 0; font-size: 14.5px; color: var(--muted); }
+  .big { font-size: 30px; font-weight: 800; letter-spacing: -.02em; color: var(--brand-ink); line-height: 1.1; }
+
+  .tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; white-space: nowrap; vertical-align: 1px; }
+  .t-site { background: var(--soft); color: var(--brand-ink); }
+  .t-code { background: #efe6ff; color: #5a2fb0; }
+  .t-board { background: var(--warn-bg); color: var(--warn-ink); }
+  .t-inf { background: var(--line); color: var(--muted); }
+  .t-team { background: #d8f5ee; color: #0a6a58; }
+  @media (prefers-color-scheme: dark) { .t-team { background: #0c3a35; color: #5af0da; } }
+  .t-new { background: var(--ok-bg); color: var(--ok-ink); }
+  @media (prefers-color-scheme: dark) { .t-code { background: #2a1d52; color: #c9b3ff; } }
+
+  .note { border-radius: 12px; padding: 10px 14px; margin: 14px 0 0; font-size: 14.5px; }
+  .note.warn { background: var(--warn-bg); color: var(--warn-ink); }
+  .note.bad { background: var(--bad-bg); color: var(--bad-ink); }
+  .note.ok { background: var(--ok-bg); color: var(--ok-ink); }
+  .note.info { background: var(--soft); color: var(--brand-ink); }
+
+  /* flow chain */
+  .chain { display: flex; align-items: stretch; overflow-x: auto; padding: 4px 2px 14px; gap: 0; }
+  .link { flex: 0 0 auto; width: 168px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 13px; box-shadow: var(--shadow); font-size: 13.5px; }
+  .link b { display: block; font-size: 14.5px; margin-bottom: 3px; }
+  .link small { color: var(--muted); display: block; margin-top: 6px; }
+  .link.manual { border-style: dashed; background: var(--warn-bg); }
+  .link.chat { border-color: var(--wa); }
+  .arr { flex: 0 0 24px; align-self: center; text-align: center; color: var(--muted); font-size: 19px; }
+
+  /* shots */
+  .shots { display: flex; gap: 16px; overflow-x: auto; padding: 4px 2px 12px; }
+  figure { margin: 0; flex: 0 0 auto; }
+  figure.ph { width: 200px; } figure.wide { width: 420px; }
+  figure button { all: unset; cursor: zoom-in; display: block; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); box-shadow: var(--shadow); line-height: 0; }
+  figure button:focus-visible { outline: 3px solid var(--cyan); outline-offset: 2px; }
+  figure img { width: 100%; height: auto; display: block; background: #dde; }
+  figcaption { font-size: 13px; color: var(--muted); margin-top: 8px; line-height: 1.4; }
+  figcaption b { display: block; color: var(--ink); }
+
+  ul.clean { margin: 0; padding-left: 18px; } ul.clean li { margin: 4px 0; }
+  .two { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); align-items: start; }
+
+  /* tables */
+  .tw { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); background: var(--soft); white-space: nowrap; }
+  tr:last-child td { border-bottom: 0; }
+  td.n { width: 36px; font-weight: 800; color: var(--brand-ink); }
+
+  /* architecture svg */
+  .diagram { overflow-x: auto; }
+  .diagram svg { min-width: 860px; width: 100%; height: auto; display: block; }
+  .diagram text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; fill: var(--ink); }
+  .diagram .bx { fill: var(--surface); stroke: var(--line); stroke-width: 1.6; }
+  .diagram .bx.brand { fill: var(--brand); stroke: var(--brand); }
+  .diagram .bx.brand text { fill: #fff; }
+  .diagram .bx.soft { fill: var(--soft); }
+  .diagram .bx.dash { stroke-dasharray: 6 5; }
+  .diagram .ln { stroke: var(--muted); stroke-width: 1.8; fill: none; }
+  .diagram .ln.wa { stroke: var(--wa); }
+  .diagram .nb { fill: var(--brand); } .diagram .nbt { fill: #fff !important; font-weight: 700; font-size: 12px; }
+  .diagram .sm { font-size: 12px; fill: var(--muted); } .diagram .lb { font-size: 14px; font-weight: 700; } .diagram .sub { font-size: 12px; fill: var(--muted); }
+
+  /* phones */
+  .phones { display: flex; gap: 16px; overflow-x: auto; padding: 8px 2px 16px; align-items: flex-start; }
+  .phone { flex: 0 0 auto; width: 204px; }
+  .phone .step-n { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+  .phone .step-n i { font-style: normal; width: 24px; height: 24px; border-radius: 50%; background: var(--brand); color: #fff; display: grid; place-items: center; font-size: 13px; }
+  .screen { background: #f5f8ff; color: #0d1733; border: 7px solid #0b1535; border-radius: 28px; padding: 12px 11px 14px; min-height: 410px; box-shadow: var(--shadow); font-size: 10.5px; line-height: 1.35; }
+  .screen .bar { display: flex; align-items: center; justify-content: space-between; font-weight: 800; font-size: 12.5px; margin-bottom: 6px; }
+  .screen .bar span { font-weight: 600; color: #5a6688; font-size: 11px; }
+  .dots { display: flex; gap: 4px; margin: 4px 0 9px; }
+  .dots b { flex: 1; height: 4px; border-radius: 4px; background: #d3dcf3; } .dots b.on { background: #1a5cff; }
+  .fld { background: #fff; border: 1px solid #d3dcf3; border-radius: 9px; padding: 6px 9px; margin: 0 0 7px; }
+  .fld small { display: block; color: #6a7597; font-size: 9.5px; }
+  .fld b { font-size: 12.5px; }
+  .btn { background: #1a5cff; color: #fff; text-align: center; font-weight: 700; padding: 8px; border-radius: 9px; margin-top: 8px; }
+  .btn.ghost { background: transparent; color: #1a5cff; border: 1px solid #1a5cff; }
+  .btn.wa { background: #1faa59; }
+  .hint { background: #fff3e4; color: #8a4a00; border-radius: 8px; padding: 6px 8px; margin: 6px 0; font-size: 10.5px; }
+  .hint.blue { background: #e6eeff; color: #1346c9; }
+  .kv { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px dashed #d3dcf3; } .kv:last-child { border: 0; }
+  .up { border: 1.5px dashed #9bb3ec; border-radius: 10px; padding: 14px 8px; text-align: center; color: #3b57a8; margin: 6px 0; background: #fff; }
+  .tl { list-style: none; margin: 8px 0 0; padding: 0 0 0 10px; border-left: 2px solid #c3d0f1; }
+  .tl li { position: relative; padding: 0 0 10px 12px; } .tl li::before { content: ""; position: absolute; left: -17px; top: 2px; width: 12px; height: 12px; border-radius: 50%; background: #c3d0f1; }
+  .tl li.done::before { background: #1a5cff; } .tl li.now::before { background: #fff; border: 3px solid #1a5cff; }
+  .tl li small { display: block; color: #6a7597; }
+  .caption { font-size: 13px; color: var(--muted); margin-top: 10px; max-width: 204px; }
+
+  /* dashboard mock */
+  .dash { background: #0f1830; color: #dfe7ff; border-radius: 14px; padding: 14px; font-size: 12.5px; overflow-x: auto; }
+  .dash .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 10px; flex-wrap: wrap; }
+  .dash .pill { background: #1a2a57; padding: 3px 10px; border-radius: 999px; font-size: 11.5px; }
+  .dash table { font-size: 12px; background: transparent; min-width: 640px; }
+  .dash th { background: #16224b; color: #9fb0e6; } .dash td, .dash th { border-color: #243059; padding: 7px 9px; }
+  .st { font-weight: 700; padding: 2px 8px; border-radius: 999px; font-size: 11px; }
+  .st.x { background: #3b1a1d; color: #ffb4b4; } .st.p { background: #3a2a14; color: #ffc98a; } .st.v { background: #17325f; color: #9db9ff; } .st.a { background: #0f3322; color: #7be6a8; } .st.e { background: #2a1d52; color: #c9b3ff; }
+  .btnrow { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .btnrow span { background: #1a5cff; color: #fff; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 12px; } .btnrow span.g { background: #1a2a57; color: #dfe7ff; }
+
+  /* roadmap */
+  .road { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); counter-reset: ph; }
+  .phase { background: var(--surface); border: 1px solid var(--line); border-top: 5px solid var(--brand); border-radius: 14px; padding: 14px; font-size: 14px; }
+  .phase h4 { margin: 0 0 4px; font-size: 15px; } .phase p { margin: 0 0 6px; color: var(--muted); } .phase ul { margin: 0; padding-left: 16px; }
+  .phase.zero { border-top-color: #e08a00; }
+
+
+  /* whatsapp agent */
+  .sub { margin: 34px 0 6px; padding-top: 22px; border-top: 1px solid var(--line); }
+  .lanes { display: grid; grid-template-columns: 112px repeat(7, minmax(150px, 1fr)); min-width: 1160px; gap: 0; font-size: 13px; }
+  .lanes > div { padding: 9px 10px; border-bottom: 1px solid var(--line); border-right: 1px dashed var(--line); }
+  .lanes .lh { font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); background: var(--soft); display: flex; align-items: center; }
+  .lanes .sh { background: var(--brand); color: #fff; font-weight: 700; border-right-color: rgba(255,255,255,.25); border-bottom: 0; }
+  .lanes .sh span { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: #fff; color: var(--brand); font-size: 12px; margin-right: 6px; }
+  .lanes .c { background: var(--surface); }
+  .lanes .c.ai { background: color-mix(in srgb, var(--cyan) 11%, var(--surface)); }
+  .lanes .c.hu { background: var(--warn-bg); color: var(--warn-ink); }
+  .lanes .c.em { color: var(--muted); text-align: center; }
+  .lanes code { font-size: 11.5px; }
+  .lanesw { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; }
+
+  .wa .screen { background: #efeae2; min-height: 452px; padding: 0 0 10px; overflow: hidden; }
+  .wa-head { background: #0b6b5d; color: #fff; padding: 8px 10px; display: flex; align-items: center; gap: 8px; }
+  .wa-head i { font-style: normal; width: 24px; height: 24px; border-radius: 50%; background: #fff; color: #0b6b5d; display: grid; place-items: center; font-weight: 800; font-size: 11px; }
+  .wa-head b { font-size: 12px; display: block; line-height: 1.1; } .wa-head small { font-size: 9px; opacity: .85; }
+  .wa-body { padding: 8px 8px 0; display: flex; flex-direction: column; gap: 5px; }
+  .m { max-width: 88%; padding: 5px 8px; border-radius: 8px; box-shadow: 0 1px 1px rgba(0,0,0,.12); line-height: 1.32; }
+  .m.in { background: #fff; align-self: flex-start; border-top-left-radius: 2px; }
+  .m.out { background: #d9fdd3; align-self: flex-end; border-top-right-radius: 2px; }
+  .m small { display: block; color: #6a7597; font-size: 8.5px; margin-top: 2px; text-align: right; }
+  .m.ai::before { content: "🤖 Asistente BrasPer"; display: block; font-weight: 700; color: #0b6b5d; font-size: 9px; margin-bottom: 1px; }
+  .m.hu::before { content: "👤 Asesor"; display: block; font-weight: 700; color: #b45f00; font-size: 9px; margin-bottom: 1px; }
+  .qr { align-self: flex-start; display: flex; flex-direction: column; gap: 3px; width: 88%; }
+  .qr span { background: #fff; color: #0b6b5d; text-align: center; font-weight: 700; padding: 4px; border-radius: 8px; box-shadow: 0 1px 1px rgba(0,0,0,.12); }
+  .ph-img { width: 100%; height: 44px; border-radius: 6px; background: repeating-linear-gradient(45deg,#e4e9f5,#e4e9f5 6px,#d3dcf3 6px,#d3dcf3 12px); display: grid; place-items: center; color: #3b57a8; font-weight: 700; font-size: 10px; margin-bottom: 3px; }
+  .sys { align-self: center; background: #e1f2fb; color: #3a5a70; font-size: 9px; padding: 2px 8px; border-radius: 6px; }
+  .m b { font-weight: 700; }
+
+  .stats { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); margin: 16px 0 0; }
+  .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+  .stat .big { font-size: 26px; } .stat small { color: var(--muted); display: block; font-size: 13px; line-height: 1.35; }
+  .lane-title { display: flex; align-items: center; gap: 8px; margin: 14px 0 4px; font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  .states { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 8px 0 0; font-size: 13px; }
+  .states span.s { background: var(--soft); color: var(--brand-ink); padding: 3px 10px; border-radius: 999px; font-weight: 600; }
+  .states span.s.x { background: var(--bad-bg); color: var(--bad-ink); }
+  .states i { font-style: normal; color: var(--muted); }
+  .diagram .bx.err { fill: var(--bad-bg); stroke: var(--bad-ink); }
+  .diagram .te { fill: var(--bad-ink); }
+  .diagram .tb { fill: #fff; } .diagram .sub.tb { fill: #dbe6ff; }
+  .diagram .bx.ai { fill: var(--ai-bg); stroke: var(--ai); stroke-dasharray: 6 5; }
+  .diagram .ait { fill: var(--ai-ink); }
+  .diagram .badge { fill: var(--ai); } .diagram .badget { fill: #fff; font-size: 10px; font-weight: 700; }
+  .diagram .aisep { stroke: var(--ai); stroke-width: 1.4; stroke-dasharray: 3 6; fill: none; }
+  .toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--ai-ink); background: var(--ai-bg); border: 1px dashed var(--ai); padding: 6px 12px; border-radius: 999px; margin: 0 0 12px; cursor: pointer; }
+  .toggle input { accent-color: #6d3fd1; width: 16px; height: 16px; }
+  .tag.t-ai { background: var(--ai-bg); color: var(--ai-ink); border: 1px dashed var(--ai); }
+  .diagram .lane { fill: var(--soft); opacity: .5; } .diagram .lane.ai { fill: var(--ai-bg); opacity: .8; }
+  .diagram .lanel { font-size: 12px; font-weight: 700; fill: var(--muted); }
+  .diagram .lb2 { font-size: 13px; font-weight: 700; } .diagram .sub2 { font-size: 11px; fill: var(--muted); }
+  .diagram .bx.new { fill: var(--soft); stroke: var(--brand); stroke-width: 1.8; }
+  .diagram .bx.per { fill: var(--warn-bg); stroke: var(--warn-ink); }
+  .diagram .bx.lock { fill: color-mix(in srgb, var(--line) 60%, var(--surface)); stroke: var(--muted); stroke-width: 2.6; }
+  .diagram .ln.pur { stroke: var(--ai); stroke-dasharray: 5 4; }
+  .diagram .ppl { stroke: var(--warn-ink); stroke-width: 1.6; fill: none; }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--muted); margin-top: 10px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 16px; height: 12px; border-radius: 4px; border: 2px solid var(--muted); display: inline-block; }
+  pre.code { background: #0f1830; color: #dfe7ff; border-radius: 12px; padding: 14px 16px; overflow-x: auto; font: 12.5px/1.55 ui-monospace, Menlo, monospace; margin: 0; }
+  pre.code .c { color: #8fa3d9; }
+  footer { padding: 34px 0 70px; color: var(--muted); font-size: 13px; }
+  dialog { border: 0; padding: 0; background: transparent; max-width: 96vw; max-height: 96vh; }
+  dialog::backdrop { background: rgba(5,8,20,.85); }
+  dialog img { max-height: 92vh; max-width: 92vw; border-radius: 12px; display: block; margin: 0 auto; }
+  dialog p { color: #dfe5f7; text-align: center; margin: 8px 0 0; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">BRASPER Transferencias · Brasil · Perú · EE. UU.</div>
+    <h1>From a WhatsApp chat to a <em>tracked operation</em></h1>
+    <p>How BRASPER attends a client today, what the Kambista exchange flow teaches us, and the to-be flow from the team whiteboard: web app, database, a VIEW where a person validates payments, the existing Dashboard (untouched) and a billing script, with WhatsApp kept as a channel instead of the system of record. Now complemented with the IATHON team diagnosis: baseline, AI components, hypotheses and MVP scope.</p>
+    <div class="chips">
+      <span class="chip">Site reviewed: brasper.com/es · 10 Oct 2026</span>
+      <span class="chip">Benchmark: Kambista app v2.0.218</span>
+      <span class="chip">Plan source: whiteboard “to be”</span>
+      <span class="chip">Baseline &amp; hypotheses: IATHON team notes</span>
+      <span class="chip"><a href="kambista-benchmark.html">Open full Kambista walkthrough →</a></span>
+    </div>
+  </div>
+</header>
+
+<nav class="toc"><div class="wrap">
+  <a href="#summary">Summary</a>
+  <a href="#asis">Today (as-is)</a>
+  <a href="#benchmark">Kambista benchmark</a>
+  <a href="#tobe">To-be flow</a>
+  <a href="#journey">Client journey</a>
+  <a href="#backoffice">The VIEW</a>
+  <a href="#improvements">Improvements</a>
+  <a href="#ai">AI &amp; business case</a>
+  <a href="#mvp">Data &amp; MVP</a>
+  <a href="#billing">Billing script</a>
+  <a href="#roadmap">Roadmap</a>
+  <a href="#open">To confirm</a>
+</div></nav>
+
+<main class="wrap">
+
+<!-- ============ SUMMARY ============ -->
+<section id="summary">
+  <div class="kicker">The short version</div>
+  <h2>One idea: the operation lives in a database, not in a chat</h2>
+  <p class="lead">Today the website is a calculator that ends in WhatsApp. Everything after that (data, proof of payment, verification, bookkeeping) happens in chat and by hand. The whiteboard moves that work into a structured flow; Kambista shows how a client-facing version of it can feel.</p>
+  <div class="grid">
+    <div class="mini"><span class="tag t-site">today</span><h4 style="margin-top:6px">Calculator → WhatsApp</h4><p>The calculator builds a pre-filled message and opens <code>wa.me</code>. No operation record is created on the website.</p></div>
+    <div class="mini"><span class="tag t-board">whiteboard</span><h4 style="margin-top:6px">Web App → BD → VIEW → Dashboard → Script</h4><p>Client data and voucher photos land in a database; a person validates each payment through a VIEW (about 15 min) and marks orders to export; the existing Dashboard imports and exports orders; a script registers the sales through the providers’ APIs.</p></div>
+    <div class="mini"><span class="tag t-new">benchmark</span><h4 style="margin-top:6px">Kambista’s 3-step wizard</h4><p>Datos → Transferencia → Constancia, then a status timeline with receipts. The same shape fits the board’s fields almost one-to-one.</p></div>
+  </div>
+  <div class="stats">
+    <div class="stat"><span class="tag t-team">team notes</span><div class="big">7 FTE</div><small>4 in sales + 3 in billing for ~60 transactions a day</small></div>
+    <div class="stat"><span class="tag t-team">team notes</span><div class="big">up to 3 days</div><small>from confirmed payment to the client’s receipt</small></div>
+    <div class="stat"><span class="tag t-team">team notes</span><div class="big">100% manual</div><small>payment validation from screenshots, and double data entry</small></div>
+    <div class="stat"><span class="tag t-team">team target</span><div class="big">20 min</div><small>from confirmation to receipt; payment validation stays with a person</small></div>
+  </div>
+  <div class="note info"><b>How to read the tags:</b> <span class="tag t-site">site</span> seen on brasper.com/es · <span class="tag t-code">code</span> read from the site’s public JavaScript · <span class="tag t-board">board</span> from the whiteboard photo · <span class="tag t-team">team notes</span> from the IATHON diagnosis notes you shared (I have not verified the numbers) · <span class="tag t-inf">inferred</span> my reading, please confirm · <span class="tag t-new">suggested</span> my proposal, not on the board.</div>
+</section>
+
+<!-- ============ AS-IS ============ -->
+<section id="asis">
+  <div class="kicker">1 · Today</div>
+  <h2>How a client is attended now</h2>
+  <p class="lead">brasper.com/es promises “Envía dinero a Perú y Brasil por WhatsApp, seguro y en minutos”. The flow below is what the site and its code do. The back office behind it (sales and billing teams, KeyFácil and Omni) comes from the team’s diagnosis notes, because the whiteboard photo I have is cropped at the top.</p>
+
+  <div class="card">
+    <div class="chain">
+      <div class="link"><b>1 · Calculator</b>Client enters an amount, picks BRL / PEN / USD; commission, total and rate are shown.<small><span class="tag t-site">site</span></small></div><div class="arr">→</div>
+      <div class="link chat"><b>2 · “Enviar por WhatsApp”</b>Builds a pre-filled message (amount, rate, commission, net, total, coupon) and opens WhatsApp.<small><span class="tag t-code">code</span></small></div><div class="arr">→</div>
+      <div class="link chat"><b>3 · Chat with the team</b>“Regístrate y realiza la transferencia… envíanos el comprobante.” Data and proof travel as chat messages.<small><span class="tag t-site">site</span></small></div><div class="arr">→</div>
+      <div class="link manual"><b>4 · Manual validation</b>A sales agent checks the screenshot by eye and types the operation into the Dashboard.<small><span class="tag t-team">team notes</span></small></div><div class="arr">→</div>
+      <div class="link manual"><b>5 · Billing</b>Billing re-checks, registers the receipt in KeyFácil or Omni, consolidates files, emails it.<small><span class="tag t-team">team notes</span></small></div><div class="arr">→</div>
+      <div class="link"><b>6 · Client receives</b>Money in the destination account, then the receipt by email, up to 3 days after confirming.<small><span class="tag t-site">site</span> <span class="tag t-team">team notes</span></small></div>
+    </div>
+    <div class="note info">Second entry point: <b>“Programa Tu Transferencia”</b> collects date, amount, DNI/CPF, full name, phone, email and currency pair, then also ends in “Enviar por WhatsApp”.</div>
+  </div>
+
+  <div class="card">
+    <h3>Inside the back office today</h3>
+    <p class="lead" style="margin-bottom:6px">Seven people, two teams, nine steps. The “Dashboard” (“eje” on the board) is the hub where sales types and billing re-checks.</p>
+    <div class="lane-title">Ventas · 4 people</div>
+    <div class="chain">
+      <div class="link"><b>1 · Web → Cotizar</b>User quotes on the site and is sent to WhatsApp.<small><span class="tag t-team">team notes</span></small></div><div class="arr">→</div>
+      <div class="link chat"><b>2 · Negotiate the rate</b>With an agent in WhatsApp, in a queue (“Cola”). Notes mention “Ventas Netas” and “Ventas Prefe…”, likely net vs preferential rates.<small><span class="tag t-team">team notes</span> <span class="tag t-inf">to confirm</span></small></div><div class="arr">→</div>
+      <div class="link chat"><b>3 · Pay and send proof</b>User transfers and sends a <b style="display:inline">screenshot</b>.<small><span class="tag t-team">team notes</span></small></div><div class="arr">→</div>
+      <div class="link manual"><b>4 · Validate by eye</b>Agent checks the transaction really exists (“completado, llenado, validado”).<small><span class="tag t-team">team notes</span></small></div><div class="arr">→</div>
+      <div class="link manual"><b>5 · Type into Dashboard</b>Flagged on the board: “dB Schema!!! → Datos”. There is no defined data schema.<small><span class="tag t-team">team notes</span></small></div>
+    </div>
+    <div class="lane-title">Facturación · 3 people</div>
+    <div class="chain">
+      <div class="link manual"><b>6 · Pre-validate</b>Re-check that everything typed in the Dashboard is right.<small><span class="tag t-team">team notes</span></small></div><div class="arr">→</div>
+      <div class="link manual"><b>7 · Register receipt</b><b style="display:inline">KeyFácil</b> for PE→BR (partly automated) or <b style="display:inline">Omni</b> for BR→PE (fully manual, no integration). Both export xlsx / pdf.<small><span class="tag t-team">team notes</span></small></div><div class="arr">→</div>
+      <div class="link manual"><b>8 · Consolidate</b>Files merged (“Consolidado”).<small><span class="tag t-team">team notes</span></small></div><div class="arr">→</div>
+      <div class="link"><b>9 · Email the receipt</b>“Envío correo”: up to 3 days after the confirmed transaction.<small><span class="tag t-team">team notes</span></small></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="big">2×</div><small>data entry: Dashboard, then KeyFácil / Omni, so typing errors</small></div>
+      <div class="stat"><div class="big">fraud risk</div><small>payment “proof” is a screenshot checked by a person</small></div>
+      <div class="stat"><div class="big">queues</div><small>long waits in WhatsApp; Omni has no integration</small></div>
+    </div>
+  </div>
+
+  <div class="shots">
+    <figure class="wide"><button data-full="brasper-asis/asis-01-hero-calculator.png" data-cap="Hero calculator, brasper.com/es"><img loading="lazy" src="brasper-asis/asis-01-hero-calculator.png" alt="Brasper hero calculator"></button><figcaption><b>Hero calculator</b>Note “1 BRL = 0 PEN” and an expired promo (“hasta el 09 de abril”).</figcaption></figure>
+    <figure class="wide"><button data-full="brasper-asis/asis-03-programa-transferencia.png" data-cap="Programa tu transferencia form"><img loading="lazy" src="brasper-asis/asis-03-programa-transferencia.png" alt="Schedule form"></button><figcaption><b>Programa tu transferencia</b>A structured form, but it submits to WhatsApp, not to a database.</figcaption></figure>
+    <figure class="wide"><button data-full="brasper-asis/asis-04-three-steps.png" data-cap="Envía en 3 pasos"><img loading="lazy" src="brasper-asis/asis-04-three-steps.png" alt="Three steps"></button><figcaption><b>“Envía en 3 pasos”</b>Four cards are shown; step 2 asks for the voucher by chat.</figcaption></figure>
+    <figure class="wide"><button data-full="brasper-asis/asis-02-hours.png" data-cap="Hours of attention"><img loading="lazy" src="brasper-asis/asis-02-hours.png" alt="Hours"></button><figcaption><b>Horarios de atención</b>Mon–Fri 7:00–18:00 · Sat 8:00–14:00 · Sun 12:00–14:00 · holidays closed.</figcaption></figure>
+  </div>
+
+  <h3 style="margin-top:18px">What gets in the way</h3>
+  <div class="tw"><table>
+    <thead><tr><th>#</th><th>Observation</th><th>Evidence</th><th>Effect on the client / team</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td>No operation record is created by the site. The only output is a WhatsApp message.</td><td><span class="tag t-code">code</span></td><td>No ID, no status the client can check, no data for reporting.</td></tr>
+      <tr><td class="n">2</td><td>Proof of payment and account data are collected in chat.</td><td><span class="tag t-site">site</span></td><td>Re-typing, missed or unreadable photos, long back-and-forth.</td></tr>
+      <tr><td class="n">3</td><td><b>Rates did not load on 10 Oct 2026.</b> Calculator showed 0.00 and “1 BRL = 0 PEN”; the calls <code>coin/currencies</code>, <code>coin/tax-rate</code>, <code>coin/commission</code> and automatic coupons failed with network errors.</td><td><span class="tag t-site">site</span> reproduced in the app’s browser pane and in headless Chrome; <code>apibras.finzeler.com</code> also fails the TLS handshake from <code>curl</code></td><td>The main call-to-action cannot quote. Caveat: tested from one Mac only, so check from another network.</td></tr>
+      <tr><td class="n">4</td><td>Hours are limited (weekday 7–18, Sat 8–14, Sun 12–14, holidays closed) and are only stated on the page, not in the flow.</td><td><span class="tag t-site">site</span></td><td>A client outside hours gets no explanation of when the operation will be checked.</td></tr>
+      <tr><td class="n">5</td><td>Back office is manual: validation by eye, double entry (Dashboard + KeyFácil / Omni), xlsx / pdf consolidation, receipt by email.</td><td><span class="tag t-team">team notes</span> <span class="tag t-board">board “(manual)”</span></td><td>Seven people for ~60 transactions a day; up to 3 days to the receipt.</td></tr>
+      <tr><td class="n">5b</td><td>Payment validation is 100% manual, from screenshots.</td><td><span class="tag t-team">team notes</span></td><td>A forged or edited screenshot can pass; a person is the only control.</td></tr>
+      <tr><td class="n">5c</td><td>No defined data schema: the Dashboard is typed free-form (board flag “dB Schema!!!”).</td><td><span class="tag t-team">team notes</span> <span class="tag t-board">board</span></td><td>Reports and automation have nothing reliable to read.</td></tr>
+      <tr><td class="n">6</td><td>Stale or inconsistent copy: promo “hasta el 09 de abril” still in the hero; “Envía en 3 pasos” shows four cards; “+45 mil operaciones” vs “+50 mil envíos”; leftover “¿Necesitas ayuda con tu donación?” near the WhatsApp button.</td><td><span class="tag t-site">site</span></td><td>Weakens trust on a money product.</td></tr>
+      <tr><td class="n">7</td><td>The public JavaScript embeds environment values, including an “admin redirect secret” with a trivially guessable value and the API host.</td><td><span class="tag t-code">code</span></td><td>Anything in a <code>VITE_</code> variable is public. Secrets and API keys must live on a server, which is exactly what the board’s “API key !” points at. Rotate that value and move the check server-side.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ============ BENCHMARK ============ -->
+<section id="benchmark">
+  <div class="kicker">2 · Benchmark</div>
+  <h2>What Kambista’s flow gives us to reuse</h2>
+  <p class="lead">Walked end to end on a real device (Samsung, app v2.0.218). Kambista does everything in-app: calculate, fill data, transfer, report proof, track, get receipts. Each pattern below maps to a piece of the whiteboard.</p>
+
+  <div class="shots">
+    <figure class="ph"><button data-full="screenshots/01-home-calculator.png" data-cap="Kambista: calculator"><img loading="lazy" src="screenshots/01-home-calculator.png" alt="Kambista calculator"></button><figcaption><b>Calculator</b>Rate tabs, live result, coupon, one button to start.</figcaption></figure>
+    <figure class="ph"><button data-full="screenshots/07-step1-form-complete.png" data-cap="Kambista: Datos step"><img loading="lazy" src="screenshots/07-step1-form-complete.png" alt="Kambista Datos"></button><figcaption><b>Datos</b>Origin bank, destination account, origin of funds.</figcaption></figure>
+    <figure class="ph"><button data-full="screenshots/11-step2-transferencia-scroll1.png" data-cap="Kambista: Transferencia step"><img loading="lazy" src="screenshots/11-step2-transferencia-scroll1.png" alt="Kambista Transferencia"></button><figcaption><b>Transferencia</b>Company account with copy buttons, currency warning.</figcaption></figure>
+    <figure class="ph"><button data-full="screenshots/13-step2-back-prompt.png" data-cap="Kambista: cancel prompt"><img loading="lazy" src="screenshots/13-step2-back-prompt.png" alt="Kambista cancel"></button><figcaption><b>Cancel</b>“Tienes una operación en curso”.</figcaption></figure>
+    <figure class="ph"><button data-full="screenshots/21-historial-detalle.png" data-cap="Kambista: finished operation"><img loading="lazy" src="screenshots/21-historial-detalle.png" alt="Kambista timeline"></button><figcaption><b>Status timeline</b>Registrada → Verificamos → Enviamos → Recibiste, plus receipts.</figcaption></figure>
+    <figure class="ph"><button data-full="screenshots/17-tab-cuentas.png" data-cap="Kambista: saved accounts"><img loading="lazy" src="screenshots/17-tab-cuentas.png" alt="Kambista accounts"></button><figcaption><b>Saved accounts</b>Reused as destination in the next operation.</figcaption></figure>
+  </div>
+
+  <div class="tw" style="margin-top:14px"><table>
+    <thead><tr><th>Kambista pattern</th><th>Brasper today</th><th>Brasper to-be (with board element)</th></tr></thead>
+    <tbody>
+      <tr><td><b>Live calculator</b> with rate and result</td><td>Has one, and shows commission + total (clearer than Kambista). Rates currently fail to load.</td><td>Keep it; make the rate source reliable. <span class="tag t-board">board: “tipo cambio” → Web App</span></td></tr>
+      <tr><td><b>Datos step</b>: origin bank, destination account, origin of funds</td><td>Asked in chat; the “Programa” form collects DNI/CPF, name, phone, email only.</td><td>Same three fields in the app, plus DNI/CPF. <span class="tag t-board">board: Origen Fondo, C. Origen, C. Destino</span></td></tr>
+      <tr><td><b>Transferencia step</b>: company account, copy buttons, “use the right currency account”, rate-lock time</td><td>Account is given in chat.</td><td>Show the Brasper account for the operation’s currency in-app, with the lock time and an out-of-hours notice built from Brasper’s own hours. <span class="tag t-new">suggested</span></td></tr>
+      <tr><td><b>Constancia</b>: report the payment</td><td>Voucher sent as a chat attachment.</td><td>Operation number + photo upload straight into the database. <span class="tag t-board">board: N° Trans, Fotos → BD</span></td></tr>
+      <tr><td><b>Verification ~15 min</b> and status timeline</td><td>No status visible to the client.</td><td>A person checks the bank (~15 min) and sets OK / Aprobado in the VIEW; client sees the timeline. <span class="tag t-board">board: Bank, 15 min, ok? Aprob</span></td></tr>
+      <tr><td><b>Receipts</b> (boleta PDF/XML)</td><td>Manual.</td><td>Billing script generates them from approved rows. <span class="tag t-board">board: SCRIPT / Fact</span></td></tr>
+      <tr><td><b>Preferential rate</b> for large amounts (Kambista: over $5,000 or S/18,000, via a link)</td><td>Rate negotiated with an agent in WhatsApp; notes mention “net” and “preferential” sales <span class="tag t-team">team notes</span> <span class="tag t-inf">to confirm</span></td><td>Rate tiers coded inside the quote tool, so a person is needed only for exceptions. <span class="tag t-new">suggested</span></td></tr>
+      <tr><td><b>Saved accounts, cancel, referral</b></td><td>Referral exists as step “Recomienda”.</td><td>Saved beneficiaries and a cancel path. <span class="tag t-new">suggested, not on the board</span></td></tr>
+    </tbody>
+  </table></div>
+  <div class="note info"><b>Speed reference:</b> in the finished Kambista operation I opened, registration (15:20) to money received (15:43) took 23 minutes. That is one example and a different interval from Brasper’s 20-minute target (confirmation to receipt), but it shows the order of magnitude is realistic.</div>
+</section>
+
+<!-- ============ TO-BE ============ -->
+<section id="tobe">
+  <div class="kicker">3 · To-be</div>
+  <h2>The whiteboard flow, redrawn</h2>
+  <p class="lead">Everything below the red line on the board, drawn with its actors: who does each step and in which system. Three rules shape it. Payment validation <b>stays with a person</b> who works in the VIEW. The <b>Dashboard is the existing system and is not modified</b>: it only imports and exports orders. And AI appears only where similar remittance and exchange businesses already use it, as <b>optional</b> pieces.</p>
+
+  <div class="card">
+    <div class="two">
+      <div>
+        <h3>The original</h3>
+        <figure style="width:100%"><button data-full="whiteboard-to-be.jpg" data-cap="Team whiteboard: to-be flow"><img loading="lazy" src="whiteboard-to-be.jpg" alt="Whiteboard to be flow"></button><figcaption>Above the red line: today’s flow (this photo is cropped at the top). Below: “to be”.</figcaption></figure>
+      </div>
+      <div>
+        <h3>What the board says</h3>
+        <ul class="clean">
+          <li><b>Web App</b> reads the exchange rate (“tipo cambio”) and collects <i>Origen de fondo ✓, C. Origen, N° Trans, C. Destino</i>.</li>
+          <li><b>Fotos</b> go from the Web App into the <b>BD</b>, labelled <b>IV</b> (read by the team as <i>Intención de Venta</i>).</li>
+          <li><b>Bank</b> with a person and <b>15 min</b>: a person checks the bank and “ok? Aprob” goes back to the BD, <b>through the VIEW</b> where they change the order status (confirmed by you).</li>
+          <li>The <b>VIEW</b> over the BD; a person <b>marks to export</b>.</li>
+          <li><b>Export</b> → the <b>Dashboard</b>, which already exists, is not modified and only imports and exports orders (confirmed by you).</li>
+          <li><b>I/EXP</b> → <b>SCRIPT “Fact”</b>: a person exports the orders from the Dashboard and imports them into Fact (confirmed by you). Fact has its own database and an <b>API key</b> (underlined and flagged with “!!”); it runs the set of orders, registers the sales through KeyFácil / Omni, and the flow ends with the receipt.</li>
+          <li>Bottom left: <b>WSP, Telegram, Discord o IA</b>. In my drawing this is the optional chat agent A1 (Discord is not drawn: I found no use of it by similar businesses).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card diagram">
+    <label class="toggle"><input type="checkbox" id="aiToggle" checked> Show optional AI evolutions</label>
+    <svg id="tobeSvg" viewBox="0 0 1200 810" role="img" aria-label="To-be flow drawn with its actors: client, optional AI agent and services, our new system (Web App, database, VIEW), people who validate and export, the existing Dashboard that is not modified, a billing person who exports from the Dashboard and imports into Fact, the Fact script and the tax services">
+      <defs><marker id="tba" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker><marker id="tbp" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ai)"/></marker></defs>
+      <g class="ai-layer"><rect class="lane ai" x="0" y="118" width="1200" height="94" rx="8"/><text class="lanel ait" x="10" y="162">IA opcional</text><text class="lanel ait" x="10" y="176">(servicios)</text></g>
+      <rect class="lane" x="0" y="14" width="1200" height="100" rx="8"/><text class="lanel" x="10" y="61">Cliente</text><text class="lanel" x="10" y="75">y canales</text>
+      <rect class="lane" x="0" y="216" width="1200" height="104" rx="8"/><text class="lanel" x="10" y="265">Nuestro</text><text class="lanel" x="10" y="279">sistema (nuevo)</text>
+      <text class="lanel" x="10" y="375">Personas</text>
+      <rect class="lane" x="0" y="422" width="1200" height="84" rx="8"/><text class="lanel" x="10" y="454">Dashboard</text><text class="lanel" x="10" y="468">actual, sin</text><text class="lanel" x="10" y="482">cambios</text>
+      <text class="lanel" x="10" y="554">Facturación</text><text class="lanel" x="10" y="568">(persona)</text>
+      <rect class="lane" x="0" y="608" width="1200" height="94" rx="8"/><text class="lanel" x="10" y="659">Script Fact</text>
+      <text class="lanel" x="10" y="745">Servicios</text><text class="lanel" x="10" y="759">fiscales</text>
+      <rect class="bx per" x="124" y="28" width="108" height="72" rx="11"/><circle class="ppl" cx="134" cy="39" r="3.5"/><path class="ppl" d="M128,54 q6,-9 12,0"/><text class="lb2 " x="178" y="46" text-anchor="middle">Cliente</text><text class="sub2 " x="178" y="60" text-anchor="middle">cotiza y llena</text><text class="sub2 " x="178" y="76" text-anchor="middle">datos, transfiere</text><text class="sub2 " x="178" y="90" text-anchor="middle">y sube la foto</text>
+      <rect class="bx per" x="1062" y="28" width="108" height="72" rx="11"/><circle class="ppl" cx="1072" cy="39" r="3.5"/><path class="ppl" d="M1066,54 q6,-9 12,0"/><text class="lb2 " x="1116" y="53" text-anchor="middle">Cliente</text><text class="sub2 " x="1116" y="68" text-anchor="middle">recibe el PDF</text><text class="sub2 " x="1116" y="83" text-anchor="middle">por correo</text>
+      <rect class="bx new" x="124" y="228" width="248" height="80" rx="11"/><text class="lb2 " x="248" y="257" text-anchor="middle">Web App</text><text class="sub2 " x="248" y="272" text-anchor="middle">cotiza con el tipo de cambio</text><text class="sub2 " x="248" y="287" text-anchor="middle">recibe datos y foto del voucher</text>
+      <rect class="bx new" x="392" y="228" width="108" height="80" rx="11"/><text class="lb2 " x="446" y="257" text-anchor="middle">BD · IV</text><text class="sub2 " x="446" y="272" text-anchor="middle">Intención de Venta</text><text class="sub2 " x="446" y="287" text-anchor="middle">fuente de verdad</text>
+      <rect class="bx new" x="526" y="228" width="242" height="80" rx="11"/><text class="lb2 " x="647" y="250" text-anchor="middle">VIEW</text><text class="sub2 " x="647" y="264" text-anchor="middle">pendientes y aprobadas</text><text class="sub2 " x="647" y="280" text-anchor="middle">la persona cambia el estado aquí</text><text class="sub2 " x="647" y="294" text-anchor="middle">y marca para exportar</text>
+      <rect class="bx" x="392" y="335" width="108" height="72" rx="11"/><text class="lb2 " x="446" y="352" text-anchor="middle">Banco</text><text class="sub2 " x="446" y="368" text-anchor="middle">depósitos del</text><text class="sub2 " x="446" y="382" text-anchor="middle">cliente (consulta</text><text class="sub2 " x="446" y="398" text-anchor="middle">manual)</text>
+      <rect class="bx per" x="526" y="335" width="108" height="72" rx="11"/><circle class="ppl" cx="536" cy="346" r="3.5"/><path class="ppl" d="M530,361 q6,-9 12,0"/><text class="lb2 " x="580" y="352" text-anchor="middle">Validador</text><text class="sub2 " x="580" y="368" text-anchor="middle">revisa el banco</text><text class="sub2 " x="580" y="382" text-anchor="middle">≈ 15 min y marca</text><text class="sub2 " x="580" y="398" text-anchor="middle">OK en la VIEW</text>
+      <rect class="bx per" x="660" y="335" width="108" height="72" rx="11"/><circle class="ppl" cx="670" cy="346" r="3.5"/><path class="ppl" d="M664,361 q6,-9 12,0"/><text class="lb2 " x="714" y="352" text-anchor="middle">Operador</text><text class="sub2 " x="714" y="368" text-anchor="middle">marca y exporta</text><text class="sub2 " x="714" y="382" text-anchor="middle">el archivo de</text><text class="sub2 " x="714" y="398" text-anchor="middle">órdenes</text>
+      <rect class="bx lock" x="660" y="433" width="242" height="62" rx="11"/><text class="lb2 " x="781" y="460" text-anchor="middle">Dashboard actual (sin cambios)</text><text class="sub2 " x="781" y="476" text-anchor="middle">solo importa y exporta órdenes</text>
+      <rect class="bx per" x="794" y="521" width="108" height="72" rx="11"/><circle class="ppl" cx="804" cy="532" r="3.5"/><path class="ppl" d="M798,547 q6,-9 12,0"/><text class="lb2 " x="848" y="538" text-anchor="middle">Facturación</text><text class="sub2 " x="848" y="554" text-anchor="middle">exporta del</text><text class="sub2 " x="848" y="568" text-anchor="middle">Dashboard y</text><text class="sub2 " x="848" y="584" text-anchor="middle">importa en Fact</text>
+      <rect class="bx new" x="794" y="619" width="108" height="72" rx="11"/><text class="lb2 " x="848" y="636" text-anchor="middle">Fact · valida</text><text class="sub2 " x="848" y="652" text-anchor="middle">esquema, datos y</text><text class="sub2 " x="848" y="666" text-anchor="middle">duplicados</text><text class="sub2 " x="848" y="682" text-anchor="middle">del lote</text>
+      <rect class="bx new" x="928" y="619" width="108" height="72" rx="11"/><text class="lb2 " x="982" y="636" text-anchor="middle">Fact · registra</text><text class="sub2 " x="982" y="652" text-anchor="middle">cada venta por</text><text class="sub2 " x="982" y="666" text-anchor="middle">API y guarda</text><text class="sub2 " x="982" y="682" text-anchor="middle">el XML</text>
+      <rect class="bx new" x="1062" y="619" width="108" height="72" rx="11"/><text class="lb2 " x="1116" y="636" text-anchor="middle">Fact · PDF</text><text class="sub2 " x="1116" y="652" text-anchor="middle">desde el XML y</text><text class="sub2 " x="1116" y="666" text-anchor="middle">envío por</text><text class="sub2 " x="1116" y="682" text-anchor="middle">correo</text>
+      <rect class="bx" x="1062" y="719" width="108" height="62" rx="11"/><text class="lb2 " x="1116" y="739" text-anchor="middle">Servicios</text><text class="sub2 " x="1116" y="754" text-anchor="middle">KeyFácil → SUNAT</text><text class="sub2 " x="1116" y="769" text-anchor="middle">Omni → fisco BR</text>
+      <path class="ln" marker-end="url(#tba)" d="M178,100 V228"/>
+      <path class="ln" marker-end="url(#tba)" d="M372,268 H392"/>
+      <path class="ln" marker-start="url(#tba)" marker-end="url(#tba)" d="M500,268 H526"/>
+      <path class="ln" marker-start="url(#tba)" marker-end="url(#tba)" d="M580,308 V335"/>
+      <path class="ln" marker-start="url(#tba)" marker-end="url(#tba)" d="M714,308 V335"/>
+      <path class="ln" marker-end="url(#tba)" d="M714,407 V433"/>
+      <path class="ln" marker-end="url(#tba)" d="M848,495 V521"/>
+      <path class="ln" marker-end="url(#tba)" d="M848,593 V619"/>
+      <path class="ln" marker-end="url(#tba)" d="M902,655 H928"/>
+      <path class="ln" marker-end="url(#tba)" d="M1036,655 H1062"/>
+      <path class="ln" marker-start="url(#tba)" marker-end="url(#tba)" d="M1010,691 V705 H1116 V719"/>
+      <path class="ln" marker-end="url(#tba)" d="M1116,619 V100"/>
+      <path class="ln" style="stroke-dasharray:4 4" marker-end="url(#tba)" d="M500,371 H526"/>
+      <circle class="nb" cx="178" cy="140" r="10"/><text class="nbt" x="178" y="144" text-anchor="middle">1</text>
+      <circle class="nb" cx="178" cy="190" r="10"/><text class="nbt" x="178" y="194" text-anchor="middle">2</text>
+      <circle class="nb" cx="600" cy="321" r="10"/><text class="nbt" x="600" y="325" text-anchor="middle">3</text>
+      <circle class="nb" cx="734" cy="321" r="10"/><text class="nbt" x="734" y="325" text-anchor="middle">4</text>
+      <circle class="nb" cx="734" cy="420" r="10"/><text class="nbt" x="734" y="424" text-anchor="middle">5</text>
+      <circle class="nb" cx="868" cy="508" r="10"/><text class="nbt" x="868" y="512" text-anchor="middle">6</text>
+      <circle class="nb" cx="1030" cy="619" r="10"/><text class="nbt" x="1030" y="623" text-anchor="middle">7</text>
+      <circle class="nb" cx="1164" cy="619" r="10"/><text class="nbt" x="1164" y="623" text-anchor="middle">8</text>
+      <text class="sm" x="1108" y="300" text-anchor="end">PDF por correo</text>
+      <g class="ai-layer"><rect class="bx ai" x="258" y="28" width="242" height="72" rx="11"/><text class="lb2 ait" x="379" y="46" text-anchor="middle">A1 · Agente de chat</text><text class="sub2 ait" x="379" y="60" text-anchor="middle">WhatsApp · Telegram · web</text><text class="sub2 ait" x="379" y="76" text-anchor="middle">usa la misma API de la Web App</text><text class="sub2 ait" x="379" y="90" text-anchor="middle">pasa a una persona si hace falta</text><rect class="bx ai" x="392" y="129" width="108" height="72" rx="11"/><text class="lb2 ait" x="446" y="146" text-anchor="middle">A2 · Identidad</text><text class="sub2 ait" x="446" y="162" text-anchor="middle">documento + rostro</text><text class="sub2 ait" x="446" y="176" text-anchor="middle">1ª operación</text><text class="sub2 ait" x="446" y="192" text-anchor="middle">servicio externo</text><rect class="bx ai" x="526" y="129" width="108" height="72" rx="11"/><text class="lb2 ait" x="580" y="146" text-anchor="middle">A3 · Riesgo</text><text class="sub2 ait" x="580" y="162" text-anchor="middle">puntaje por orden</text><text class="sub2 ait" x="580" y="176" text-anchor="middle">servicio externo</text><text class="sub2 ait" x="580" y="192" text-anchor="middle">solo orienta</text><rect class="bx ai" x="928" y="719" width="108" height="62" rx="11"/><text class="lb2 ait" x="982" y="739" text-anchor="middle">A4 · Rechazos</text><text class="sub2 ait" x="982" y="754" text-anchor="middle">explica el error</text><text class="sub2 ait" x="982" y="769" text-anchor="middle">experimental</text><path class="ln pur" marker-start="url(#tbp)" marker-end="url(#tbp)" d="M232,64 H258"/><path class="ln pur" marker-end="url(#tbp)" d="M330,100 V228"/><path class="ln pur" marker-start="url(#tbp)" marker-end="url(#tbp)" d="M446,201 V228"/><path class="ln pur" marker-start="url(#tbp)" marker-end="url(#tbp)" d="M580,201 V228"/><path class="ln pur" marker-start="url(#tbp)" marker-end="url(#tbp)" d="M982,719 V691"/></g>
+      </svg>
+    <div class="legend"><span><i style="background:var(--warn-bg);border-color:var(--warn-ink)"></i>Persona</span><span><i style="background:var(--soft);border-color:var(--brand)"></i>Sistema nuevo (nuestro)</span><span><i style="background:color-mix(in srgb,var(--line) 60%,var(--surface))"></i>Dashboard actual, sin cambios</span><span><i style="background:var(--ai-bg);border-color:var(--ai);border-style:dashed"></i>IA opcional</span><span>Flecha discontinua morada = IA opcional</span></div>
+  </div>
+
+  <div class="tw"><table>
+    <thead><tr><th>#</th><th>Who does what</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td><b>Cliente</b> quotes in the Web App, which asks for the current <b>tipo de cambio</b> (and commission). Optionally through the chat agent <b>A1</b>.</td><td><span class="tag t-board">board</span> arrow read as “Web App → rate”</td></tr>
+      <tr><td class="n">2</td><td><b>Cliente</b> enters <b>origen de fondos, cuenta origen, N° de transacción, cuenta destino</b>, transfers, and uploads the <b>fotos</b> of the proof; all of it is stored in the <b>BD</b>. Optionally <b>A2</b> checks identity once, on the first operation.</td><td><span class="tag t-board">board</span></td></tr>
+      <tr><td class="n">3</td><td><b>Validador</b> (a person) sees the pending operations in the <b>VIEW</b>, checks the deposit in the bank (target about <b>15 minutes</b>) and sets <b>OK / Aprobado</b>; the status is written to the BD. Optionally <b>A3</b> shows a risk score beside each order.</td><td><span class="tag t-board">board</span> <span class="tag t-team">confirmed by you</span></td></tr>
+      <tr><td class="n">4</td><td><b>Operador</b> marks the approved operations in the VIEW and exports the order file. They may be the same person as the validator.</td><td><span class="tag t-board">board</span> <span class="tag t-inf">same person? to confirm</span></td></tr>
+      <tr><td class="n">5</td><td>The file is <b>imported into the Dashboard</b>, the MYPE’s current system. It is not modified: it only accepts imports and exports of orders.</td><td><span class="tag t-team">confirmed by you</span></td></tr>
+      <tr><td class="n">6</td><td>A <b>person from billing</b> exports the orders from the Dashboard and <b>imports that file into Fact</b>, which runs the whole set (the board’s <b>I/EXP</b>). This is a manual hand-off by design.</td><td><span class="tag t-board">board</span> <span class="tag t-team">confirmed by you</span> <span class="tag t-inf">which person? to confirm</span></td></tr>
+      <tr><td class="n">7</td><td><b>Fact</b> runs the imported set: it validates the batch and registers each sale through the API: <b>SUNAT</b> via KeyFácil, the Brazilian equivalent via Omni, with an API key kept server-side. It stores the XML it gets back. Optionally <b>A4</b> explains any rejection (<a href="#billing">detail</a>).</td><td><span class="tag t-board">board</span> <span class="tag t-team">team notes</span></td></tr>
+      <tr><td class="n">8</td><td><b>Fact</b> builds the PDF from that XML and emails it to the client. It returns the invoice number and status to the BD, where the VIEW shows them; the Dashboard is not involved.</td><td><span class="tag t-team">team notes</span> <span class="tag t-inf">return path: my reading</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <div id="ai-evolutions" style="margin-top:26px">
+    <div class="kicker">Optional evolutions</div>
+    <h3 style="font-size:22px;margin:2px 0 6px">Three AI pieces already used by similar businesses, and one experimental</h3>
+    <p class="lead" style="margin-bottom:14px">I kept only the pieces for which I found a real deployment in remittance or currency-exchange companies, and each now sits in the graph as an actor that exchanges data with the flow. A1 to A3 meet that test. A4, for the Fact script, does not: I found no deployment, and the table says so. None of them approves a payment or edits fiscal data. The base flow runs with all of them switched off. Most sources are company, partner or vendor write-ups, so the performance claims are unaudited.</p>
+    <div class="tw"><table>
+      <thead><tr><th></th><th>Where it sits in the graph</th><th>What it does</th><th>Evidence in this context</th><th>What stays human or deterministic</th><th>What it needs, and its limits</th></tr></thead>
+      <tbody>
+        <tr><td class="n">A1</td><td><b>Cliente y canales</b> → Web App API. Same API as the Web App; hands over to a person.</td><td>Conversation on WhatsApp, Telegram or web chat: quote, data capture, voucher upload, status. Detail in <a href="#wa-agent">4b</a>.</td><td>Félix Pago sends remittances to Latin America through an AI chatbot on WhatsApp (<a href="https://stripe.com/ie/customers/felix">Stripe case study</a>). Rextie, a Peruvian exchange house, launched an AI chatbot, “Lucía”, for 24-hour customer advice (<a href="https://andina.pe/ingles/noticia-casa-cambio-digital-utiliza-chatbots-para-dar-asesoria-financiera-712151.aspx">Andina</a>; the article is undated, and it describes advice rather than operations). Tkambio’s assistant is described as experimental, so I do not count it.</td><td>Rates, fees and account numbers come from the API. No approvals; the validator decides. Handoff to a person on request.</td><td>A language model with tool calling, and the Web App API must exist first. Automating WhatsApp needs the <b>WhatsApp Business Platform</b>: today the site only opens a <code>wa.me</code> link. A Telegram bot works for a demo without that approval. Effort: medium.</td></tr>
+        <tr><td class="n">A2</td><td><b>Web App → BD</b>, first operation only. A purple service attached to the BD.</td><td>Checks an identity document and a face match; returns pass or fail to the BD, and the result shows in the VIEW.</td><td>Remitly onboards customers with Onfido’s AI-based document and face checks (<a href="https://www.thepaypers.com/digital-identity-security-online-fraud/remitly-partners-onfido-to-onboard-customers-using-ai-based-technology/775127-26">The Paypers</a>, <a href="https://onfido.com/?p=3878">Onfido</a>).</td><td>A person handles every failure. The vendor’s model is not ours to train or tune.</td><td>It is a paid external service. Open points: whether the vendor reads Peruvian DNI and Brazilian CPF documents, the cost per check, and legal review of ID and biometric data under Peruvian and Brazilian data-protection rules. It adds friction, so first operation only. Effort: low to medium.</td></tr>
+        <tr><td class="n">A3</td><td><b>BD → VIEW.</b> A purple service whose score appears beside each pending order.</td><td>Returns a risk score for each operation to help the validator prioritize and look harder at some orders.</td><td>Remitly integrated Sift’s risk score into its review workflow: the score creates review tasks and is one input to human decisions (<a href="https://sift.com/resources/case-studies/remitly/">Sift case study</a>, a vendor account).</td><td>The validator decides; the score never approves or rejects.</td><td>A vendor integration, and it needs operation history to be useful, while about 60 transactions a day is little data. A first version can be plain rules (first operation, unusual amount, new account), which are not AI. Effort: low to medium.</td></tr>
+        <tr><td class="n">A4</td><td><b>Fact · registra</b>, on the rejected records. A purple actor under the step that talks to the tax services.</td><td>Reads the authority’s or provider’s rejection message plus the record, and says in plain language what is probably wrong and which field to check. A person corrects the data at the source and re-imports.</td><td><b>None found as AI.</b> What I found is the problem it would address: some NFS-e rejections are generic, such as code E8214, which does not say which data is wrong (<a href="https://ajuda.omie.com.br/pt-BR/articles/17300437-e8214-rejeicao-nfs-e-a-mensagem-enviada-contem-dados-invalidos-ou-incorretos">Omie help</a>), and Brazilian rejections vary by municipality (<a href="https://blog.tecnospeed.com.br/erros-de-rejeicao-da-nfs-e/">Tecnospeed</a>). E-invoicing vendors document <b>rule-based</b> validation in layers, technical then content (<a href="https://docs.sovos.com/en/indirect-tax/indirect-tax-products/data-and-analytics/saf-t/data-validation/validation-overview">Sovos</a>). The search result itself called an AI layer here a suggestion, not a fact.</td><td>Rules come first: schema, document numbers, totals and duplicates are checked before sending, with no AI. A4 only comments after a rejection. It never edits fiscal data, never resubmits, and its text is labelled as a suggestion.</td><td>Real rejection responses collected from the providers’ test environments, to see how many are generic enough to need it. A small language-model call with structured output. Limit: it can be wrong, so a person confirms. Effort: low. Unproven in this context.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note warn"><b>Left out for lack of evidence.</b> I found no deployment in remittance or exchange businesses of: reading voucher images with OCR, a triage assistant for exceptions, natural-language queries over the database, or a custom-trained fraud classifier. A rejection explainer is back only as the experimental A4, at your request. Some of these were in my earlier version or the team notes; they are removed. Two of them also touched the Dashboard, which is off limits.</div>
+
+    <div class="two" style="margin-top:18px">
+      <div class="card" style="margin:0">
+        <b>Ground rules</b>
+        <ul class="clean">
+          <li>AI never approves a payment and never changes a money value.</li>
+          <li>Each piece has a feature flag; the base flow keeps working with all of them off.</li>
+          <li>Store the input reference, model or vendor and the answer in <code>events</code> for audit.</li>
+          <li>Voucher and ID images are personal data: private storage, a provider with data controls, redacted logs.</li>
+        </ul></div>
+      <div class="card" style="margin:0">
+        <b>Where I would start</b> <span class="tag t-new">suggested</span>
+        <ul class="clean">
+          <li><b>A1</b> on Telegram first (no approval needed), WhatsApp when the Business Platform is ready.</li>
+          <li><b>A3</b> as plain rules first, so the VIEW already has the column; swap in a vendor score later.</li>
+          <li><b>A2</b> only if a vendor covers DNI and CPF at an acceptable cost.</li>
+          <li><b>A4</b> last, and only after the rule-based checks in Fact work and real rejections show it is needed.</li>
+        </ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ JOURNEY ============ -->
+<section id="journey">
+  <div class="kicker">4 · Client journey</div>
+  <h2>What the client would see</h2>
+  <p class="lead">Five screens modelled on Kambista’s wizard, using the board’s fields and BRASPER’s own rules (three currencies, commission shown up front, WhatsApp always one tap away). Illustrative wireframes with sample values, not final design.</p>
+
+  <div class="phones">
+    <div class="phone"><div class="step-n"><i>1</i>Cotiza</div>
+      <div class="screen">
+        <div class="bar">BrasPer <span>ES · PT · EN</span></div>
+        <div class="fld"><small>Tú envías</small><b>500.00 &nbsp;BRL ▾</b></div>
+        <div class="fld"><small>Destinatario recibe</small><b>— &nbsp;PEN ▾</b></div>
+        <div class="kv"><span>Comisión</span><b>—</b></div><div class="kv"><span>Total a enviar</span><b>—</b></div><div class="kv"><span>Tasa de cambio</span><b>1 BRL = — PEN</b></div>
+        <div class="hint blue">Tasa asegurada por 15 min</div>
+        <div class="btn">Continuar</div><div class="btn wa">¿Dudas? Habla por WhatsApp</div>
+      </div><p class="caption">Same calculator the site has, with “Continuar” as the main action and WhatsApp as the secondary one.</p></div>
+
+    <div class="phone"><div class="step-n"><i>2</i>Datos</div>
+      <div class="screen">
+        <div class="bar">Completa los datos <span>1 / 3</span></div><div class="dots"><b class="on"></b><b></b><b></b></div>
+        <div class="fld"><small>DNI / CPF</small><b>••••••••</b></div>
+        <div class="fld"><small>Origen de fondos</small><b>Selecciona ▾</b></div>
+        <div class="fld"><small>¿Desde qué banco envías?</small><b>Cuenta origen ▾</b></div>
+        <div class="fld"><small>¿Dónde recibes?</small><b>Cuenta destino ▾</b></div>
+        <div class="hint">Ambas cuentas deben estar a tu nombre.</div>
+        <div class="btn">Continuar</div>
+      </div><p class="caption">Board fields: origen de fondos, cuenta origen, cuenta destino. Destination can be a saved account.</p></div>
+
+    <div class="phone"><div class="step-n"><i>3</i>Transfiere a Brasper</div>
+      <div class="screen">
+        <div class="bar">Transfiere a BrasPer <span>2 / 3</span></div><div class="dots"><b class="on"></b><b class="on"></b><b></b></div>
+        <div class="kv"><span>Titular</span><b>BrasPer</b></div><div class="kv"><span>Monto</span><b>500.00 BRL ⧉</b></div><div class="kv"><span>Banco</span><b>según tu origen</b></div><div class="kv"><span>Cuenta</span><b>•••• •••• ⧉</b></div>
+        <div class="hint">Transfiere a la cuenta de la moneda correcta (BRL / PEN / USD).</div>
+        <div class="hint blue">Fuera de horario: tu operación se verificará hoy a las 12:00 p. m.</div>
+        <div class="btn">Ya transferí</div><div class="btn ghost">Cancelar operación</div>
+      </div><p class="caption">From Kambista’s Transferencia step. The out-of-hours line comes from BRASPER’s own published hours.</p></div>
+
+    <div class="phone"><div class="step-n"><i>4</i>Constancia</div>
+      <div class="screen">
+        <div class="bar">Envía tu constancia <span>3 / 3</span></div><div class="dots"><b class="on"></b><b class="on"></b><b class="on"></b></div>
+        <div class="fld"><small>N° de operación bancaria</small><b>000000</b></div>
+        <div class="up">📷 Sube la foto o captura<br>del comprobante</div>
+        <div class="hint blue">Verificaremos tu depósito en ~15 min.</div>
+        <div class="btn">Enviar constancia</div>
+      </div><p class="caption">Board: <i>N° Trans</i> and <i>Fotos</i> go straight to the BD, no chat attachment.</p></div>
+
+    <div class="phone"><div class="step-n"><i>5</i>Seguimiento</div>
+      <div class="screen">
+        <div class="bar">Operación BR-0001 <span>ejemplo</span></div>
+        <div class="kv"><span>Enviaste</span><b>500.00 BRL</b></div><div class="kv"><span>Recibes</span><b>— PEN</b></div>
+        <ul class="tl">
+          <li class="done"><b>Operación registrada</b><small>hora</small></li>
+          <li class="now"><b>Verificando tu transferencia</b><small>≈ 15 min</small></li>
+          <li><b>Enviamos tu dinero</b></li>
+          <li><b>Recibiste tu dinero</b></li>
+        </ul>
+        <div class="btn ghost">Descargar comprobante</div>
+        <div class="hint blue">Comprobante por correo y avisos por WhatsApp / Telegram.</div>
+      </div><p class="caption">Timeline from Kambista’s finished-operation screen; receipt comes from the billing script.</p></div>
+  </div>
+
+  <!-- ===== WhatsApp AI agent ===== -->
+  <div class="sub" id="wa-agent">
+    <div class="kicker">4b · Same journey, other door</div>
+    <h2>WhatsApp with an AI agent <span class="tag t-ai">A1 · optional</span></h2>
+    <p class="lead">Clients will keep using WhatsApp, so the agent runs the <b>same five steps</b> inside the chat and writes to the <b>same database</b> as the web app. The “Enviar por WhatsApp” button stays: the pre-filled quote it already sends becomes the agent’s first input. The agent talks and collects; it never decides about money. Payments are validated by a person in the VIEW; the agent never approves anything. This is piece A1 of the optional AI layer (<a href="#ai-evolutions">evidence</a>).</p>
+
+    <h3>Optimized flow (swimlanes)</h3>
+    <div class="lanesw"><div class="lanes">
+      <div class="lh" style="background:transparent;border-bottom:0"></div>
+      <div class="sh"><span>1</span>Entry</div><div class="sh"><span>2</span>Quote</div><div class="sh"><span>3</span>Datos</div><div class="sh"><span>4</span>Transfer</div><div class="sh"><span>5</span>Proof</div><div class="sh"><span>6</span>Verify</div><div class="sh"><span>7</span>Close</div>
+
+      <div class="lh">Client on WhatsApp</div>
+      <div class="c">Sends the pre-filled quote from the site, or just writes “quiero enviar 500 reales a Perú”.</div>
+      <div class="c">Taps <i>Sí, continuar</i>, or changes the amount.</div>
+      <div class="c">Answers DNI/CPF, origen de fondos, picks a saved destination account or adds one.</div>
+      <div class="c">Transfers from their own bank app.</div>
+      <div class="c">Sends the voucher photo and the bank’s operation number.</div>
+      <div class="c em">Waits; gets updates.</div>
+      <div class="c">Receives the money and the receipt; can recommend Brasper.</div>
+
+      <div class="lh">AI agent</div>
+      <div class="c ai">Detects language (ES / PT / EN) and the amounts, then asks the tool for a <b>fresh</b> quote instead of trusting the pasted one.</div>
+      <div class="c ai">Shows rate, commission, total and the rate-lock time. Offers “Hablar con una persona”.</div>
+      <div class="c ai">Asks one question at a time, validates format, reminds “ambas cuentas a tu nombre”, then <b>creates the operation</b> (ID, status Pendiente).</div>
+      <div class="c ai">Sends Brasper’s account for that currency, lock time, and what to expect given today’s hours.</div>
+      <div class="c ai">Asks for the voucher photo and the operation number, confirms the number with the client, and <b>attaches both</b> to the operation.</div>
+      <div class="c ai">Tells the client a person is validating the payment (≈15 min). Sends the result when the status changes in the BD.</div>
+      <div class="c ai">Sends status messages and the receipt link; closes the thread with a short survey.</div>
+
+      <div class="lh">Tools / BD</div>
+      <div class="c"><code>get_rate_quote</code><br><code>check_hours</code></div>
+      <div class="c"><code>get_rate_quote</code></div>
+      <div class="c"><code>list_accounts</code><br><code>create_operation</code> → BD row</div>
+      <div class="c"><code>get_company_account</code></div>
+      <div class="c"><code>attach_proof</code> → photo + N° Trans in BD</div>
+      <div class="c"><code>get_status</code> (reads BD; the validator updates it in the VIEW)</div>
+      <div class="c">Script “Fact” registers the sale, builds the PDF from the XML and emails it; <code>send_receipt</code> shares the link</div>
+
+      <div class="lh">People</div>
+      <div class="c em">—</div>
+      <div class="c em">—</div>
+      <div class="c hu">Takes over if the client asks for a person.</div>
+      <div class="c em">—</div>
+      <div class="c hu">The validator sees the new operation, with its photo, in the VIEW.</div>
+      <div class="c hu"><b>Validator:</b> checks the bank and sets OK / Aprobado in the VIEW (≈15 min). <b>Operator:</b> marks and exports; imports into the Dashboard as today.</div>
+      <div class="c hu">A billing person exports from the Dashboard and imports into Fact; an advisor handles exceptions and complaints.</div>
+    </div></div>
+    <div class="note info">Steps 5 to 7 are the whiteboard’s human validation in the VIEW → export → existing Dashboard → Fact script chain, unchanged. Steps 1 to 4 are what the web app does too: a second front door on one backend.</div>
+
+    <h3 style="margin-top:22px">What the chat would look like</h3>
+    <div class="phones wa">
+      <div class="phone"><div class="step-n"><i>1</i>Entry + quote</div>
+        <div class="screen">
+          <div class="wa-head"><i>B</i><div><b>BrasPer</b><small>Asistente · en línea 24/7</small></div></div>
+          <div class="wa-body">
+            <div class="m out">Perfecto, los detalles de tu envío de Brasper hoy son los siguientes:<br><b>Monto a Enviar: {monto} BRL</b><br>Tipo de Cambio: {tasa}<br><b>Total a Recibir: {recibe} PEN</b><small>pre-filled by the site</small></div>
+            <div class="m in ai">¡Hola! Confirmé tu cotización con la tasa de este momento: <b>1 BRL = {tasa_nueva} PEN</b>. Comisión {comision}. Recibirás <b>{recibe_nuevo} PEN</b>. Tasa asegurada hasta las {hora}.</div>
+            <div class="qr"><span>Sí, continuar</span><span>Cambiar monto</span><span>Hablar con una persona</span></div>
+          </div>
+        </div><p class="caption">Today’s template is reused as input. The agent re-quotes because the pasted rate may be stale.</p></div>
+
+      <div class="phone"><div class="step-n"><i>2</i>Datos</div>
+        <div class="screen">
+          <div class="wa-head"><i>B</i><div><b>BrasPer</b><small>Asistente</small></div></div>
+          <div class="wa-body">
+            <div class="m in ai">¿Cuál es tu DNI o CPF?</div>
+            <div class="m out">••••••••</div>
+            <div class="m in ai">¿De dónde provienen los fondos?</div>
+            <div class="qr"><span>Ahorros</span><span>Venta de un bien</span><span>Otro</span></div>
+            <div class="m out">Ahorros</div>
+            <div class="m in ai">Para recibir tengo guardada tu cuenta <b>Banco •••9956</b>. ¿Usamos esa? Recuerda: debe estar a tu nombre.</div>
+            <div class="qr"><span>Sí, esa</span><span>Otra cuenta</span></div>
+            <div class="sys">Operación BR-{id} creada · Pendiente</div>
+          </div>
+        </div><p class="caption">Board fields as questions. The agent writes each answer to the BD as it goes; the ID appears when the data is complete.</p></div>
+
+      <div class="phone"><div class="step-n"><i>3</i>Transferencia</div>
+        <div class="screen">
+          <div class="wa-head"><i>B</i><div><b>BrasPer</b><small>Asistente</small></div></div>
+          <div class="wa-body">
+            <div class="m in ai">Transfiere <b>{monto} BRL</b> a:<br>Titular: BrasPer<br>Banco: {banco}<br>Cuenta: {cuenta}<br>Usa la cuenta de <b>BRL</b>, no otra moneda.<br>Tasa asegurada hasta las {hora}.</div>
+            <div class="m in ai">Hoy es domingo: verificamos entre 12:00 y 2:00 p. m. Si transfieres ahora, te avisamos apenas se confirme.</div>
+            <div class="qr"><span>Ya transferí</span><span>Cancelar operación</span></div>
+            <div class="m out">Ya transferí</div>
+            <div class="m in ai">Perfecto. Envíame la foto del comprobante y el número de operación.</div>
+          </div>
+        </div><p class="caption">Account data comes from a tool, never from the model’s own text. Hours-aware message (Brasper’s published hours).</p></div>
+
+      <div class="phone"><div class="step-n"><i>4</i>Constancia</div>
+        <div class="screen">
+          <div class="wa-head"><i>B</i><div><b>BrasPer</b><small>Asistente</small></div></div>
+          <div class="wa-body">
+            <div class="m out"><div class="ph-img">📷 comprobante.jpg</div>Operación 000000<small>cliente</small></div>
+            <div class="m in ai">Recibí tu comprobante y el número de operación <b>000000</b>. ¿Lo confirmo?</div>
+            <div class="qr"><span>Sí, confirmar</span><span>Corregir número</span></div>
+            <div class="m out">Sí, confirmar</div>
+            <div class="sys">Foto y N° guardados · En validación</div>
+            <div class="m in ai">Listo. Una persona del equipo validará tu pago en unos <b>15 min</b>. Te escribo en cuanto esté verificado.</div>
+          </div>
+        </div><p class="caption">Photo + N° Trans go to the BD (board “Fotos”). The agent only collects and stores; a person validates it in the VIEW.</p></div>
+
+      <div class="phone"><div class="step-n"><i>5</i>Seguimiento + escalamiento</div>
+        <div class="screen">
+          <div class="wa-head"><i>B</i><div><b>BrasPer</b><small>Asistente</small></div></div>
+          <div class="wa-body">
+            <div class="m in ai">✅ Depósito verificado.<br>💸 Enviamos tu dinero a la cuenta •••9956.</div>
+            <div class="m in ai">¡Listo! Recibiste <b>{recibe} PEN</b>. Te enviamos tu comprobante a tu correo y aquí: {enlace}</div>
+            <div class="m out">Mi amigo también quiere enviar, ¿pueden ayudarlo?</div>
+            <div class="m in ai">¡Claro! Comparte este enlace con tu amigo: {enlace_ref}</div>
+            <div class="m out">Tengo un problema con otra operación</div>
+            <div class="m in ai">Te paso con un asesor. Ya le compartí tu historial y el resumen.</div>
+            <div class="sys">Asesor asignado · hilo con contexto</div>
+          </div>
+        </div><p class="caption">Status comes from the BD. Complaints and unusual cases go to a person with the context attached.</p></div>
+    </div>
+
+    <div class="two" style="margin-top:6px">
+      <div>
+        <h3>What the agent can do (tool layer)</h3>
+        <div class="tw"><table>
+          <thead><tr><th>Tool</th><th>Does</th><th>Writes BD</th></tr></thead>
+          <tbody>
+            <tr><td><code>get_rate_quote</code></td><td>Rate, commission, total, lock time for a currency pair and amount</td><td>quote</td></tr>
+            <tr><td><code>check_hours</code></td><td>Open / closed now and when a person will validate the payment</td><td>—</td></tr>
+            <tr><td><code>list_accounts</code> / <code>save_account</code></td><td>Saved destination accounts of this client</td><td>yes</td></tr>
+            <tr><td><code>create_operation</code></td><td>Origen de fondos, cuenta origen, cuenta destino → ID, status Pendiente</td><td>yes</td></tr>
+            <tr><td><code>get_company_account</code></td><td>Brasper account for the operation’s currency</td><td>—</td></tr>
+            <tr><td><code>attach_proof</code></td><td>Photo + N° Trans; status En validación</td><td>yes</td></tr>
+            <tr><td><code>get_status</code></td><td>Timeline of an operation</td><td>—</td></tr>
+            <tr><td><code>handoff_to_human</code></td><td>Opens an advisor thread with reason and summary</td><td>yes</td></tr>
+            <tr><td><code>send_receipt</code></td><td>Receipt link produced by the billing script</td><td>—</td></tr>
+          </tbody>
+        </table></div>
+        <div class="note info"><span class="tag t-code">code</span> The site’s public JavaScript already points to an AI chat endpoint (<code>VITE_CHAT_API_URL</code>) and has chat strings in ES / EN / PT. I did not verify what it does or whether it is live; it may be a starting point for this agent.</div>
+      </div>
+      <div>
+        <h3>Guardrails and handoff</h3>
+        <div class="card" style="padding:16px 18px;margin:0 0 14px">
+          <b>The agent must never…</b>
+          <ul class="clean">
+            <li>say a payment is received or approved; it only repeats the status the validator set in the VIEW</li>
+            <li>treat the voucher image as proof: the validator checks it against the bank</li>
+            <li>write a rate, fee or account number itself; those come verbatim from tools</li>
+            <li>invent a rate when the rates service is down: it says so and hands off</li>
+            <li>give financial or legal advice</li>
+          </ul>
+        </div>
+        <div class="card" style="padding:16px 18px;margin:0">
+          <b>Hand off to a person when…</b>
+          <ul class="clean">
+            <li>the client asks for one, or writes a complaint or claim</li>
+            <li>the client reports a problem with the voucher, the amount or the account</li>
+            <li>the rate lock expired mid-flow, or the amount is above a limit <span class="tag t-inf">limit to define</span></li>
+            <li>a first-time client needs identity checks <span class="tag t-inf">process to define</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:22px">Chat today vs optimized</h3>
+    <div class="tw"><table>
+      <thead><tr><th></th><th>Today</th><th>With the AI agent</th></tr></thead>
+      <tbody>
+        <tr><td><b>First reply</b></td><td>Pre-filled quote, then a person answers during business hours</td><td>Instant, any hour, in the client’s language</td></tr>
+        <tr><td><b>Data</b></td><td>Person asks, client types, answers scattered in the chat</td><td>One question at a time, written to BD fields</td></tr>
+        <tr><td><b>Proof</b></td><td>Screenshot in chat, found by scrolling the conversation</td><td>Photo and operation number stored on the operation and shown in the VIEW, where the validator checks it against the bank</td></tr>
+        <tr><td><b>Status</b></td><td>Client asks “¿ya llegó?”</td><td>Messages sent when the BD status changes</td></tr>
+        <tr><td><b>Team effort</b></td><td>Every step: 4 in sales, 3 in billing</td><td>Validation in the VIEW, export and import, exceptions and supervision</td></tr>
+        <tr><td><b>Record</b></td><td>Chat history and spreadsheets</td><td>One BD row per operation, with the message log attached</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note warn"><b>Needs to exist first:</b> the Web App backend and BD (roadmap phase 1). The agent is a second client of the same API, so it can start read-only (quote and status) and gain write tools as the BD matures. Telegram reuses the same tool layer through another channel adapter.</div>
+  </div>
+</section>
+
+<!-- ============ BACK OFFICE ============ -->
+<section id="backoffice">
+  <div class="kicker">5 · The VIEW</div>
+  <h2>What the validator and the operator would see</h2>
+  <p class="lead">The VIEW is the one screen we build for the team. The person validating payments changes order statuses here and marks which orders to export. The Dashboard is not touched: the exported file is imported into it as today. Wireframe with made-up rows.</p>
+  <div class="dash">
+    <div class="top"><b>VIEW · Operaciones</b><span><span class="pill">Pendientes 1</span> <span class="pill">En validación 1</span> <span class="pill">Aprobadas 2</span> <span class="pill">Rechazadas 1</span> <span class="pill">Exportadas 1</span></span></div>
+    <table>
+      <thead><tr><th></th><th>ID</th><th>Cliente</th><th>Envía → Recibe</th><th>Origen de fondos</th><th>N° trans.</th><th>Foto</th><th>Riesgo (A3, opcional)</th><th>Estado</th></tr></thead>
+      <tbody>
+        <tr><td>☐</td><td>BR-0001</td><td>Cliente A</td><td>BRL → PEN</td><td>Ahorros</td><td>000001</td><td>📎</td><td>—</td><td><span class="st p">Pendiente</span></td></tr>
+        <tr><td>☐</td><td>BR-0002</td><td>Cliente B</td><td>PEN → BRL</td><td>Venta de bien</td><td>000002</td><td>📎</td><td>—</td><td><span class="st v">En validación</span></td></tr>
+        <tr><td>☑</td><td>BR-0003</td><td>Cliente C</td><td>USD → BRL</td><td>Ahorros</td><td>000003</td><td>📎</td><td>bajo</td><td><span class="st a">Aprobada</span></td></tr>
+        <tr><td>☑</td><td>BR-0004</td><td>Cliente D</td><td>BRL → USD</td><td>Donación</td><td>000004</td><td>📎</td><td>medio</td><td><span class="st a">Aprobada</span></td></tr>
+        <tr><td>☐</td><td>BR-0005</td><td>Cliente E</td><td>BRL → PEN</td><td>Ahorros</td><td>000005</td><td>📎</td><td>alto</td><td><span class="st x">Rechazada</span></td></tr>
+        <tr><td>☐</td><td>BR-0006</td><td>Cliente F</td><td>BRL → PEN</td><td>Ahorros</td><td>000006</td><td>📎</td><td>bajo</td><td><span class="st e">Exportada</span></td></tr>
+      </tbody>
+    </table>
+    <div class="btnrow"><span class="g">Cambiar estado</span><span class="g">Marcar para exportar (2)</span><span>Exportar archivo de órdenes</span><span class="g">Ver facturas (Fact)</span></div>
+  </div>
+  <div class="note warn"><b>The person stays in charge.</b> The validator checks the deposit in the bank and sets the status here; nothing is approved by a system. The “Riesgo” column is empty unless the optional risk score (A3) is switched on.</div>
+  <div class="note info"><b>The Dashboard is not changed.</b> The operator exports the approved orders from this VIEW and imports the file into the Dashboard, which only accepts imports and exports of orders. Fact’s results (invoice number, status) come back to the BD and appear here, not in the Dashboard.</div>
+</section>
+
+<!-- ============ IMPROVEMENTS ============ -->
+<section id="improvements">
+  <div class="kicker">6 · Improvements</div>
+  <h2>What changes, element by element</h2>
+  <p class="lead">Each row is one improvement from the board, with what it replaces today and the Kambista behaviour it can borrow.</p>
+  <div class="tw"><table>
+    <thead><tr><th>#</th><th>Improvement</th><th>Replaces today</th><th>Kambista reference</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td><b>Live “tipo de cambio” in the Web App</b></td><td>Calculator that currently shows 0 when the rates service is unreachable</td><td>Calculator + rate lock time</td><td><span class="tag t-board">board</span></td></tr>
+      <tr><td class="n">2</td><td><b>Structured data capture</b>: origen de fondos, cuenta origen, cuenta destino, N° de transacción</td><td>Questions answered one by one in WhatsApp</td><td>Datos step</td><td><span class="tag t-board">board</span></td></tr>
+      <tr><td class="n">3</td><td><b>Proof photos uploaded to the BD</b></td><td>Voucher sent as a chat attachment</td><td>Constancia step</td><td><span class="tag t-board">board</span></td></tr>
+      <tr><td class="n">4</td><td><b>BD (“IV”) as single source of truth</b> with a defined schema and a status per operation</td><td>Free-form typing into the Dashboard; chats and spreadsheets</td><td>Historial: En proceso / Finalizadas</td><td><span class="tag t-board">board</span></td></tr>
+      <tr><td class="n">5</td><td><b>Human payment validation in a VIEW</b>: the person sees each case and the voucher, checks the bank (~15 min) and sets OK / Aprobado there</td><td>Validating by eye from chat screenshots, with no record of who decided</td><td>“Verificamos tu transferencia”</td><td><span class="tag t-board">board</span> <span class="tag t-team">confirmed by you</span></td></tr>
+      <tr><td class="n">6</td><td><b>VIEW + “marcar para exportar”</b></td><td>Building the export by hand</td><td>—</td><td><span class="tag t-board">board</span></td></tr>
+      <tr><td class="n">7</td><td><b>Dashboard stays as it is</b>: the VIEW exports an order file, the Dashboard imports it, and its order export feeds billing</td><td>Typing each order into the Dashboard</td><td>—</td><td><span class="tag t-board">board</span> <span class="tag t-team">confirmed by you</span></td></tr>
+      <tr><td class="n">8</td><td><b>Billing script “Fact”</b>: takes the exported batch, registers each sale via API (SUNAT / Brazilian equivalent), builds the PDF from the returned XML and emails it; API key kept on the server</td><td>Re-typing into KeyFácil / Omni, xlsx / pdf consolidation, manual email (up to 3 days)</td><td>Boleta PDF / XML per operation</td><td><span class="tag t-board">board</span> <span class="tag t-team">team notes</span></td></tr>
+      <tr><td class="n">9</td><td><b>Channels around one BD</b>: WhatsApp and Telegram, with an optional AI chat agent (A1)</td><td>WhatsApp as the only channel and the record</td><td>— (see <a href="#wa-agent">4b</a> for the agent flow)</td><td><span class="tag t-board">board</span> <span class="tag t-inf">role inferred</span></td></tr>
+      <tr><td class="n">10</td><td><b>Status timeline and notifications</b> to the client</td><td>“Did you receive my voucher?” messages</td><td>4-stage timeline</td><td><span class="tag t-new">suggested</span></td></tr>
+      <tr><td class="n">11</td><td><b>Out-of-hours notice in the flow</b>, using Brasper’s hours</td><td>Hours only in a page section</td><td>“Fuera de horario” toast</td><td><span class="tag t-new">suggested</span></td></tr>
+      <tr><td class="n">12</td><td><b>Saved beneficiary accounts and cancel path</b></td><td>Re-sending account data each time</td><td>Cuentas tab, cancel prompt</td><td><span class="tag t-new">suggested</span></td></tr>
+      <tr><td class="n">13</td><td><b>Optional AI, only where similar businesses already use it</b>: A1 chat agent, A2 identity check, A3 risk score in the VIEW (<a href="#ai-evolutions">evidence</a>)</td><td>Everything by hand</td><td>—</td><td><span class="tag t-ai">optional</span></td></tr>
+      <tr><td class="n">14</td><td><b>Rate tiers inside the quote tool</b> (net vs preferential)</td><td>Rate negotiated per chat in a queue</td><td>Preferential-rate link for large amounts</td><td><span class="tag t-new">suggested</span> <span class="tag t-team">to confirm</span></td></tr>
+      <tr><td class="n">15</td><td><b>Single data entry</b>: one record feeds Dashboard and billing</td><td>Double entry, with typing errors</td><td>—</td><td><span class="tag t-team">team notes</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ============ AI & BUSINESS CASE ============ -->
+<section id="ai">
+  <div class="kicker">7 · AI and business case</div>
+  <h2>Where AI helps, and what it should be worth</h2>
+  <p class="lead">From the IATHON diagnosis (challenge 5.5, sales and billing at Brasper). Payment validation stays with a person, so AI is limited to three optional pieces with a track record in remittance and exchange businesses (the evidence is in <a href="#ai-evolutions">A1 to A3</a> of the To-be section). The numbers below are the team’s baseline and hypotheses, not measurements I made.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>Piece</th><th>Where it acts</th><th>Seen in similar businesses</th><th>Main risk</th><th>Guard</th></tr></thead>
+    <tbody>
+      <tr><td><b>A1 · Chat agent</b></td><td>Web chat, WhatsApp, Telegram (see <a href="#wa-agent">4b</a>)</td><td>Félix Pago (WhatsApp remittances), Rextie (Peruvian exchange house)</td><td>Wrong numbers; WhatsApp automation needs the Business Platform</td><td>Money values only from tools; a person validates</td></tr>
+      <tr><td><b>A2 · Identity check</b></td><td>First operation of a client</td><td>Remitly with Onfido</td><td>Cost, privacy, coverage of DNI and CPF</td><td>Vendor verdict, a person handles failures</td></tr>
+      <tr><td><b>A3 · Risk score</b></td><td>Beside each order in the VIEW</td><td>Remitly with Sift</td><td>Little data at about 60 operations a day</td><td>Informs the validator, never decides</td></tr>
+      <tr><td><b>Plain automation</b> <span class="tag t-team">team notes</span></td><td>Web App + BD, the VIEW and its export, Fact via API</td><td>—</td><td>No API key from Brasper; the Dashboard’s file format is unknown</td><td>Fallbacks in <a href="#mvp">Data &amp; MVP</a></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 style="margin-top:22px">Baseline, hypotheses and what they imply</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Measure</th><th>Baseline</th><th>Team hypothesis / target</th><th>Implied <span class="tag t-inf">my arithmetic</span></th></tr></thead>
+    <tbody>
+      <tr><td><b>Sales effort</b></td><td>4 people, ~60 trx/day, WhatsApp queues</td><td>−55% man-hours (the team’s hypothesis, built with automatic validation in mind)</td><td>4 × 0.45 ≈ <b>1.8 FTE</b>, only if the saving still holds with a person validating. <b>Re-estimate.</b></td></tr>
+      <tr><td><b>Attention capacity</b></td><td>Limited by the queue</td><td>+25% with the chat agent, no extra staff</td><td>Capacity gain, not added to the line above</td></tr>
+      <tr><td><b>Billing effort</b></td><td>3 people; Omni fully manual, KeyFácil partly</td><td>−80 to −90% man-hours (script via API to KeyFácil / Omni); 3 → 1 supervising</td><td>≈ <b>1 FTE</b> (the team’s plan)</td></tr>
+      <tr><td><b>Total team</b></td><td><b>7 FTE</b></td><td>—</td><td>≈ <b>2.8 FTE</b> on the team’s figures; about 8.6 trx per person per day today vs about 21 (60 ÷ 2.8)</td></tr>
+      <tr><td><b>Time to receipt</b></td><td>Up to 3 days</td><td><b>20 minutes</b> from confirmation</td><td>Receipt generated by the script, no queue between steps</td></tr>
+      <tr><td><b>Payment validation</b></td><td>By eye from chat screenshots, no record of who decided</td><td>Stays with a person (owner decision); the VIEW records who decided and when</td><td>Measure minutes per validation instead of a share validated automatically</td></tr>
+      <tr><td><b>Typing errors</b></td><td>Double entry</td><td><b>0</b></td><td>One record, no re-typing</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note warn">The first version of this page carried a target of at least 80% of payments validated automatically. Since validation stays human, that target is dropped. The sales saving came partly from it, so it needs a new estimate: the remaining gain comes from the Web App and the BD removing chat re-typing. The FTE figures also assume man-hours convert to people linearly. They are targets to test in the MVP, not a forecast.</div>
+</section>
+
+<!-- ============ DATA & MVP ============ -->
+<section id="mvp">
+  <div class="kicker">8 · Data and MVP</div>
+  <h2>The schema the board asks for, and a 4-day cut</h2>
+  <p class="lead">The board flags “dB Schema!!!” in red and the notes list “define the BD schema” as pending. Below is a draft built only from the fields named on the board and in the notes, plus the MVP limits the team gave: four days, happy path only.</p>
+
+  <h3>Draft schema <span class="tag t-new">suggested, to validate</span></h3>
+  <div class="tw"><table>
+    <thead><tr><th>Entity</th><th>Key fields</th><th>Why it exists</th></tr></thead>
+    <tbody>
+      <tr><td><code>clients</code></td><td>id, name, doc_type (DNI / CPF), doc_number, phone (WhatsApp), email, country</td><td>One identity across web and chat</td></tr>
+      <tr><td><code>client_accounts</code></td><td>id, client_id, bank, currency, account_number, holder_name, alias</td><td>Origin and destination accounts; “ambas a tu nombre” can be checked</td></tr>
+      <tr><td><code>quotes</code></td><td>id, from_currency, to_currency, amount_send, rate, commission, amount_receive, tier (net / preferential), coupon, locked_until</td><td>The price the client accepted, frozen</td></tr>
+      <tr><td><code>operations</code> (“IV”)</td><td>id, client_id, quote_id, origin_account_id, destination_account_id, origen_de_fondos, channel, status, created_at</td><td>The Intención de Venta; the single source of truth</td></tr>
+      <tr><td><code>proofs</code></td><td>id, operation_id, image_url, n_trans, uploaded_at</td><td>Voucher photo and the operation number the client entered</td></tr>
+      <tr><td><code>validations</code></td><td>id, operation_id, validator, decided_at, decision (OK / rechazada), note</td><td>Who validated each payment and when; the human check, on record</td></tr>
+      <tr><td><code>risk_scores</code> <span class="tag t-ai">optional</span></td><td>id, operation_id, source, score, created_at</td><td>Only if A3 is switched on; shown in the VIEW</td></tr>
+      <tr><td><code>billing_batches</code></td><td>id, exported_by, imported_by, imported_at, file_checksum, record_count, status</td><td>One file exported from the Dashboard and imported into Fact by a person</td></tr>
+      <tr><td><code>invoices</code></td><td>id, operation_id, batch_id, service (KeyFácil / Omni), authority_status, number, series, xml_url, cdr_url, xml_hash, pdf_url, emailed_at, message_id</td><td>Result per record: the XML is the source, the PDF is derived</td></tr>
+      <tr><td><code>events</code></td><td>id, operation_id, channel, actor (client / agent / person), text, at</td><td>Audit trail and the chat history of each operation</td></tr>
+    </tbody>
+  </table></div>
+  <div class="states"><b>Status of an operation:</b>
+    <span class="s">pendiente</span><i>→</i><span class="s">en validación</span><i>→</i><span class="s">aprobada</span><i>→</i><span class="s">exportada</span><i>→</i><span class="s">facturada</span><i>→</i><span class="s">comprobante enviado</span>
+    <i>·</i><span class="s x">rechazada</span><i>·</i><span class="s x">cancelada</span>
+  </div>
+
+  <h3 style="margin-top:22px">MVP cut for four days <span class="tag t-new">suggested</span></h3>
+  <div class="two">
+    <div class="card" style="margin:0"><b>In (happy path)</b>
+      <ul class="clean">
+        <li>Web App: quote → Datos → Transferencia → Constancia, with voucher upload</li>
+        <li>BD with the schema above</li>
+        <li>VIEW for the validator: see the voucher, set the status, mark and export the order file</li>
+        <li>The existing Dashboard imports that file as today, with no changes</li>
+        <li>Billing script: exported batch → API registration → PDF from the returned XML → email</li>
+      </ul></div>
+    <div class="card" style="margin:0"><b>Out for now</b>
+      <ul class="clean">
+        <li>The optional AI pieces A2 and A3; A1 only as a Telegram or WhatsApp demo with quote and status</li>
+        <li>Agent write-tools and Discord</li>
+        <li>Edge cases: partial payments, third-party payers, wrong currency, refunds</li>
+        <li>Rate tiers and coupons beyond one default</li>
+      </ul>
+      <div class="note info" style="margin-top:10px">Even in an MVP: private storage for voucher images, access control on the VIEW, and no secrets in client-side code.</div></div>
+  </div>
+
+  <h3 style="margin-top:22px">Dependencies and risks</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Risk</th><th>Why it matters</th><th>Fallback if it slips</th></tr></thead>
+    <tbody>
+      <tr><td><b>API key for Omni / KeyFácil</b> not delivered <span class="tag t-team">team notes</span></td><td>It is the critical dependency (“API Key !!” on the board). Omni has no integration today.</td><td>Script produces the xlsx / pdf in the exact format billing already uploads: still manual to upload, but no re-typing</td></tr>
+      <tr><td><b>Dashboard file format unknown</b> <span class="tag t-inf">new</span></td><td>The Dashboard cannot be changed and only imports and exports orders, so its file layout is the integration contract for both the VIEW and Fact.</td><td>Get a sample import and export file first; until then, export the VIEW as CSV and map it by hand</td></tr>
+      <tr><td><b>False or illegible vouchers</b> <span class="tag t-team">team notes</span></td><td>A forged voucher can pass if the validator only looks at the image.</td><td>The validator checks the deposit in the bank, not just the photo; optional risk score A3 helps prioritize</td></tr>
+      <tr><td><b>Edge cases outside the happy path</b> <span class="tag t-team">team notes</span></td><td>Real traffic will have them.</td><td>Handled by a person in the VIEW from day one (status rechazada, notes)</td></tr>
+      <tr><td><b>Adoption</b>: clients used to WhatsApp <span class="tag t-team">team notes</span></td><td>If they skip the web app, data is not captured.</td><td>The WhatsApp agent writes to the same BD (<a href="#wa-agent">4b</a>)</td></tr>
+      <tr><td><b>Security, login and data in the MVP</b> <span class="tag t-team">team notes</span></td><td>IDs, accounts and voucher images are sensitive. The live site already ships a guessable secret in its public JavaScript (see Today).</td><td>Server-side secrets only; rotate that value; limit staff access by role</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ============ BILLING SCRIPT ============ -->
+<section id="billing">
+  <div class="kicker">9 · Billing script</div>
+  <h2>The flow behind “Script Fact”</h2>
+  <p class="lead">Fact takes a <b>set of orders that a person exports from the Dashboard and imports into Fact</b>, which then runs the whole set. It registers each sale through the provider’s <b>API</b> with the tax authority (<b>SUNAT</b> in Peru through KeyFácil, the Brazilian equivalent through Omni), <b>builds the PDF itself from the XML it gets back</b>, and <b>emails</b> that PDF. It replaces today’s billing steps 6 to 9: pre-validate, register in KeyFácil / Omni, consolidate, email.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="big">batch in</div><small>one exported file, many records; each record succeeds or fails on its own</small></div>
+    <div class="stat"><div class="big">XML is the document</div><small>the tax authority’s XML is the legal source; it is stored untouched</small></div>
+    <div class="stat"><div class="big">PDF is derived</div><small>generated from the stored XML, so it always shows what was registered</small></div>
+  </div>
+
+  <div class="card diagram" style="margin-top:16px">
+    <svg viewBox="0 0 1200 520" role="img" aria-label="Billing script flow: exported batch, validation, registration through the provider API for Peru and Brazil, XML storage, PDF built from the XML, email, report">
+<defs><marker id="ba" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker><marker id="br" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--bad-ink)"/></marker></defs>
+<rect class="bx soft" x="10" y="200" width="140" height="80" rx="12"/><text class="lb" x="80" y="226" text-anchor="middle">Persona</text><text class="sub" x="80" y="244" text-anchor="middle">exporta del Dashboard</text><text class="sub" x="80" y="262" text-anchor="middle">e importa en Fact</text>
+<rect class="bx" x="180" y="200" width="150" height="80" rx="12"/><text class="lb" x="255" y="226" text-anchor="middle">1 · Validar lote</text><text class="sub" x="255" y="244" text-anchor="middle">esquema, checksum,</text><text class="sub" x="255" y="262" text-anchor="middle">datos y duplicados</text>
+<rect class="bx" x="360" y="90" width="190" height="90" rx="12"/><text class="lb" x="455" y="121" text-anchor="middle">2 · Registrar vía API</text><text class="sub" x="455" y="139" text-anchor="middle">Perú: KeyFácil → SUNAT</text><text class="sub" x="455" y="157" text-anchor="middle">devuelve XML firmado + CDR</text>
+<rect class="bx" x="360" y="300" width="190" height="90" rx="12"/><text class="lb" x="455" y="331" text-anchor="middle">2 · Registrar vía API</text><text class="sub" x="455" y="349" text-anchor="middle">Brasil: Omni → fisco BR</text><text class="sub" x="455" y="367" text-anchor="middle">devuelve XML autorizado</text>
+<rect class="bx" x="580" y="200" width="140" height="80" rx="12"/><text class="lb" x="650" y="226" text-anchor="middle">3 · Guardar XML</text><text class="sub" x="650" y="244" text-anchor="middle">+ CDR / protocolo</text><text class="sub" x="650" y="262" text-anchor="middle">fuente legal</text>
+<rect class="bx brand" x="750" y="200" width="140" height="80" rx="12"/><text class="lb tb" x="820" y="226" text-anchor="middle">4 · Generar PDF</text><text class="sub tb" x="820" y="244" text-anchor="middle">desde el XML recibido</text><text class="sub tb" x="820" y="262" text-anchor="middle">QR + hash + leyendas</text>
+<rect class="bx" x="920" y="200" width="120" height="80" rx="12"/><text class="lb" x="980" y="226" text-anchor="middle">5 · Enviar</text><text class="sub" x="980" y="244" text-anchor="middle">PDF por correo</text><text class="sub" x="980" y="262" text-anchor="middle">al cliente</text>
+<rect class="bx soft" x="1070" y="200" width="120" height="80" rx="12"/><text class="lb" x="1130" y="226" text-anchor="middle">6 · Reportar</text><text class="sub" x="1130" y="244" text-anchor="middle">estado por fila</text><text class="sub" x="1130" y="262" text-anchor="middle">+ consolidado</text>
+<rect class="bx err" x="180" y="330" width="150" height="80" rx="12"/><text class="lb te" x="255" y="356" text-anchor="middle">registro inválido</text><text class="sub te" x="255" y="374" text-anchor="middle">→ fuera del lote</text><text class="sub te" x="255" y="392" text-anchor="middle">(el resto sigue)</text>
+<rect class="bx err" x="360" y="10" width="190" height="56" rx="12"/><text class="lb te" x="455" y="33" text-anchor="middle">rechazo de la autoridad</text><text class="sub te" x="455" y="51" text-anchor="middle">→ error_fiscal (corregir)</text>
+<rect class="bx err" x="360" y="430" width="190" height="64" rx="12"/><text class="lb te" x="455" y="448" text-anchor="middle">API caída / timeout</text><text class="sub te" x="455" y="466" text-anchor="middle">→ reintento + consultar</text><text class="sub te" x="455" y="484" text-anchor="middle">estado antes de reenviar</text>
+<rect class="bx err" x="750" y="330" width="140" height="64" rx="12"/><text class="lb te" x="820" y="348" text-anchor="middle">PDF ≠ XML</text><text class="sub te" x="820" y="366" text-anchor="middle">(totales, hash, QR)</text><text class="sub te" x="820" y="384" text-anchor="middle">→ no se envía</text>
+<rect class="bx err" x="920" y="330" width="120" height="64" rx="12"/><text class="lb te" x="980" y="357" text-anchor="middle">rebote / sin</text><text class="sub te" x="980" y="375" text-anchor="middle">correo → alerta</text>
+<path class="ln" marker-end="url(#ba)" d="M150,240 H180"/>
+<path class="ln" marker-end="url(#ba)" d="M330,240 H345 V135 H360"/>
+<path class="ln" marker-end="url(#ba)" d="M330,240 H345 V345 H360"/>
+<path class="ln" marker-end="url(#ba)" d="M550,135 H565 V240 H580"/>
+<path class="ln" marker-end="url(#ba)" d="M550,345 H565 V240 H580"/>
+<path class="ln" marker-end="url(#ba)" d="M720,240 H750"/>
+<path class="ln" marker-end="url(#ba)" d="M890,240 H920"/>
+<path class="ln" marker-end="url(#ba)" d="M1040,240 H1070"/>
+<path class="ln" style="stroke:var(--bad-ink)" marker-end="url(#br)" d="M255,280 V330"/>
+<path class="ln" style="stroke:var(--bad-ink)" marker-end="url(#br)" d="M455,90 V66"/>
+<path class="ln" style="stroke:var(--bad-ink)" marker-end="url(#br)" d="M455,390 V430"/>
+<path class="ln" style="stroke:var(--bad-ink)" marker-end="url(#br)" d="M820,280 V330"/>
+<path class="ln" style="stroke:var(--bad-ink)" marker-end="url(#br)" d="M980,280 V330"/>
+<text class="sm" x="10" y="80">Entrada: registros ya aprobados y confirmados</text>
+<text class="sm" x="1190" y="510" text-anchor="end">rojo = camino de error, por registro</text>
+</svg>
+  </div>
+
+  <div class="tw"><table>
+    <thead><tr><th>#</th><th>Step (per batch, then per record)</th><th>Record state after</th></tr></thead>
+    <tbody>
+      <tr><td class="n">0</td><td>The operator marks approved orders in the VIEW and exports them; the file is imported into the Dashboard (unchanged). A person from billing then exports the orders from the Dashboard and imports that file into Fact (the board’s <b>I/EXP</b>), which runs the set. Every record has already been validated by a person.</td><td><code>lote recibido</code></td></tr>
+      <tr><td class="n">1</td><td><b>Validar lote.</b> Check the file schema and checksum, then each record: document number format and check digits, email, amounts that add up, route. Records whose <code>operation_id</code> is already invoiced are skipped, so importing the same file twice is safe. Invalid records are rejected on their own and the rest continue.</td><td><code>validado</code> or <code>rechazado_validacion</code></td></tr>
+      <tr><td class="n">2</td><td><b>Registrar la venta vía API.</b> Routed by direction: PE→BR to KeyFácil (registers with SUNAT), BR→PE to Omni (registers with the Brazilian tax authority; to confirm which document and authority). One call per record with the operation ID as idempotency key, bounded concurrency, API key from the server-side secret store. The service returns the authority’s answer and the XML.</td><td><code>registrando</code> → <code>aceptado</code>, <code>error_fiscal</code> or <code>pendiente_autoridad</code></td></tr>
+      <tr><td class="n">3</td><td><b>Guardar el XML</b> exactly as received (plus the CDR or authorization protocol) with its hash. It is never edited.</td><td><code>xml_guardado</code></td></tr>
+      <tr><td class="n">4</td><td><b>Generar el PDF desde ese XML.</b> Fact’s own template reads number, series, customer, amounts, hash and QR from the XML, then checks the PDF totals against it before saving.</td><td><code>pdf_generado</code> or <code>error_pdf</code></td></tr>
+      <tr><td class="n">5</td><td><b>Enviar por correo</b> the PDF (the XML can be attached too) to the customer; log the message ID. The WhatsApp agent can deliver the same link.</td><td><code>enviado</code> or <code>error_envio</code></td></tr>
+      <tr><td class="n">6</td><td><b>Reportar.</b> A batch report is written to the BD and shown in the VIEW (record, invoice number, status, error) and emailed to the supervisor; the Dashboard is not changed. The BD marks operations as invoiced, and the daily consolidated file is produced from it, replacing the manual “Consolidado”.</td><td><code>facturada</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note info"><b>Order of safeguards:</b> rules first, AI after. Fact checks schema, document numbers, totals and duplicates with plain rules before sending, as e-invoicing vendors document (<a href="https://docs.sovos.com/en/indirect-tax/indirect-tax-products/data-and-analytics/saf-t/data-validation/validation-overview">Sovos</a>). The client’s PDF goes out only after the authority’s accepted answer: a Sovos summary of Peru’s rules says SUNAT advises against delivering a receipt before validation, since a later rejection would leave it without fiscal validity (<a href="https://sovos.com/es-es/iva/reglas-de-impuestos/facturacion-electronica-peru/">Sovos Peru</a>; confirm with your accountant). The optional <b>A4</b> only comments on records the services reject, as described in <a href="#ai-evolutions">the AI table</a>.</div>
+
+  <div class="states" style="margin-top:12px"><b>Record status:</b>
+    <span class="s">lote recibido</span><i>→</i><span class="s">validado</span><i>→</i><span class="s">registrando</span><i>→</i><span class="s">aceptado</span><i>→</i><span class="s">xml_guardado</span><i>→</i><span class="s">pdf_generado</span><i>→</i><span class="s">enviado</span><i>→</i><span class="s">facturada</span>
+    <i>·</i><span class="s x">rechazado_validacion</span><i>·</i><span class="s x">error_fiscal</span><i>·</i><span class="s x">pendiente_autoridad</span><i>·</i><span class="s x">error_pdf</span><i>·</i><span class="s x">error_envio</span>
+  </div>
+
+  <div class="two" style="margin-top:22px">
+    <div>
+      <h3>What each exported record must carry</h3>
+      <div class="tw"><table>
+        <thead><tr><th>Group</th><th>Fields</th></tr></thead>
+        <tbody>
+          <tr><td><b>Identity</b></td><td><code>batch_id</code>, <code>operation_id</code> (unique), exported_at, exported_by</td></tr>
+          <tr><td><b>Routing</b></td><td>direction (PE→BR / BR→PE), which gives country, authority and service</td></tr>
+          <tr><td><b>Document</b></td><td>document type (boleta, factura, or the Brazilian equivalent), issue date, currency</td></tr>
+          <tr><td><b>Customer</b></td><td>document type and number (DNI, RUC, CE, passport, CPF, CNPJ), name or razón social, email, address when the document requires it</td></tr>
+          <tr><td><b>Line</b></td><td>description (for example the exchange service or commission), quantity, unit value, tax code, total</td></tr>
+          <tr><td><b>Evidence</b></td><td>amounts sent and received, exchange rate, bank operation number, payment date</td></tr>
+        </tbody>
+      </table></div>
+      <div class="note warn">Which amount is billed and every tax field (affectation, rates, service codes) must be defined with the accountant. Fact validates and transmits them; it does not decide tax treatment.</div>
+    </div>
+    <div>
+      <h3>Why the PDF comes from the XML</h3>
+      <ul class="clean">
+        <li><b>Peru:</b> the signed XML (UBL) is what SUNAT receives. The printed representation must show a QR code and the hash (the XML’s DigestValue), with the minimum content set by SUNAT resolutions (see <a href="https://www.sunat.gob.pe/legislacion/superin/2017/340-2017.pdf">Res. 340-2017</a>). I did not verify the exact field list.</li>
+        <li><b>Brazil:</b> the authorized XML is the only fiscal document; the PDF (DANFSe for the national NFS-e) has no fiscal validity and its QR points to the public consultation (<a href="https://simplifique.contmatic.com.br/blogs/danfse-como-consultar-e-baixar-o-pdf-e-o-xml">overview</a>). One blog reported the national PDF-generation service offline in August 2026, which is a reason to render it ourselves; open-source renderers exist (<a href="https://packagist.org/packages/nfse-br/danfse">example</a>).</li>
+        <li><b>Test environments:</b> run against the providers’ test (homologación) mode first; Brazilian test PDFs carry a “no legal validity” mark.</li>
+      </ul>
+      <div class="note info"><span class="tag t-inf">to verify</span> Which document Omni emits in Brazil (NFS-e national, municipal or NF-e), and whether KeyFácil / Omni return the <b>signed XML</b> in the API response. The PDF step depends on that.</div>
+    </div>
+  </div>
+
+  <h3 style="margin-top:22px">When something goes wrong (per record)</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Case</th><th>What Fact does</th><th>Who acts</th></tr></thead>
+    <tbody>
+      <tr><td>Invalid data in the file</td><td>Rejects that record in the report; the rest of the batch continues</td><td>Supervisor fixes the data at the source (VIEW / BD) and re-exports</td></tr>
+      <tr><td>Tax authority rejects it</td><td><code>error_fiscal</code> with the authority’s code; no automatic retry</td><td>Supervisor corrects the data and resubmits; numbering follows the service’s rules</td></tr>
+      <tr><td>API down, timeout or 5xx</td><td>Retries with backoff; before resending, asks the service for the status of the idempotency key so no sale is registered twice</td><td>Alert only if retries run out</td></tr>
+      <tr><td>Authority answers later</td><td><code>pendiente_autoridad</code>; polls until a final answer</td><td>—</td></tr>
+      <tr><td>PDF does not match the XML</td><td>Blocks the email</td><td>Supervisor; this should never happen</td></tr>
+      <tr><td>Email bounces or is missing</td><td><code>error_envio</code>; the PDF stays downloadable from the VIEW and the WhatsApp agent can send the link</td><td>Supervisor</td></tr>
+      <tr><td>Same file imported twice</td><td>Skips records already invoiced</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 style="margin-top:22px">Pseudocode of the job</h3>
+<pre class="code"><span class="c"># input: the set of orders a person exported from the Dashboard and imported into Fact</span>
+batch = ingest(file)                                   <span class="c"># 1 schema + checksum, skip already-invoiced ids</span>
+for rec in batch.records:                              <span class="c">#   bounded concurrency</span>
+    try:
+        check(rec)                                     <span class="c"># 1 country rules; DataError → rechazado_validacion</span>
+        svc = service_for(rec.direction)               <span class="c"># 2 PE→BR: keyfacil → SUNAT · BR→PE: omni → BR authority</span>
+        res = svc.register_sale(rec, key=rec.operation_id)   <span class="c"># idempotent; returns xml (+ cdr / protocol)</span>
+        if res.rejected:  mark(rec, "error_fiscal", res.code); continue
+        if res.pending:   mark(rec, "pendiente_autoridad");   continue   <span class="c"># polled later</span>
+        store_xml(rec, res.xml, res.cdr)               <span class="c"># 3 untouched, hashed</span>
+        pdf = render_pdf(res.xml)                      <span class="c"># 4 from the XML, never from the DB</span>
+        assert totals(pdf) == totals(res.xml)          <span class="c">#   PDF ≠ XML → error_pdf, no email</span>
+        send_mail(rec.customer.email, pdf)             <span class="c"># 5 log message id</span>
+        mark(rec, "facturada")
+    except DataError  as e: mark(rec, "rechazado_validacion", e)
+    except Transient  as e: retry_later(rec, status_check=True)  <span class="c"># ask the service before resending</span>
+report(batch)                                          <span class="c"># 6 per-row result to the BD / VIEW + daily consolidated</span></pre>
+
+  <div class="two" style="margin-top:22px">
+    <div class="card" style="margin:0">
+      <b>Rules that keep it safe</b>
+      <ul class="clean">
+        <li><b>Idempotent:</b> the operation ID is the key; re-running a batch continues the unfinished records and never duplicates a sale.</li>
+        <li><b>XML is immutable:</b> store it with its hash; the PDF can always be rebuilt from it.</li>
+        <li><b>Secrets:</b> API keys in a server-side secret store, never in the web bundle, rotated (the board’s “API Key !!”).</li>
+        <li><b>Private storage</b> for XML and PDF; links to customers are signed and expire.</li>
+        <li><b>Audit trail:</b> every call and the raw answer in <code>events</code>.</li>
+        <li><b>Test mode first</b> on both services before real sales.</li>
+      </ul></div>
+    <div class="card" style="margin:0">
+      <b>Timing against the 20-minute target</b>
+      <ul class="clean">
+        <li>The script is fast when the services answer: seconds per record, minutes per batch.</li>
+        <li>What decides the target is how soon operators export and confirm. Small, frequent batches (for example every 15 min or on each confirmation) beat one daily batch.</li>
+        <li>If an authority answers asynchronously, the receipt waits for it; the client is told the status meanwhile.</li>
+      </ul></div>
+  </div>
+
+  <h3 style="margin-top:22px">What billing would see (in the VIEW, not in the Dashboard)</h3>
+  <div class="dash">
+    <div class="top"><b>VIEW · Facturación (lotes)</b><span><span class="pill">Lotes hoy 3</span> <span class="pill">Registros 58</span> <span class="pill">Facturados 54</span> <span class="pill">Con error 4</span></span></div>
+    <table>
+      <thead><tr><th>Lote</th><th>Ruta</th><th>Registros</th><th>Aceptados</th><th>Rechazo validación</th><th>Rechazo autoridad</th><th>PDF enviados</th><th>Estado</th></tr></thead>
+      <tbody>
+        <tr><td>L-0101</td><td>PE→BR · SUNAT</td><td>24</td><td>23</td><td>1</td><td>0</td><td>23</td><td><span class="st e">Completo</span></td></tr>
+        <tr><td>L-0102</td><td>BR→PE · fisco BR</td><td>16</td><td>14</td><td>0</td><td>1</td><td>14</td><td><span class="st x">Con errores</span></td></tr>
+        <tr><td>L-0103</td><td>PE→BR · SUNAT</td><td>18</td><td>17</td><td>0</td><td>0</td><td>16</td><td><span class="st v">En proceso</span></td></tr>
+      </tbody>
+    </table>
+    <div class="btnrow"><span>Ver errores del lote</span><span class="g">Reenviar corregidos</span><span class="g">Descargar consolidado del día</span><span class="g">Ver PDF / XML</span></div>
+  </div>
+  <div class="note info">Sample rows and numbers are made up. The point: billing goes from re-typing every operation to reading a batch report and fixing the few records that fail, which is the “3 FTE to 1” hypothesis.</div>
+</section>
+
+<!-- ============ ROADMAP ============ -->
+<section id="roadmap">
+  <div class="kicker">10 · Suggested order</div>
+  <h2>A phased path (my proposal)</h2>
+  <p class="lead">The board does not set an order, so this is one that delivers value early: first stop the leaks on the live site, then capture data, then verify, then export and invoice, then widen the channels.</p>
+  <div class="road">
+    <div class="phase zero"><h4>0 · Stabilize today’s site</h4><p>Days</p><ul><li>Restore the rates / commission service and add a visible fallback</li><li>Remove the expired promo, fix “3 pasos” and stale copy</li><li>Move the admin check and any secret out of the public bundle</li></ul></div>
+    <div class="phase"><h4>1 · Capture</h4><p>Web App + BD</p><ul><li>Calculator → Datos → Transferencia → Constancia</li><li>Photo upload, operation ID</li><li>WhatsApp stays as a secondary button</li></ul></div>
+    <div class="phase"><h4>2 · Validate</h4><p>VIEW + human check</p><ul><li>Pending list with photo and N° Trans</li><li>The validator sets OK / Aprobado (≈ 15 min target)</li><li>Client timeline + notifications</li></ul></div>
+    <div class="phase"><h4>3 · Export</h4><p>VIEW → Dashboard</p><ul><li>Mark approved orders, export the file</li><li>Import into the Dashboard as today, no changes</li><li>Retire the manual typing and .xlsx / PDF</li></ul></div>
+    <div class="phase"><h4>4 · Invoice</h4><p>Script “Fact”</p><ul><li>A person exports from the Dashboard and imports the set into Fact; KeyFácil (PE→BR) and Omni (BR→PE) via API key kept on the server (<a href="#billing">flow</a>)</li><li>PDF built from the returned XML and emailed</li></ul></div>
+    <div class="phase"><h4>5 · Channels + IA</h4><p>Same BD, more doors</p><ul><li>Optional AI with a track record: A1 chat agent (<a href="#wa-agent">4b</a>), A2 identity check, A3 risk score</li><li>A1 can start read-only (quote, status) earlier</li></ul></div>
+  </div>
+  <div class="note info"><b>How we would know it works:</b> time from confirmation to receipt (3 days → 20 min), minutes per validation in the VIEW, typing errors (0), man-hours per transaction, and operations created with complete data. For the four-day MVP, phases 1 to 4 on the happy path are the cut described in <a href="#mvp">Data &amp; MVP</a>.</div>
+</section>
+
+<!-- ============ OPEN ============ -->
+<section id="open">
+  <div class="kicker">11 · To confirm</div>
+  <h2>What I read from the board, and how sure I am</h2>
+  <p class="lead">Handwriting leaves room. These are the readings I used; correct any that are wrong and the diagram above will change with them.</p>
+  <div class="tw"><table>
+    <thead><tr><th>On the board</th><th>My reading</th><th>Confidence</th></tr></thead>
+    <tbody>
+      <tr><td>Red line; “to be” below it</td><td>Above = today’s manual flow, below = the new one.</td><td>High</td></tr>
+      <tr><td>Box: Origen Fondo ✓ · C. Origen · N° Trans · C. Destino</td><td>Origin of funds, origin account, operation / transaction number, destination account.</td><td>High</td></tr>
+      <tr><td>“Fotos” into BD; “ok? Aprob” from Bank; “15 min”</td><td>Photos stored; a person checks the bank (~15 min) and sets OK / Aprobado through the VIEW. Confirmed by you: validation stays human. (An earlier version of this page, following the team notes, showed an automatic reconciliation; that is superseded.)</td><td>High</td></tr>
+      <tr><td>VIEW + person “Mark 2 export”, “export”</td><td>A database view of operations; a person marks which to export.</td><td>High</td></tr>
+      <tr><td>Dashboard, “confirmar / import”, “I/EXP”</td><td>The Dashboard is the MYPE’s existing system, is not modified, and only imports and exports orders (confirmed by you). The VIEW exports a file it imports; a person then exports its orders and imports them into Fact. The first letters of its label (“DAP / BAP”) remain unread.</td><td>High</td></tr>
+      <tr><td>SCRIPT + “Fact” + cylinder + “API key !”</td><td>Billing script with its own database; it reaches KeyFácil / Omni with an API key that must be protected (team notes).</td><td>Medium-high</td></tr>
+      <tr><td>“tipo cambio” with an arrow from Web App</td><td>The Web App fetches the exchange rate. I drew the arrow as drawn.</td><td>Medium</td></tr>
+      <tr><td>“&lt;Expo&gt;” beside the data box</td><td>Either “export” (this data is what gets exported) or Expo, the app framework. Not used in the diagram.</td><td>Low</td></tr>
+      <tr><td>“IV” over BD</td><td><i>Intención de Venta</i>, the team’s interpretation. Plausible: it labels the table that holds each sale. I show it as “BD · IV”.</td><td>Medium</td></tr>
+      <tr><td>“eje”</td><td>The central hub, i.e. the Dashboard (team notes).</td><td>Medium</td></tr>
+      <tr><td>“x Asis”, “Ventas Prefe…”, “Ventas Netas”, “Cola” (in the part of the board I cannot see)</td><td>Per assistant / agent; preferential vs net sales; queue (team notes). Not verified by me.</td><td>Low-medium</td></tr>
+      <tr><td>“e” inside the script box; the red circle at the end of the script line</td><td>Unclear. I left them out of the diagram.</td><td>Low</td></tr>
+      <tr><td>WSP · Telegram · Discord o IA with a long arrow</td><td>Alternative channels (WhatsApp / Telegram) with an AI chatbot, writing to the same BD (team notes: “Diseño con IA”). I drew it as A1; Discord is not drawn because I found no use of it by similar businesses.</td><td>Medium-high</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note warn"><b>Questions for you:</b> (1) What file format does the Dashboard import and export (type and columns), so the VIEW and Fact can talk to it? (2) Does Omni offer an API at all for BR→PE, or only xlsx / pdf? (3) Should the web app replace WhatsApp for the first message, or only follow it? (4) Does the client need an account / login, or just an operation link? (5) Is the rates service the same <code>apibras.finzeler.com</code> API that is failing now? (6) Do the identity-verification vendors you would consider read Peruvian DNI and Brazilian CPF documents? (7) Are the 7 FTE and ~60 trx/day figures measured or estimated? (8) What exactly is invoiced on each route (commission or full amount) and which document type applies? (9) Do KeyFácil and Omni expose an API, who at Brasper can request the keys, and do they return the signed XML (and the CDR in Peru) in the response? (10) Which document and authority does Omni use in Brazil (NFS-e national, municipal, NF-e)? (11) Are the validator and the operator the same person, and who validates outside business hours? (12) Which person exports from the Dashboard and imports into Fact, and how often? (13) Does Fact’s first version need the optional A4, or is rule-based validation enough?</div>
+</section>
+
+</main>
+
+<footer><div class="wrap">Evidence: <code>reference/brasper-asis/</code> (site captures), IATHON team notes (pasted into the session, not verified), <code>reference/screenshots/</code> (Kambista, personal account numbers masked), <code>reference/whiteboard-to-be.jpg</code>. Full benchmark: <a href="kambista-benchmark.html">kambista-benchmark.html</a>. Tap any screenshot to enlarge.</div></footer>
+
+<dialog id="lb"><img id="lbimg" alt=""><p id="lbcap"></p></dialog>
+<script>
+  const lb = document.getElementById('lb'), img = document.getElementById('lbimg'), cap = document.getElementById('lbcap');
+  document.querySelectorAll('figure button').forEach(b => b.addEventListener('click', () => {
+    img.src = b.dataset.full; img.alt = b.dataset.cap || ''; cap.textContent = b.dataset.cap || ''; lb.showModal();
+  }));
+  lb.addEventListener('click', () => lb.close());
+  (function () {
+    const t = document.getElementById('aiToggle'), ls = document.querySelectorAll('#tobeSvg .ai-layer');
+    if (!t || !ls.length) return;
+    t.addEventListener('change', () => { ls.forEach(l => { l.style.display = t.checked ? '' : 'none'; }); });
+  })();
+</script>
+</body>
+</html>
