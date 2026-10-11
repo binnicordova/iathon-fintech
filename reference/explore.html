@@ -233,12 +233,31 @@
   .diagram .bx.aic { fill: var(--ai-bg); stroke: var(--ai); stroke-width: 1.8; }
   .diagram .ln.pur2 { stroke: var(--ai); }
   .btn.ai { background: #6d3fd1; }
-  .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 12px; }
-  .tabs button { font: inherit; font-weight: 600; font-size: 14px; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); cursor: pointer; }
-  .tabs button[aria-selected="true"] { background: var(--brand); border-color: var(--brand); color: #fff; }
-  .tabs button:focus-visible { outline: 3px solid var(--cyan); outline-offset: 2px; }
   .appchat .m.out { background: #dbe6ff; }
 
+  .tabpanel { margin: 0 0 28px; }
+  h4.way { margin: 26px 0 10px; font-size: 17px; color: var(--brand-ink); }
+  .phones.wrap { flex-wrap: wrap; overflow-x: visible; }
+  .phones.wrap .phone { margin-bottom: 8px; }
+  a.btn { display: block; text-decoration: none; color: #fff; }
+  .btn.hu { background: #b45f00; }
+  .btn.cur { box-shadow: inset 0 0 0 2px #fff, 0 0 0 2px #6d3fd1; }
+  .qr a { background: #fff; color: #0b6b5d; text-align: center; font-weight: 700; padding: 4px; border-radius: 8px; box-shadow: 0 1px 1px rgba(0,0,0,.12); text-decoration: none; }
+  .qr a:hover, a.btn:hover { filter: brightness(.94); }
+  .qr a:focus-visible, a.btn:focus-visible { outline: 3px solid var(--cyan); outline-offset: 2px; }
+  .wa .plain .screen { background: #f5f8ff; padding: 12px 11px 14px; }
+  .inbox .screen { background: #fff; padding: 0 0 10px; overflow: hidden; }
+  .inbox .row { display: flex; gap: 7px; align-items: center; padding: 6px 9px; border-bottom: 1px solid #e8edf8; }
+  .inbox .row i { font-style: normal; flex: 0 0 22px; height: 22px; border-radius: 50%; background: #c3d0f1; color: #1346c9; display: grid; place-items: center; font-weight: 800; font-size: 10px; }
+  .inbox .row div { flex: 1; min-width: 0; } .inbox .row b { display: block; font-size: 10.5px; } .inbox .row small { display: block; color: #6a7597; font-size: 9px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .inbox .row u { text-decoration: none; background: #1faa59; color: #fff; border-radius: 999px; font-size: 9px; font-weight: 700; padding: 1px 6px; }
+  .inbox .row.me { background: #fff3e4; } .inbox .row.me i { background: #e08a00; color: #fff; }
+  .inbox .hd { background: #0b6b5d; color: #fff; padding: 8px 10px; font-weight: 800; font-size: 12px; display: flex; justify-content: space-between; } .inbox .hd span { font-weight: 600; font-size: 10px; opacity: .9; }
+  .inbox .more { text-align: center; color: #6a7597; padding: 6px; font-size: 9.5px; }
+  .queue-card { background: #fff; border-radius: 8px; padding: 6px 8px; box-shadow: 0 1px 1px rgba(0,0,0,.12); align-self: stretch; text-align: center; }
+  .queue-card .pos { font-size: 22px; font-weight: 800; color: #b45f00; line-height: 1.1; }
+  .human .screen { min-height: 452px; }
+  .wa-head.hu { background: #8a4a00; } .wa-head.hu i { color: #8a4a00; }
   details.wb { margin: 0 0 14px; } details.wb summary { cursor: pointer; font-weight: 700; color: var(--brand-ink); padding: 4px 0; }
   details.wb figure { width: min(560px, 100%); margin-top: 10px; }
   ol.q { margin: 0; padding-left: 22px; } ol.q li { margin: 8px 0; }
@@ -347,7 +366,7 @@
   <div class="kicker">3 · The new flow</div>
   <h2>Who does what, and in which system</h2>
   <p class="lead">The whiteboard flow, drawn with its actors. Blue boxes are what we build, purple boxes are the AI chat assistant, the grey box is the Dashboard that stays as it is, and the dashed purple piece is optional AI (use the switch to hide it).</p>
-  <details class="wb"><summary>Show the original whiteboard</summary>
+  <details class="wb" open><summary>Show the original whiteboard</summary>
     <figure><button data-full="whiteboard-to-be.jpg" data-cap="Team whiteboard"><img loading="lazy" src="whiteboard-to-be.jpg" alt="Team whiteboard"></button><figcaption>Above the red line: today. Below: the new flow. The photo is cropped at the top.</figcaption></figure>
   </details>
   <div class="card diagram">
@@ -411,7 +430,7 @@
   <div class="tw"><table>
     <thead><tr><th>#</th><th>Who</th><th>What happens</th></tr></thead>
     <tbody>
-      <tr><td class="n">1</td><td>Client</td><td>Quotes with the current exchange rate, in one of three ways: the Web App form, a WhatsApp chat, or the assistant inside the Web App (the same assistant as on WhatsApp). See <a href="#screens">What people see</a>.</td></tr>
+      <tr><td class="n">1</td><td>Client</td><td>Quotes with the current exchange rate, in one of three ways: the Web App form, a WhatsApp chat, or the assistant inside the Web App (the same assistant as on WhatsApp); or by talking to a human seller, as today (large or negotiated amounts). See <a href="#screens">What people see</a>.</td></tr>
       <tr><td class="n">2</td><td>Client</td><td>Gives the source of funds, source account, operation number and destination account, pays, and sends the proof photo, by form or by chat. All three ways save the same data in the database, one record per sale (“IV”, Intención de Venta).</td></tr>
       <tr><td class="n">3</td><td>Validator</td><td>Sees the pending operations in the VIEW, checks the bank (target about 15 minutes) and approves.</td></tr>
       <tr><td class="n">4</td><td>Operator</td><td>Marks the approved operations in the VIEW and exports a file of orders.</td></tr>
@@ -428,14 +447,10 @@
 <section id="screens">
   <div class="kicker">4 · What people see</div>
   <h2>The client’s Web App and the team’s VIEW</h2>
-  <h3>Client: three ways in</h3>
-  <p class="lead" style="margin-bottom:12px">All three save the same data in the same database, so the team always works from one VIEW. The chat is a core way in, with the AI assistant doing the talking. It is one assistant service behind both chat channels: the WhatsApp chat and the assistant inside the Web App run the same steps and save the same data, and only the channel differs. The assistant never approves anything: the validator does.</p>
-  <div class="tabs" role="tablist">
-    <button type="button" role="tab" aria-selected="true" data-tab="tab-form">Web App form</button>
-    <button type="button" role="tab" aria-selected="false" data-tab="tab-wa">WhatsApp chat</button>
-    <button type="button" role="tab" aria-selected="false" data-tab="tab-app">Assistant inside the app</button>
-  </div>
+  <h3>Client: three new ways in, and the current human route</h3>
+  <p class="lead" style="margin-bottom:12px">The first three save the same data in the same database, so the team always works from one VIEW. The chat is a core way in, with the AI assistant doing the talking. It is one assistant service behind both chat channels: the WhatsApp chat and the assistant inside the Web App run the same steps and save the same data, and only the channel differs. The assistant never approves anything: the validator does. The fourth is how it works today: a human seller attends the client and negotiates the rate before the operation is made. It keeps working as it is, and the assistant can hand a client over to it at any time.</p>
 
+  <h4 class="way" id="flow-form">1 · Web App form</h4>
   <div class="tabpanel" id="tab-form">
   <div class="phones">
     <div class="phone"><div class="step-n"><i>1</i>Cotiza</div>
@@ -445,8 +460,8 @@
         <div class="fld"><small>Destinatario recibe</small><b>— &nbsp;PEN ▾</b></div>
         <div class="kv"><span>Comisión</span><b>—</b></div><div class="kv"><span>Total a enviar</span><b>—</b></div><div class="kv"><span>Tasa de cambio</span><b>1 BRL = — PEN</b></div>
         <div class="hint blue">Tasa asegurada por 15 min</div>
-        <div class="btn">Continuar</div><div class="btn wa">¿Dudas? Habla por WhatsApp</div>
-      </div><p class="caption">Same calculator as the site. WhatsApp stays as a help button.</p></div>
+        <div class="btn">Continuar</div><a class="btn wa" href="#flow-wa">¿Dudas? Habla por WhatsApp</a><a class="btn ai" href="#flow-app">🤖 Hablar con el asistente</a><a class="btn hu" href="#flow-human">👤 Hablar con una persona</a>
+      </div><p class="caption">Same calculator as the site. The help buttons jump to the other ways in (tap them to see each flow).</p></div>
 
     <div class="phone"><div class="step-n"><i>2</i>Datos</div>
       <div class="screen">
@@ -493,6 +508,7 @@
   </div>
   </div>
 
+  <h4 class="way" id="flow-wa">2 · WhatsApp chat</h4>
   <div class="tabpanel" id="tab-wa">
     <div class="phones wa">
       <div class="phone"><div class="step-n"><i>1</i>Quote</div>
@@ -501,9 +517,9 @@
           <div class="wa-body">
             <div class="m out">Hola, quiero enviar 500 reales a Perú</div>
             <div class="m in ai">¡Hola! Hoy <b>1 BRL = {tasa} PEN</b>. Comisión {comisión}. Recibirás <b>{monto} PEN</b>. Tasa asegurada hasta las {hora}.</div>
-            <div class="qr"><span>Continuar</span><span>Cambiar monto</span><span>Hablar con una persona</span></div>
+            <div class="qr"><span>Continuar</span><span>Cambiar monto</span><a href="#flow-human">👤 Hablar con una persona</a><a href="#flow-form">🌐 Usar el formulario web</a><a href="#flow-app">🤖 Seguir en la app con el asistente</a></div>
           </div>
-        </div><p class="caption">The “Enviar por WhatsApp” button on the site opens this same chat.</p></div>
+        </div><p class="caption">The “Enviar por WhatsApp” button on the site opens this same chat. The quick replies let the client switch to another way in.</p></div>
 
       <div class="phone"><div class="step-n"><i>2</i>Data</div>
         <div class="screen">
@@ -547,6 +563,7 @@
     </div>
   </div>
 
+  <h4 class="way" id="flow-app">3 · Assistant inside the app</h4>
   <div class="tabpanel appchat" id="tab-app">
     <div class="phones">
       <div class="phone"><div class="step-n"><i>1</i>Choose</div>
@@ -555,11 +572,24 @@
           <div class="fld"><small>Tú envías</small><b>500.00 &nbsp;BRL ▾</b></div>
           <div class="fld"><small>Destinatario recibe</small><b>— &nbsp;PEN ▾</b></div>
           <div class="kv"><span>Comisión</span><b>—</b></div><div class="kv"><span>Tasa de cambio</span><b>1 BRL = — PEN</b></div>
-          <div class="btn">Continuar con el formulario</div>
-          <div class="btn ai">🤖 Hablar con el asistente</div>
-        </div><p class="caption">The calculator offers the form or the assistant. This is the same assistant and flow as the WhatsApp chat, in a different channel.</p></div>
+          <a class="btn" href="#flow-form">Continuar con el formulario</a>
+          <div class="btn ai cur">🤖 Hablar con el asistente</div>
+          <a class="btn wa" href="#flow-wa">Habla por WhatsApp</a>
+          <a class="btn hu" href="#flow-human">👤 Hablar con una persona</a>
+        </div><p class="caption">The calculator offers the form or the assistant. This is the same assistant and flow as the WhatsApp chat, in a different channel. Other ways in are one tap away.</p></div>
 
-      <div class="phone"><div class="step-n"><i>2</i>Talk</div>
+      <div class="phone"><div class="step-n"><i>2</i>Quote</div>
+        <div class="screen">
+          <div class="bar">Asistente BrasPer <span>✕</span></div>
+          <div class="wa-body">
+            <div class="m in ai">¡Hola! ¿Cuánto quieres enviar y a qué país?</div>
+            <div class="m out">500 reales a Perú</div>
+            <div class="m in ai">Hoy <b>1 BRL = {tasa} PEN</b>. Comisión {comisión}. Recibirás <b>{monto} PEN</b>. Tasa asegurada hasta las {hora}.</div>
+            <div class="qr"><span>Continuar</span><span>Cambiar monto</span><span>Hablar con una persona</span></div>
+          </div>
+        </div><p class="caption">The rate card always comes from the system, never from the assistant’s own words. “Hablar con una persona” is always there.</p></div>
+
+      <div class="phone"><div class="step-n"><i>3</i>Talk</div>
         <div class="screen">
           <div class="bar">Asistente BrasPer <span>✕</span></div>
           <div class="hint blue"><b>Tu operación</b><br>500 BRL → — PEN · Origen: Ahorros ✓<br>Destino: pendiente</div>
@@ -571,7 +601,7 @@
           </div>
         </div><p class="caption">One question at a time. The summary on top fills in as you answer.</p></div>
 
-      <div class="phone"><div class="step-n"><i>3</i>Review</div>
+      <div class="phone"><div class="step-n"><i>4</i>Review</div>
         <div class="screen">
           <div class="bar">Revisa tu operación <span>1 / 3</span></div><div class="dots"><b class="on"></b><b></b><b></b></div>
           <div class="fld"><small>Origen de fondos</small><b>Ahorros</b></div>
@@ -580,6 +610,138 @@
           <div class="hint blue">Datos completados con el asistente. Puedes editarlos.</div>
           <div class="btn">Continuar a pagar</div>
         </div><p class="caption">It ends on the same review screen as the form, then moves on to payment.</p></div>
+
+      <div class="phone"><div class="step-n"><i>5</i>Pay</div>
+        <div class="screen">
+          <div class="bar">Transfiere a BrasPer <span>2 / 3</span></div><div class="dots"><b class="on"></b><b class="on"></b><b></b></div>
+          <div class="kv"><span>Titular</span><b>BrasPer</b></div><div class="kv"><span>Monto</span><b>{monto} BRL ⧉</b></div><div class="kv"><span>Banco</span><b>{banco}</b></div><div class="kv"><span>Cuenta</span><b>{cuenta} ⧉</b></div>
+          <div class="hint">Usa la cuenta de <b>BRL</b>. Tasa asegurada hasta las {hora}.</div>
+          <div class="btn">Ya transferí</div>
+          <div class="btn ai">🤖 ¿Dudas? Pregúntale al asistente</div>
+        </div><p class="caption">The assistant stays one tap away on every screen, with the operation as context.</p></div>
+
+      <div class="phone"><div class="step-n"><i>6</i>Proof</div>
+        <div class="screen">
+          <div class="bar">Asistente BrasPer <span>✕</span></div>
+          <div class="wa-body">
+            <div class="m in ai">Envíame la foto del comprobante y el número de operación.</div>
+            <div class="m out"><div class="ph-img">📷 comprobante.jpg</div>Operación 000000</div>
+            <div class="sys">Foto y N° guardados · En validación</div>
+            <div class="m in ai">Una persona validará tu pago en unos <b>15 min</b>. Te aviso aquí y por correo.</div>
+          </div>
+        </div><p class="caption">The photo and number go to the database; the assistant does not judge the proof.</p></div>
+
+      <div class="phone"><div class="step-n"><i>7</i>Status</div>
+        <div class="screen">
+          <div class="bar">Asistente BrasPer <span>✕</span></div>
+          <div class="wa-body">
+            <div class="m out">¿Dónde está mi orden?</div>
+            <div class="m in ai">Tu operación <b>BR-{id}</b> está <b>En validación</b>.</div>
+          </div>
+          <ul class="tl">
+            <li class="done">Operación registrada<small>{hora}</small></li>
+            <li class="now">Verificando tu transferencia<small>≈ 15 min</small></li>
+            <li>Enviamos tu dinero</li>
+            <li>Recibiste tu dinero</li>
+          </ul>
+          <div class="hint blue">El estado viene de la base de datos, igual que en la línea de tiempo del formulario.</div>
+        </div><p class="caption">“Where is my order?” is answered from the database, so it matches the timeline in the form.</p></div>
+
+      <div class="phone"><div class="step-n"><i>8</i>Ask for a person</div>
+        <div class="screen">
+          <div class="bar">Asistente BrasPer <span>✕</span></div>
+          <div class="wa-body">
+            <div class="m out">Quiero cambiar 5,000 USD, ¿me pueden mejorar la tasa?</div>
+            <div class="m in ai">Para montos grandes y tasas negociadas te atiende una persona del equipo. Ya le compartí el resumen.</div>
+            <div class="queue-card"><small>Fila de atención</small><div class="pos">#14</div><small>espera estimada ≈ 35 min</small></div>
+            <div class="sys">Pasado a atención humana · hilo con contexto</div>
+          </div>
+        </div><p class="caption">Same hand-over as on WhatsApp. From here it is the current human flow, shown in 4 below.</p></div>
+
+    </div>
+  </div>
+
+  <h4 class="way" id="flow-human">4 · Human attention (current)</h4>
+  <p class="lead" style="margin:0 0 10px">This flow already works in the business: a human seller attends the client and negotiates the exchange before it is made. It is how large or negotiated amounts get done today. Example: a client who wants to change <b>5,000 USD</b>, a long queue and many messages.</p>
+  <div class="tabpanel human" id="tab-human">
+    <div class="phones wa">
+      <div class="phone"><div class="step-n"><i>1</i>Waiting in line</div>
+        <div class="screen">
+          <div class="wa-head"><i>B</i><div><b>BrasPer · Ventas</b><small>en línea</small></div></div>
+          <div class="wa-body">
+            <div class="m out">Hola, quiero cambiar 5,000 dólares</div>
+            <div class="m in"><b>Ventas BrasPer</b><br>Gracias por escribir 🙌 Tienes <b>23 personas</b> antes que tú. Un asesor te atenderá en orden.</div>
+            <div class="queue-card"><small>Tu posición</small><div class="pos">#24</div><small>espera estimada ≈ 50 min</small></div>
+            <div class="qr"><a href="#flow-app">🤖 Hablar con el asistente, sin fila</a><a href="#flow-form">🌐 Usar el formulario web</a></div>
+            <div class="m out">Hola?</div>
+            <div class="m out">Sigo esperando 🙏</div>
+            <div class="m out">Es un monto grande, necesito confirmar la tasa antes de transferir</div>
+            <div class="m in"><b>Ventas BrasPer</b><br>Posición #11 · ≈ 25 min.</div>
+            <div class="m out">¿Alguien puede ayudarme?</div>
+            <div class="m out">Ya pasó una hora</div>
+          </div>
+        </div><p class="caption">Today a client with 5,000 USD queues like everyone else. The numbers are examples. The new flow lets the client leave the queue for the assistant or the form at any time.</p></div>
+
+      <div class="phone inbox"><div class="step-n"><i>2</i>Seller’s inbox</div>
+        <div class="screen">
+          <div class="hd">Bandeja Ventas <span>23 en espera</span></div>
+          <div class="row"><i>MC</i><div><b>Marcos C. · 2 USD→BRL</b><small>«Ya transferí, ahí va la foto»</small></div><u>12</u></div>
+          <div class="row"><i>LP</i><div><b>Lucía P.</b><small>«¿Cuál es la tasa hoy?»</small></div><u>3</u></div>
+          <div class="row"><i>JR</i><div><b>Juan R.</b><small>📷 comprobante.jpg</small></div><u>2</u></div>
+          <div class="row me"><i>A5</i><div><b>+51 9•• ••• 214 · 5,000 USD</b><small>«Hola, quiero cambiar 5,000 USD»</small></div><u>9</u></div>
+          <div class="row"><i>CS</i><div><b>Carla S.</b><small>«Gracias, ya me llegó»</small></div></div>
+          <div class="row"><i>DT</i><div><b>Diego T.</b><small>«¿Pueden mejorar la tasa?»</small></div><u>5</u></div>
+          <div class="row"><i>FA</i><div><b>Fabiana A.</b><small>«Mi operación no llega»</small></div><u>7</u></div>
+          <div class="row"><i>RV</i><div><b>Rafael V.</b><small>🎤 audio 0:42</small></div><u>1</u></div>
+          <div class="more">+ 14 chats más sin atender…</div>
+        </div><p class="caption">The seller’s side: a long queue and many unread messages, handled one by one, mostly by hand.</p></div>
+
+      <div class="phone"><div class="step-n"><i>3</i>Negotiate</div>
+        <div class="screen">
+          <div class="wa-head hu"><i>R</i><div><b>Rodrigo · Ventas</b><small>asesor humano</small></div></div>
+          <div class="wa-body">
+            <div class="m in hu">Buenas tardes, soy Rodrigo, de Ventas. Perdón la espera 🙏 ¿Cuánto quieres cambiar?</div>
+            <div class="m out">Hola Rodrigo, 5,000 USD a reales</div>
+            <div class="m in hu">Hoy está <b>1 USD = 5.40 BRL</b>. Serían <b>27,000 BRL</b>.</div>
+            <div class="m out">Es un monto grande, ¿no me das mejor tasa?</div>
+            <div class="m in hu">Déjame consultarlo con mi supervisor, un momento</div>
+            <div class="m out">Ok</div>
+            <div class="m in hu">Puedo dejarla en <b>5.42</b></div>
+            <div class="m out">En otra casa me ofrecen 5.45</div>
+            <div class="m in hu">Te la mejoro a <b>5.43</b>. Es lo mejor que puedo darte</div>
+            <div class="m out">Dame un minuto</div>
+            <div class="m out">Ok, acepto 5.43</div>
+            <div class="m in hu">Perfecto: <b>5,000 USD → 27,150 BRL</b> a 5.43 ✅</div>
+            <div class="m in hu">Tasa asegurada por <b>30 min</b>.</div>
+          </div>
+        </div><p class="caption">The client and the seller go back and forth until they agree on the rate. Many messages, all typed by people.</p></div>
+
+      <div class="phone"><div class="step-n"><i>4</i>Data and proof</div>
+        <div class="screen">
+          <div class="wa-head hu"><i>R</i><div><b>Rodrigo · Ventas</b><small>asesor humano</small></div></div>
+          <div class="wa-body">
+            <div class="m in hu">Para transferir te paso los datos:<br>Titular: BrasPer<br>Banco: {banco} · Cuenta: {cuenta}<br>Cuenta de <b>USD</b>. Asegurada hasta las {hora}.</div>
+            <div class="m in hu">¿Cuál es tu DNI/CPF y a qué cuenta enviamos los reales?</div>
+            <div class="m out">CPF ••••••••• · cuenta Itaú ••••4412, a mi nombre</div>
+            <div class="m in hu">¿De dónde provienen los fondos?</div>
+            <div class="m out">Venta de un auto</div>
+            <div class="m out">Ya transferí</div>
+            <div class="m out"><div class="ph-img">📷 comprobante.jpg</div>Operación 000000</div>
+            <div class="m in hu">Recibido 👍 Lo reviso con el banco y te aviso.</div>
+          </div>
+        </div><p class="caption">The seller collects the data and the proof photo by chat. Nothing is saved in a database; it only lives in the conversation.</p></div>
+
+      <div class="phone plain"><div class="step-n"><i>5</i>Seller types it in</div>
+        <div class="screen">
+          <div class="bar">Dashboard <span>entrada manual</span></div>
+          <div class="fld"><small>Cliente</small><b>CPF ••••••••• </b></div>
+          <div class="fld"><small>Monto / tasa pactada</small><b>5,000 USD · 5.43</b></div>
+          <div class="fld"><small>Recibe</small><b>27,150 BRL · Itaú •••4412</b></div>
+          <div class="fld"><small>Origen de fondos</small><b>Venta de un bien</b></div>
+          <div class="hint">El asesor mira la captura y tipea la operación a mano. Después, facturación la vuelve a tipear en KeyFácil u Omni.</div>
+          <div class="btn">Guardar</div>
+        </div><p class="caption">Same data typed twice by hand, then the receipt can take up to 3 days. This is the part the new flow records once.</p></div>
+
     </div>
   </div>
 
@@ -776,13 +938,6 @@
     img.src = b.dataset.full; img.alt = b.dataset.cap || ''; cap.textContent = b.dataset.cap || ''; lb.showModal();
   }));
   lb.addEventListener('click', () => lb.close());
-  (function () {
-    const btns = document.querySelectorAll('.tabs button'), panels = document.querySelectorAll('.tabpanel');
-    if (!btns.length) return;
-    const show = id => { panels.forEach(p => { p.hidden = p.id !== id; }); btns.forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === id))); };
-    btns.forEach(b => b.addEventListener('click', () => show(b.dataset.tab)));
-    show('tab-form');
-  })();
   (function () {
     const t = document.getElementById('aiToggle'), ls = document.querySelectorAll('#tobeSvg .ai-layer');
     if (!t || !ls.length) return;
