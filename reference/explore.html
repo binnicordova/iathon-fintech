@@ -282,9 +282,12 @@
 <nav class="toc"><div class="wrap">
   <a href="#summary">Summary</a>
   <a href="#asis">Today</a>
+  <a href="#mobile">Why mobile</a>
   <a href="#kambista">Kambista</a>
   <a href="#flow">New flow</a>
   <a href="#screens">Screens</a>
+  <a href="#rates">Rates</a>
+  <a href="#datamodel">Data model</a>
   <a href="#billing">Billing (Fact)</a>
   <a href="#ai">AI</a>
   <a href="#mvp">MVP</a>
@@ -342,6 +345,31 @@
   <div class="note warn"><b>Fix on the live website first:</b> (a) the calculator could not load rates on 10 Oct, so it shows 0; check from another network; (b) an expired promotion (“until 9 April”) is still shown, and “3 steps” lists four; (c) a secret value is visible in the site’s public code and should be changed.</div>
 </section>
 
+
+<!-- ============ WHY MOBILE ============ -->
+<section id="mobile">
+  <div class="kicker">Why a mobile-first web app, then an app</div>
+  <h2>The business already lives on the phone</h2>
+  <p class="lead">Next step: a web app built for the phone first and opened from a WhatsApp link; an Expo app later, once clients come back often.</p>
+  <div class="two">
+    <div class="card" style="margin:0"><b>Evidence from today’s operation</b>
+      <ul class="clean">
+        <li><b>~60 operations a day, mostly by chat</b> (team estimate, not yet measured).</li>
+        <li><b>The website ends in “Enviar por WhatsApp”:</b> the client leaves the site to finish.</li>
+        <li><b>Proof of payment is a phone screenshot:</b> camera and gallery are already the upload step.</li>
+        <li><b>Short support hours</b> (Mon–Fri 7–18, Sat 8–14, Sun 12–14): outside them, only self-service works.</li>
+        <li>WhatsApp reaches ~91% of Brazilian internet users aged 16–64 (<a href="https://verint.com/blog/what-countries-are-the-biggest-whatsapp-users">GWI 2020 via Verint</a>; dated, no Peru figure found).</li>
+      </ul></div>
+    <div class="card" style="margin:0"><b>Why web first, app second</b>
+      <ul class="clean">
+        <li><b>No install:</b> a link opens the quote in seconds.</li>
+        <li><b>One codebase</b> fits the four-day MVP; the chat assistant and the form share one service.</li>
+        <li><b>The app earns its place</b> with weekly use: push alerts, camera, biometric login. The repo root is already reserved for Expo.</li>
+      </ul></div>
+  </div>
+  <div class="note warn"><b>Gap:</b> “mainly WhatsApp” is not measured. The web app must count mobile sessions and completion per step from day one.</div>
+</section>
+
 <!-- ============ KAMBISTA ============ -->
 <section id="kambista">
   <div class="kicker">2 · Learning from a similar app</div>
@@ -383,10 +411,12 @@
       <text class="lanel" x="10" y="745">Servicios</text><text class="lanel" x="10" y="759">fiscales</text>
       <rect class="bx per" x="124" y="28" width="108" height="72" rx="11"/><circle class="ppl" cx="134" cy="39" r="3.5"/><path class="ppl" d="M128,54 q6,-9 12,0"/><text class="lb2 " x="178" y="46" text-anchor="middle">Cliente</text><text class="sub2 " x="178" y="60" text-anchor="middle">cotiza y llena</text><text class="sub2 " x="178" y="76" text-anchor="middle">datos, paga y</text><text class="sub2 " x="178" y="90" text-anchor="middle">sube la foto</text>
       <rect class="bx wa" x="258" y="28" width="108" height="72" rx="11"/><text class="lb2 " x="312" y="46" text-anchor="middle">WhatsApp</text><text class="sub2 " x="312" y="60" text-anchor="middle">chat con el</text><text class="sub2 " x="312" y="76" text-anchor="middle">asistente</text><text class="sub2 " x="312" y="90" text-anchor="middle">(esencial)</text>
+      <rect class="bx" x="520" y="28" width="510" height="72" rx="11"/><text class="lb2 " x="775" y="46" text-anchor="middle">Tasas de cambio · referencia API gratuita, 11 oct</text><text class="sub2 " x="775" y="64" text-anchor="middle">1 BRL = 0.689 PEN · 1 BRL = 0.200 USD</text><text class="sub2 " x="775" y="79" text-anchor="middle">1 USD = 5.01 BRL · 1 USD = 3.45 PEN</text><text class="sub2 " x="775" y="94" text-anchor="middle">La tasa Brasper se fija aparte y se guarda en la orden</text>
+      <path class="ln" style="stroke-dasharray:4 4" marker-end="url(#tba)" d="M560,100 V214 H470 V228"/>
       <rect class="bx per" x="1062" y="28" width="108" height="72" rx="11"/><circle class="ppl" cx="1072" cy="39" r="3.5"/><path class="ppl" d="M1066,54 q6,-9 12,0"/><text class="lb2 " x="1116" y="53" text-anchor="middle">Cliente</text><text class="sub2 " x="1116" y="68" text-anchor="middle">recibe el PDF</text><text class="sub2 " x="1116" y="83" text-anchor="middle">por correo</text>
       <rect class="bx aic" x="258" y="129" width="242" height="72" rx="11"/><text class="lb2 ait" x="379" y="146" text-anchor="middle">A1 · Asistente de chat (IA)</text><text class="sub2 ait" x="379" y="162" text-anchor="middle">habla en WhatsApp y dentro de la Web App</text><text class="sub2 ait" x="379" y="176" text-anchor="middle">llena los mismos datos que el formulario</text><text class="sub2 ait" x="379" y="192" text-anchor="middle">pasa a una persona si hace falta</text>
       <rect class="bx new" x="124" y="228" width="248" height="80" rx="11"/><text class="lb2 " x="248" y="257" text-anchor="middle">Web App</text><text class="sub2 " x="248" y="272" text-anchor="middle">formulario o asistente integrado</text><text class="sub2 " x="248" y="287" text-anchor="middle">recibe datos y foto del voucher</text>
-      <rect class="bx new" x="392" y="228" width="108" height="80" rx="11"/><text class="lb2 " x="446" y="257" text-anchor="middle">Base de datos</text><text class="sub2 " x="446" y="272" text-anchor="middle">una ficha por venta</text><text class="sub2 " x="446" y="287" text-anchor="middle">(IV)</text>
+      <rect class="bx new" x="392" y="228" width="108" height="80" rx="11"/><text class="lb2 " x="446" y="257" text-anchor="middle">Base de datos</text><text class="sub2 " x="446" y="272" text-anchor="middle">tablas orders</text><text class="sub2 " x="446" y="287" text-anchor="middle">e invoices</text>
       <rect class="bx new" x="526" y="228" width="242" height="80" rx="11"/><text class="lb2 " x="647" y="250" text-anchor="middle">VIEW</text><text class="sub2 " x="647" y="264" text-anchor="middle">pendientes y aprobadas</text><text class="sub2 " x="647" y="280" text-anchor="middle">la persona cambia el estado aquí</text><text class="sub2 " x="647" y="294" text-anchor="middle">y marca para exportar</text>
       <rect class="bx" x="392" y="335" width="108" height="72" rx="11"/><text class="lb2 " x="446" y="352" text-anchor="middle">Banco</text><text class="sub2 " x="446" y="368" text-anchor="middle">depósitos del</text><text class="sub2 " x="446" y="382" text-anchor="middle">cliente (consulta</text><text class="sub2 " x="446" y="398" text-anchor="middle">manual)</text>
       <rect class="bx per" x="526" y="335" width="108" height="72" rx="11"/><circle class="ppl" cx="536" cy="346" r="3.5"/><path class="ppl" d="M530,361 q6,-9 12,0"/><text class="lb2 " x="580" y="352" text-anchor="middle">Validador</text><text class="sub2 " x="580" y="368" text-anchor="middle">revisa el banco</text><text class="sub2 " x="580" y="382" text-anchor="middle">≈ 15 min y aprueba</text><text class="sub2 " x="580" y="398" text-anchor="middle">en la VIEW</text>
@@ -430,7 +460,7 @@
   <div class="tw"><table>
     <thead><tr><th>#</th><th>Who</th><th>What happens</th></tr></thead>
     <tbody>
-      <tr><td class="n">1</td><td>Client</td><td>Quotes with the current exchange rate, in one of three ways: the Web App form, a WhatsApp chat, or the assistant inside the Web App (the same assistant as on WhatsApp); or by talking to a human seller, as today (large or negotiated amounts). See <a href="#screens">What people see</a>.</td></tr>
+      <tr><td class="n">1</td><td>Client</td><td>Quotes with the current exchange rate (e.g. 1 BRL = 0.689 PEN on the free API; Brasper sets its own), in one of three ways: the Web App form, a WhatsApp chat, or the assistant inside the Web App (the same assistant as on WhatsApp); or by talking to a human seller, as today (large or negotiated amounts). See <a href="#screens">What people see</a>.</td></tr>
       <tr><td class="n">2</td><td>Client</td><td>Gives the source of funds, source account, operation number and destination account, pays, and sends the proof photo, by form or by chat. All three ways save the same data in the database, one record per sale (“IV”, Intención de Venta).</td></tr>
       <tr><td class="n">3</td><td>Validator</td><td>Sees the pending operations in the VIEW, checks the bank (target about 15 minutes) and approves.</td></tr>
       <tr><td class="n">4</td><td>Operator</td><td>Marks the approved operations in the VIEW and exports a file of orders.</td></tr>
@@ -459,7 +489,7 @@
         <div class="fld"><small>Tú envías</small><b>500.00 &nbsp;BRL ▾</b></div>
         <div class="fld"><small>Destinatario recibe</small><b>— &nbsp;PEN ▾</b></div>
         <div class="kv"><span>Comisión</span><b>—</b></div><div class="kv"><span>Total a enviar</span><b>—</b></div><div class="kv"><span>Tasa de cambio</span><b>1 BRL = — PEN</b></div>
-        <div class="hint blue">Tasa asegurada por 15 min</div>
+        <div class="hint blue">El tipo de cambio podría actualizarse a las 17:18</div>
         <div class="btn">Continuar</div><a class="btn wa" href="#flow-wa">¿Dudas? Habla por WhatsApp</a><a class="btn ai" href="#flow-app">🤖 Hablar con el asistente</a><a class="btn hu" href="#flow-human">👤 Hablar con una persona</a>
       </div><p class="caption">Same calculator as the site. The help buttons jump to the other ways in (tap them to see each flow).</p></div>
 
@@ -763,6 +793,80 @@
   <p class="small">The VIEW replaces searching through chats. The validator checks the photo and the bank and sets the status; the operator marks and exports; billing results appear here too. Sample rows are made up.</p>
 </section>
 
+
+<!-- ============ RATES ============ -->
+<section id="rates">
+  <div class="kicker">Exchange rates</div>
+  <h2>Where the rates come from, and what “17:18” means</h2>
+  <p class="lead">Two numbers: the <b>Brasper rate</b> is what the client pays and is set by the business; the <b>market reference</b> comes from a free API and is used to check it and as a fallback.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Free API (tested 11 Oct 2026)</th><th>BRL</th><th>PEN</th><th>USD</th><th>Refresh</th></tr></thead>
+    <tbody>
+      <tr><td><b><a href="https://www.exchangerate-api.com/docs/free">open.er-api.com</a></b> <span class="tag t-board">use</span><br><small>No key, CORS open, attribution required</small></td><td>✔</td><td>✔</td><td>✔</td><td>Daily; gives last and next update time</td></tr>
+      <tr><td><b><a href="https://github.com/fawazahmed0/exchange-api">fawazahmed0 currency-api</a></b> <span class="tag t-new">backup</span></td><td>✔</td><td>✔</td><td>✔</td><td>Daily</td></tr>
+      <tr><td><b><a href="https://frankfurter.dev">Frankfurter</a></b> <span class="tag t-team">no</span></td><td>✔</td><td>✘</td><td>✔</td><td>No PEN, so it cannot serve the main route</td></tr>
+    </tbody>
+  </table></div>
+  <div class="two" style="margin-top:18px">
+    <div class="card" style="margin:0"><b>The “17:18” message</b>
+      <p>A daily API cannot give an intraday time, so the time comes from Brasper’s own rate refresh (a server cache, not a table): next refresh = last refresh + interval.</p>
+      <div class="screen" style="min-height:0;border-width:5px;max-width:260px"><div class="kv"><span>Tasa de cambio</span><b>1 BRL = 0.658 PEN</b></div>
+      <div class="hint blue">El tipo de cambio podría actualizarse a las 17:18</div></div>
+      <p class="small">The rate pressed at “Continuar” is frozen in the order (<code>rate</code>). If no rate loads, show “Tasa no disponible, habla con una persona”, never 0. Show Lima time (UTC-5).</p></div>
+    <div class="card" style="margin:0"><b>Live check from this page</b>
+      <div class="kv" style="margin-top:8px"><span>1 BRL in PEN</span><b id="liveRate">…</b></div>
+      <div class="kv"><span>1 BRL in USD</span><b id="liveUsd">…</b></div>
+      <div class="kv"><span>Source updated</span><b id="liveWhen">…</b></div>
+      <p class="small" id="liveNote">Loading from open.er-api.com…</p></div>
+  </div>
+</section>
+
+<!-- ============ DATA MODEL ============ -->
+<section id="datamodel">
+  <div class="kicker">Data model · two tables</div>
+  <h2>One table for orders, one for the Fact script</h2>
+  <p class="lead">The team’s board (<i>Operaciones &gt; Contabilidad</i>) is already one row per order. The MVP keeps only what is needed to validate, bill and send the PDF. Everything else (discounts, second proof, channel, rate history) waits.</p>
+  <div class="two">
+    <div>
+      <h3 style="margin-top:0"><code>orders</code> <span class="tag t-new">VIEW and Web App</span></h3>
+      <div class="tw"><table>
+        <thead><tr><th>Field</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td><code>order_id</code> <b>PK, unique</b></td><td>Identity of the order everywhere</td></tr>
+          <tr><td><code>created_at</code> (UTC)</td><td>Order and invoice date</td></tr>
+          <tr><td><code>status</code></td><td>pending, approved, exported</td></tr>
+          <tr><td><code>client_name</code>, <code>doc_type</code>, <code>doc_number</code>, <code>email</code></td><td>Invoice client and PDF delivery</td></tr>
+          <tr><td><code>destination_account</code></td><td>Bank + currency, e.g. “Nubank (BRL)”</td></tr>
+          <tr><td><code>send_amount</code>, <code>send_currency</code></td><td>What the client pays</td></tr>
+          <tr><td><code>receive_amount</code>, <code>receive_currency</code></td><td>What arrives</td></tr>
+          <tr><td><code>rate</code></td><td>Rate frozen at quote (e.g. 1.425, 0.66)</td></tr>
+          <tr><td><code>commission</code>, <code>tax</code></td><td>Taxable value and 18% tax (board: comisión, impuesto). Total = commission + tax</td></tr>
+          <tr><td><code>funds_source</code>, <code>operation_no</code></td><td>Compliance data the client gives</td></tr>
+          <tr><td><code>payment_proof_url</code></td><td>The validator’s evidence</td></tr>
+          <tr><td><code>validated_by</code>, <code>validated_at</code></td><td>Who approved and when</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div>
+      <h3 style="margin-top:0"><code>invoices</code> <span class="tag t-board">written only by Fact</span></h3>
+      <div class="tw"><table>
+        <thead><tr><th>Field</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td><code>order_id</code> <b>PK, unique, = orders.order_id</b></td><td><b>Idempotency:</b> one invoice per order, ever</td></tr>
+          <tr><td><code>series</code>, <code>number</code> <b>unique together</b></td><td>e.g. B001-00000003, no repeats</td></tr>
+          <tr><td><code>status</code></td><td>reserved, sent, accepted, rejected</td></tr>
+          <tr><td><code>provider_message</code></td><td>Why a rejection happened</td></tr>
+          <tr><td><code>xml_url</code>, <code>pdf_url</code></td><td>Official XML and the PDF built from it</td></tr>
+          <tr><td><code>emailed_at</code></td><td>Proves the PDF was sent</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+  <div class="note info"><b>Idempotent by design:</b> Fact looks up <code>order_id</code> before doing anything. No row: reserve a number and send. <b>accepted</b>: skip. <b>sent</b>: ask the provider for the result, do not send again. <b>rejected</b>: retry only after a fix. Re-importing the same file, or running it twice, never makes a second invoice.</div>
+  <p class="small">Left out on purpose: issuer (derived from the send currency: PEN → INGENITECH S.A.C. in S/, BRL → Brasper 21 in R$), document type and environment (Fact settings), IGV rate (18% setting), discount % (already inside the commission), second proof and channel.</p>
+  <div class="note warn"><b>Found in the board and invoice screenshots:</b> invoice numbers B001-00000001 and -02 repeat (hence the unique key); Brazilian rows also show an 18% tax and a SUNAT number; the invoice panel shows two times for one event (12:26 p. m. issued, 07:26 a. m. in the history), so store UTC and show Lima; two rows are one cent off from rounding.</div>
+</section>
+
 <!-- ============ BILLING ============ -->
 <section id="billing">
   <div class="kicker">5 · Billing script (Fact)</div>
@@ -812,6 +916,19 @@
       <tr><td class="n">6</td><td>Report</td><td>The result of every order (invoice number or error) is saved and shown in the VIEW, and the daily consolidated file is produced. The Dashboard is not involved.</td></tr>
     </tbody>
   </table></div>
+
+
+  <h3 style="margin-top:24px">What Fact receives for each order</h3>
+  <p>One <code>orders</code> row per order, exactly the fields of the first table, plus fixed settings (issuer by currency, 18% tax, document type). That is the whole input. Modeled on the boleta detail the team uses today (B001-00000003, provider APISUNAT):</p>
+<pre style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;overflow-x:auto;font-size:13px"><code>{
+  "order_id": "BR-0003",                       // unique, idempotency key
+  "created_at": "2026-10-10T17:26:00Z",        // UTC; shown in Lima time
+  "client": { "name": "MICHAEL CHECASACA MUÑOZ", "doc_type": "DNI",
+              "doc_number": "48602704", "email": "client@example.com" },
+  "commission": 11.98, "tax": 2.16,            // total 14.14 = 11.98 + 2.16
+  "send_currency": "PEN"                       // → issuer INGENITECH S.A.C., S/
+}</code></pre>
+  <p class="small">Fact checks <code>total = commission + tax</code> before sending, and writes back one <code>invoices</code> row. The screenshot names the provider APISUNAT while the diagram says KeyFácil: confirm which one Peru uses.</p>
 
   <h3 style="margin-top:20px">If something goes wrong</h3>
   <div class="tw"><table>
@@ -920,7 +1037,9 @@
       <li>Who validates payments, who operates the VIEW, and who exports from the Dashboard and imports into Fact? Are they the same people? Who validates outside business hours (Mon–Fri 7–18, Sat 8–14, Sun 12–14)?</li>
       <li>Does Brasper already have an official WhatsApp Business account, and who can set it up? Does the client need a login in the Web App, or just a link?</li>
       <li>Are the 7 people and ~60 operations a day measured or estimated?</li>
-      <li>Is the rates service the same one that failed on 10 Oct?</li>
+      <li>Is the rates service the same one that failed on 10 Oct? Who sets the Brasper rate and the commission/variable discount (see <a href="#rates">Rates</a>), and how often?</li>
+      <li>Which tax applies to the Brazilian rows? The board shows the same 18% “impuesto” in R$ as in S/ (see <a href="#datamodel">Data model</a>).</li>
+      <li>Which SUNAT document type goes to clients with a CPF (no DNI/CE/RUC)? (The accountant.)</li>
       <li>Is the optional rejection explainer (A2) needed at all, once real rejections from the test mode are known?</li>
     </ol>
   </div>
@@ -942,6 +1061,17 @@
     const t = document.getElementById('aiToggle'), ls = document.querySelectorAll('#tobeSvg .ai-layer');
     if (!t || !ls.length) return;
     t.addEventListener('change', () => { ls.forEach(l => { l.style.display = t.checked ? '' : 'none'; }); });
+  })();
+
+  (async function () {
+    const f = id => document.getElementById(id);
+    try {
+      const r = await fetch('https://open.er-api.com/v6/latest/BRL'); const d = await r.json();
+      if (d.result !== 'success') throw 0;
+      const t = new Date(d.time_last_update_unix * 1000);
+      f('liveRate').textContent = d.rates.PEN.toFixed(4); f('liveUsd').textContent = d.rates.USD.toFixed(4);
+      f('liveWhen').textContent = t.toLocaleString('es-PE', { timeZone: 'America/Lima', dateStyle: 'short', timeStyle: 'short' }) + ' (Lima)'; f('liveNote').textContent = 'Live from open.er-api.com. Rates by Exchange Rate API.';
+    } catch (e) { f('liveRate').textContent = f('liveUsd').textContent = f('liveWhen').textContent = 'no disponible'; f('liveNote').textContent = 'The live call failed: this is exactly the case the screen must handle without showing 0.'; }
   })();
 </script>
 </body>
