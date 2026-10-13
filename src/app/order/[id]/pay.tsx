@@ -1,6 +1,6 @@
 import {Column} from "@expo/ui";
 import {useLocalSearchParams, useRouter} from "expo-router";
-import {useAtomValue, useSetAtom} from "jotai";
+import {useSetAtom} from "jotai";
 import {useEffect, useState} from "react";
 import {Button} from "@/components/atoms/Button/Button";
 import {Chip} from "@/components/atoms/Chip/Chip";
@@ -12,11 +12,9 @@ import {Screen} from "@/components/templates/Screen/Screen";
 import {PATHS} from "@/constants/routes";
 import {useOrder} from "@/hooks/useOrder";
 import {useT} from "@/hooks/useT";
-import {track} from "@/services/analytics";
 import {api, toApiError} from "@/services/api";
 import {reportError} from "@/services/monitoring";
 import {activeOrderIdAtom} from "@/stores/order";
-import {sessionAtom} from "@/stores/session";
 import {SPACING} from "@/theme/spacing";
 import {useTheme} from "@/theme/useTheme";
 
@@ -26,17 +24,9 @@ export default function PayScreen() {
     const {muted} = useTheme();
     const {id} = useLocalSearchParams<{id: string}>();
     const {data: order, loading} = useOrder(id ?? null);
-    const uid = useAtomValue(sessionAtom)?.uid ?? null;
     const setActive = useSetAtom(activeOrderIdAtom);
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
-    // biome-ignore lint/correctness/useExhaustiveDependencies: one funnel event per order, not per snapshot
-    useEffect(() => {
-        if (order) {
-            track(uid, "pay_viewed", order.channel, {orderId: order.orderId});
-        }
-    }, [order?.orderId]);
 
     // Once proof is in (or the order ended) the payment step is behind us.
     useEffect(() => {
@@ -82,12 +72,7 @@ export default function PayScreen() {
                         testID="pay-done"
                         title={t("pay.done")}
                         disabled={busy}
-                        onPress={() => {
-                            track(uid, "paid_tapped", order.channel, {
-                                orderId: order.orderId,
-                            });
-                            router.push(PATHS.proof(order.orderId));
-                        }}
+                        onPress={() => router.push(PATHS.proof(order.orderId))}
                     />
                     <Button
                         testID="pay-cancel"

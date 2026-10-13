@@ -1,7 +1,7 @@
 import {Column, Host, Row, Spacer} from "@expo/ui";
 import {useRouter} from "expo-router";
 import {useAtomValue, useSetAtom} from "jotai";
-import {useCallback, useEffect, useMemo} from "react";
+import {useCallback, useMemo} from "react";
 import {
     FlatList,
     KeyboardAvoidingView,
@@ -19,7 +19,6 @@ import {ChatMessageRow} from "@/components/organisms/ChatMessageRow/ChatMessageR
 import {ChatSummary} from "@/components/organisms/ChatSummary/ChatSummary";
 import {PATHS} from "@/constants/routes";
 import {useT} from "@/hooks/useT";
-import {track} from "@/services/analytics";
 import {
     chatBusyAtom,
     chatDegradedAtom,
@@ -29,7 +28,6 @@ import {
     sendMessageAtom,
 } from "@/stores/chat";
 import {lockedQuoteAtom} from "@/stores/quote";
-import {sessionAtom} from "@/stores/session";
 import {SPACING} from "@/theme/spacing";
 import {ICON_SIZE} from "@/theme/typography";
 import {useTheme} from "@/theme/useTheme";
@@ -49,16 +47,9 @@ export default function AssistantScreen() {
     const busy = useAtomValue(chatBusyAtom);
     const degraded = useAtomValue(chatDegradedAtom);
     const hasQuote = useAtomValue(lockedQuoteAtom) !== null;
-    const uid = useAtomValue(sessionAtom)?.uid ?? null;
     const send = useSetAtom(sendMessageAtom);
     const runAction = useSetAtom(runActionAtom);
     const reset = useSetAtom(resetChatAtom);
-
-    useEffect(() => {
-        if (uid) {
-            track(uid, "assistant_opened", "assistant");
-        }
-    }, [uid]);
 
     const onAction = useCallback(
         (action: QuickActionId) => {

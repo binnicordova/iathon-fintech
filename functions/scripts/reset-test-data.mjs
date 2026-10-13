@@ -19,7 +19,6 @@ const COLLECTIONS = [
     "invoices",
     "handoffs",
     "clients",
-    "events",
     "counters",
     "rateLimits",
 ];

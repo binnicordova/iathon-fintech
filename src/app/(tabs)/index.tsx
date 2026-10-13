@@ -1,7 +1,7 @@
 import {Column, Row} from "@expo/ui";
 import {useRouter} from "expo-router";
 import {useAtomValue, useSetAtom} from "jotai";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {Linking} from "react-native";
 import {Chip} from "@/components/atoms/Chip/Chip";
 import {Text} from "@/components/atoms/Text/Text";
@@ -13,11 +13,9 @@ import {PATHS} from "@/constants/routes";
 import {formatNumber} from "@/domain/money";
 import {QuoteError} from "@/domain/pricing";
 import {useLanguage, useT} from "@/hooks/useT";
-import {track} from "@/services/analytics";
 import {type ApiError, toApiError} from "@/services/api";
 import {reportError} from "@/services/monitoring";
 import {liveQuoteAtom, lockQuoteAtom} from "@/stores/quote";
-import {sessionAtom} from "@/stores/session";
 import {SPACING} from "@/theme/spacing";
 import {useTheme} from "@/theme/useTheme";
 
@@ -28,18 +26,11 @@ export default function QuoteScreen() {
     const language = useLanguage();
     const router = useRouter();
     const {muted} = useTheme();
-    const uid = useAtomValue(sessionAtom)?.uid ?? null;
     const live = useAtomValue(liveQuoteAtom);
     const lockQuote = useSetAtom(lockQuoteAtom);
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [requiresHuman, setRequiresHuman] = useState(false);
-
-    useEffect(() => {
-        if (uid) {
-            track(uid, "quote_viewed");
-        }
-    }, [uid]);
 
     const messageFor = (failure: ApiError): string => {
         switch (failure.code) {
@@ -60,7 +51,6 @@ export default function QuoteScreen() {
         setRequiresHuman(false);
         try {
             await lockQuote("form");
-            track(uid, "quote_continue");
             router.push(PATHS.DATA);
         } catch (caught) {
             if (caught instanceof QuoteError) {

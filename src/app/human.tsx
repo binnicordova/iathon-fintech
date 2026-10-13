@@ -9,13 +9,11 @@ import {QueueCard} from "@/components/organisms/QueueCard/QueueCard";
 import {Screen} from "@/components/templates/Screen/Screen";
 import {PATHS} from "@/constants/routes";
 import {useLanguage, useT} from "@/hooks/useT";
-import {track} from "@/services/analytics";
 import {api, toApiError} from "@/services/api";
 import {reportError} from "@/services/monitoring";
 import {queueAtom} from "@/stores/handoff";
 import {activeOrderIdAtom} from "@/stores/order";
 import {lockedQuoteAtom} from "@/stores/quote";
-import {sessionAtom} from "@/stores/session";
 import {useTheme} from "@/theme/useTheme";
 
 /**
@@ -28,7 +26,6 @@ export default function HumanScreen() {
     const language = useLanguage();
     const router = useRouter();
     const {muted} = useTheme();
-    const uid = useAtomValue(sessionAtom)?.uid ?? null;
     const orderId = useAtomValue(activeOrderIdAtom);
     const quote = useAtomValue(lockedQuoteAtom);
     const [queue, setQueue] = useAtom(queueAtom);
@@ -65,7 +62,6 @@ export default function HumanScreen() {
                 language,
                 channel: "human",
             });
-            track(uid, "human_requested", "human");
             setQueue(info);
         } catch (caught) {
             reportError(caught, "requestHuman");

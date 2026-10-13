@@ -10,7 +10,6 @@ import {
 import {runTool} from "@/assistant/tools";
 import type {ChatCard, ChatMessage, QuickActionId} from "@/assistant/types";
 import {translate} from "@/i18n";
-import {track} from "@/services/analytics";
 import {api} from "@/services/api";
 import {RECORD_AI_CONTENT, reportError, Sentry} from "@/services/monitoring";
 import {languageAtom} from "@/stores/language";
@@ -20,7 +19,6 @@ import {
     DraftIncompleteError,
 } from "@/stores/order";
 import {lockedQuoteAtom} from "@/stores/quote";
-import {sessionAtom} from "@/stores/session";
 
 export const chatMessagesAtom = atom<ChatMessage[]>([]);
 export const chatHistoryAtom = atom<BaseMessage[]>([]);
@@ -162,7 +160,6 @@ export const runActionAtom = atom(
     async (get, set, action: QuickActionId) => {
         const language = get(languageAtom);
         const deps = createDefaultDeps();
-        const uid = get(sessionAtom)?.uid ?? null;
         const t = (
             key: Parameters<typeof translate>[1],
             params?: Record<string, string | number>
@@ -215,7 +212,6 @@ export const runActionAtom = atom(
                     {reason: "The client asked for a person."},
                     deps
                 );
-                track(uid, "human_requested", "assistant");
                 say(
                     set,
                     t("assistant.humanHandoff"),
@@ -228,9 +224,6 @@ export const runActionAtom = atom(
                 set(chatBusyAtom, true);
                 try {
                     const order = await set(createOrderAtom);
-                    track(uid, "data_completed", "assistant", {
-                        orderId: order.orderId,
-                    });
                     say(
                         set,
                         t("assistant.orderCreated", {id: order.orderId}),
@@ -262,7 +255,6 @@ export const runActionAtom = atom(
                     say(set, t("assistant.noOrder"), [], ["human"]);
                     return;
                 }
-                track(uid, "paid_tapped", "assistant", {orderId});
                 say(
                     set,
                     t("assistant.proofCard"),
@@ -295,9 +287,6 @@ export const runActionAtom = atom(
 /** The proof card reports back here once the photo and number are saved. */
 export const proofSubmittedAtom = atom(null, (get, set, orderId: string) => {
     const language = get(languageAtom);
-    track(get(sessionAtom)?.uid ?? null, "proof_submitted", "assistant", {
-        orderId,
-    });
     say(
         set,
         translate(language, "assistant.proofSaved"),

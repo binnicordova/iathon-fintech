@@ -1,7 +1,6 @@
 import {Column} from "@expo/ui";
 import {useLocalSearchParams, useRouter} from "expo-router";
-import {useAtomValue} from "jotai";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {Button} from "@/components/atoms/Button/Button";
 import {Chip} from "@/components/atoms/Chip/Chip";
 import {Text} from "@/components/atoms/Text/Text";
@@ -16,10 +15,8 @@ import {formatMoney, formatRate} from "@/domain/money";
 import {maskAccount} from "@/domain/validators";
 import {useOrder} from "@/hooks/useOrder";
 import {useLanguage, useT} from "@/hooks/useT";
-import {track} from "@/services/analytics";
 import {reportError} from "@/services/monitoring";
 import {downloadReceipt} from "@/services/receipt";
-import {sessionAtom} from "@/stores/session";
 import {SPACING} from "@/theme/spacing";
 import {useTheme} from "@/theme/useTheme";
 
@@ -30,19 +27,8 @@ export default function StatusScreen() {
     const {muted} = useTheme();
     const {id} = useLocalSearchParams<{id: string}>();
     const {data: order, loading} = useOrder(id ?? null);
-    const uid = useAtomValue(sessionAtom)?.uid ?? null;
     const [receiptError, setReceiptError] = useState(false);
     const [downloading, setDownloading] = useState(false);
-
-    // biome-ignore lint/correctness/useExhaustiveDependencies: one funnel event per order status, not per snapshot
-    useEffect(() => {
-        if (order) {
-            track(uid, "status_viewed", order.channel, {
-                orderId: order.orderId,
-                status: order.status,
-            });
-        }
-    }, [order?.orderId, order?.status]);
 
     if (!order) {
         return (
@@ -62,9 +48,6 @@ export default function StatusScreen() {
         setReceiptError(false);
         try {
             await downloadReceipt(order.orderId);
-            track(uid, "receipt_downloaded", order.channel, {
-                orderId: order.orderId,
-            });
         } catch (error) {
             reportError(error, "receipt");
             setReceiptError(true);

@@ -20,12 +20,11 @@ One codebase at the repo root, built from the [`expo-go-boilerplate`](https://ww
 | In-app assistant, same service and steps | **Assistant** tab: a LangGraph agent with Gemma, one question at a time, rate card / payment / proof / status drawn by the app (`src/assistant/*`) |
 | Human attention flow | "Hablar con una persona": queue position + estimated wait, leave for the assistant or the form any time (`src/app/human.tsx`) |
 | VIEW for the team | **Team** tab: staff sign-in, filters, proof photo, approve / reject, mark + export orders CSV, run Fact |
-| `orders` / `invoices` tables | Firestore `orders`, `invoices` (+ `quotes`, `handoffs`, `clients`, `events`), written **only** by Cloud Functions |
+| `orders` / `invoices` tables | Firestore `orders`, `invoices` (+ `quotes`, `handoffs`, `clients`), written **only** by Cloud Functions |
 | Exchange-rate provider | `open.er-api.com` primary, `fawazahmed0` backup, cached by our server; Brasper rate = market − spread; "next update" = last refresh + interval; never shows 0 |
 | Fact billing script | Idempotent test-mode run: reserve number → XML → PDF built from the XML → result on the order; client downloads the PDF |
 | Hours, fees, tax | Mon–Fri 7–18 / Sat 8–14 / Sun 12–14 (Lima); commission + 18% tax; "outside hours" message on the pay screen |
 | ES · PT · EN | Whole UI and the assistant |
-| "Count completion per step" | One tiny `events` doc per funnel step + a Sentry breadcrumb |
 
 ### Run it
 
@@ -114,14 +113,14 @@ gcloud auth application-default login
 node functions/scripts/grant-staff.mjs you@brasper.com admin --password '<choose one>'   # creates the user, then sets the role
 ```
 
-**Reset the test data before launch.** Testing leaves orders, quotes, a client, funnel events, rate-limit counters, proof photos and anonymous users in production, and the order counter would start at `BR-0002`. The script lists what it would remove and deletes nothing without `--yes`; it keeps `config/*` and every user that has an email:
+**Reset the test data before launch.** Testing leaves orders, quotes, a client, rate-limit counters, proof photos and anonymous users in production, and the order counter would start at `BR-0002`. The script lists what it would remove and deletes nothing without `--yes`; it keeps `config/*` and every user that has an email:
 
 ```bash
 bun run reset:test-data                           # dry run
 bun run reset:test-data -- --yes --anonymous-users
 ```
 
-**Synthetic demo data.** `bun run seed:demo` adds 12 made-up orders in every status (with proof photos), funnel events and hand-over tickets, all marked `synthetic: true` and using `example.com` emails, so the Team tab is not empty in the demo. Run it after `reset:test-data`; it refuses to run twice without `--force`. Invoices are not seeded: press Fact on the approved orders.
+**Synthetic demo data.** `bun run seed:demo` adds 12 made-up orders in every status (with proof photos), and hand-over tickets, all marked `synthetic: true` and using `example.com` emails, so the Team tab is not empty in the demo. Run it after `reset:test-data`; it refuses to run twice without `--force`. Invoices are not seeded: press Fact on the approved orders.
 
 **Gemma credits.** The Gemini API answered `402 prepayment credits depleted` for this project when tested, so live Gemma replies need credits (or a free-tier key) in [AI Studio](https://ai.studio/projects). Until then the app runs in basic mode. Once fixed, no redeploy is needed for the same project; to use a different key:
 

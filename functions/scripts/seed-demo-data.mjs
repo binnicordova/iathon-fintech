@@ -1,5 +1,5 @@
 // Fills Firestore (and Storage, for proof photos) with SYNTHETIC orders so the
-// team VIEW, the filters, the CSV export and the funnel counts have something to
+// team VIEW, the filters and the CSV export have something to
 // show. Every record uses example.com emails and made-up people, and carries
 // `synthetic: true`.
 //
@@ -215,36 +215,6 @@ for (const [personIndex, amount, status] of PLAN) {
 }
 await counter.set({seq}, {merge: true});
 
-// Funnel events: each step loses a few clients, as a real funnel does.
-const FUNNEL = [
-    ["quote_viewed", 40],
-    ["quote_continue", 26],
-    ["data_completed", 19],
-    ["pay_viewed", 16],
-    ["paid_tapped", 13],
-    ["proof_submitted", 10],
-    ["status_viewed", 9],
-    ["assistant_opened", 14],
-    ["human_requested", 3],
-];
-const batch = db.batch();
-let events = 0;
-for (const [name, count] of FUNNEL) {
-    for (let i = 0; i < count; i += 1) {
-        batch.set(db.collection("events").doc(), {
-            uid: `seed-visitor-${(i % 18) + 1}`,
-            name,
-            channel: name === "assistant_opened" || i % 3 === 0 ? "assistant" : "form",
-            platform: ["web", "ios", "android"][i % 3],
-            at: iso(Math.floor(Math.random() * 6 * 24 * 60)),
-            props: {},
-            synthetic: true,
-        });
-        events += 1;
-    }
-}
-await batch.commit();
-
 const HANDOFFS = [
     ["waiting", 14, "Client wants to send R$ 18,000 and asks for a better rate."],
     ["waiting", 6, "Doubt about the bank that receives in Peru; has a saved quote."],
@@ -266,4 +236,4 @@ for (const [status, minutesAgo, summary] of HANDOFFS) {
     });
 }
 
-console.log(`Seeded ${PLAN.length} orders (counter now ${seq}), ${events} events, ${HANDOFFS.length} handoffs${emulated ? " (emulator)" : ""}.`);
+console.log(`Seeded ${PLAN.length} orders (counter now ${seq}), ${HANDOFFS.length} handoffs${emulated ? " (emulator)" : ""}.`);

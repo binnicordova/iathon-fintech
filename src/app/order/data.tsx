@@ -12,7 +12,6 @@ import {PATHS} from "@/constants/routes";
 import {formatLimaClock} from "@/domain/hours";
 import {formatMoney, formatRate} from "@/domain/money";
 import {useLanguage, useT} from "@/hooks/useT";
-import {track} from "@/services/analytics";
 import {type ApiError, toApiError} from "@/services/api";
 import {reportError} from "@/services/monitoring";
 import {
@@ -21,7 +20,6 @@ import {
     DraftIncompleteError,
 } from "@/stores/order";
 import {lockedQuoteAtom} from "@/stores/quote";
-import {sessionAtom} from "@/stores/session";
 import {SPACING} from "@/theme/spacing";
 import {type DraftErrors, validateClientDraft} from "@/utils/clientDraft";
 
@@ -35,7 +33,6 @@ export default function DataScreen() {
         storedQuote && new Date(storedQuote.expiresAt).getTime() > Date.now()
             ? storedQuote
             : null;
-    const uid = useAtomValue(sessionAtom)?.uid ?? null;
     const [draft, setDraft] = useAtom(clientDraftAtom);
     const createOrder = useSetAtom(createOrderAtom);
     const [errors, setErrors] = useState<DraftErrors>({});
@@ -87,7 +84,6 @@ export default function DataScreen() {
         submitted.current = true;
         try {
             const order = await createOrder();
-            track(uid, "data_completed", "form", {orderId: order.orderId});
             router.replace(PATHS.pay(order.orderId));
         } catch (caught) {
             submitted.current = false;
