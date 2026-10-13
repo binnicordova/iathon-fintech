@@ -121,6 +121,8 @@ bun run reset:test-data                           # dry run
 bun run reset:test-data -- --yes --anonymous-users
 ```
 
+**Synthetic demo data.** `bun run seed:demo` adds 12 made-up orders in every status (with proof photos), funnel events and hand-over tickets, all marked `synthetic: true` and using `example.com` emails, so the Team tab is not empty in the demo. Run it after `reset:test-data`; it refuses to run twice without `--force`. Invoices are not seeded: press Fact on the approved orders.
+
 **Gemma credits.** The Gemini API answered `402 prepayment credits depleted` for this project when tested, so live Gemma replies need credits (or a free-tier key) in [AI Studio](https://ai.studio/projects). Until then the app runs in basic mode. Once fixed, no redeploy is needed for the same project; to use a different key:
 
 ```bash

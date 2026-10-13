@@ -67,6 +67,7 @@
         "functions:build": "npm --prefix functions run build",
         "emulators": "firebase emulators:start --only functions,firestore,auth,storage",
         "e2e:emulator": "node functions/scripts/e2e-emulator.mjs",
+        "seed:demo": "node functions/scripts/seed-demo-data.mjs",
         "reset:test-data": "node functions/scripts/reset-test-data.mjs",
         "mock:gemma": "node functions/scripts/mock-gemma.mjs",
         "deploy:backend": "firebase deploy --only firestore,storage,functions",
