@@ -23,7 +23,6 @@ const SYMBOL: Record<IconName, SFSymbol> = {
     send: "paperplane.fill",
     quote: "dollarsign.arrow.circlepath",
     orders: "list.bullet.rectangle",
-    team: "person.badge.shield.checkmark",
     close: "xmark",
     clock: "clock",
     download: "arrow.down.circle",

@@ -5,8 +5,8 @@
 //   node scripts/reset-test-data.mjs --yes           # Firestore + proof photos
 //   node scripts/reset-test-data.mjs --yes --anonymous-users
 //
-// Kept on purpose: config/* (prices, payment accounts, the rate cache) and every
-// staff user (users with an email). Against production it needs Application
+// Kept on purpose: config/* (prices, payment accounts, the rate cache) and any
+// user that has an email. Against production it needs Application
 // Default Credentials for the project: gcloud auth application-default login
 import {applicationDefault, initializeApp} from "firebase-admin/app";
 import {getAuth} from "firebase-admin/auth";
@@ -16,7 +16,6 @@ import {getStorage} from "firebase-admin/storage";
 const COLLECTIONS = [
     "orders",
     "quotes",
-    "invoices",
     "handoffs",
     "clients",
     "counters",
@@ -61,7 +60,7 @@ if (withAnonymousUsers) {
     const anonymous = [];
     let page = await getAuth().listUsers(1000);
     for (;;) {
-        // Only users with no email and no provider: staff and any signed-up user stay.
+        // Only users with no email and no provider: any signed-up user stays.
         anonymous.push(
             ...page.users.filter(
                 (user) => !user.email && user.providerData.length === 0

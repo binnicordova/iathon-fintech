@@ -23,7 +23,6 @@ const SYMBOL: Record<IconName, ImageSourcePropType> = {
     send: require("@expo/material-symbols/send.xml"),
     quote: require("@expo/material-symbols/currency_exchange.xml"),
     orders: require("@expo/material-symbols/receipt_long.xml"),
-    team: require("@expo/material-symbols/shield_person.xml"),
     close: require("@expo/material-symbols/close.xml"),
     clock: require("@expo/material-symbols/schedule.xml"),
     download: require("@expo/material-symbols/download.xml"),

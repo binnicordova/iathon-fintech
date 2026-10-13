@@ -14,7 +14,6 @@ const TABS: Record<string, {icon: IconName; label: TranslationKey}> = {
     index: {icon: "quote", label: "tab.quote"},
     assistant: {icon: "assistant", label: "tab.assistant"},
     orders: {icon: "orders", label: "tab.orders"},
-    team: {icon: "team", label: "tab.team"},
 };
 
 /** One bar for web, iOS and Android, so the flow looks the same everywhere. */

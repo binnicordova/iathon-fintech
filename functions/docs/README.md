@@ -1,12 +1,12 @@
 # BRASPER Cloud Functions: how to use them
 
-Project `aibrasper` · region `southamerica-east1` · Cloud Functions 2nd gen (Node 24) · 13 **callable** functions.
+Project `aibrasper` · region `southamerica-east1` · Cloud Functions 2nd gen (Node 24) · 9 **callable** functions.
 
-The app, the assistant and any other client (a WhatsApp bot, a script, Postman) use the same functions. Each one checks who is calling, validates the input, and is the only place that writes orders, quotes, invoices and hand-over tickets. Clients never write those collections directly (see `firestore.rules`).
+The app, the assistant and any other client (a WhatsApp bot, a script, Postman) use the same functions. Each one checks who is calling, validates the input, and is the only place that writes orders, quotes and hand-over tickets. These are **client** services only: validating payments, exporting orders and billing are done by the back office, outside this project's functions. Clients never write those collections directly (see `firestore.rules`).
 
 - [1. Endpoints](#1-endpoints)
 - [2. Calling a function](#2-calling-a-function)
-- [3. Authentication and roles](#3-authentication-and-roles)
+- [3. Authentication](#3-authentication)
 - [4. Errors](#4-errors)
 - [5. Functions](#5-functions)
 - [6. Typical flows](#6-typical-flows)
@@ -25,18 +25,14 @@ Every function is served at `https://<name-lowercase>-h5wenirx2q-rj.a.run.app`.
 | [`createOrder`](#createorder) | `https://createorder-h5wenirx2q-rj.a.run.app` | the quote's owner |
 | [`submitProof`](#submitproof) | `https://submitproof-h5wenirx2q-rj.a.run.app` | the order's owner |
 | [`cancelOrder`](#cancelorder) | `https://cancelorder-h5wenirx2q-rj.a.run.app` | the order's owner |
-| [`getReceipt`](#getreceipt) | `https://getreceipt-h5wenirx2q-rj.a.run.app` | the order's owner or any staff |
 | [`requestHuman`](#requesthuman) | `https://requesthuman-h5wenirx2q-rj.a.run.app` | any signed-in user |
 | [`getQueueInfo`](#getqueueinfo) | `https://getqueueinfo-h5wenirx2q-rj.a.run.app` | the ticket's owner |
 | [`leaveQueue`](#leavequeue) | `https://leavequeue-h5wenirx2q-rj.a.run.app` | the ticket's owner |
 | [`assistantGenerate`](#assistantgenerate) | `https://assistantgenerate-h5wenirx2q-rj.a.run.app` | any signed-in user |
-| [`reviewOrder`](#revieworder) | `https://revieworder-h5wenirx2q-rj.a.run.app` | `validator`, `admin` |
-| [`exportOrders`](#exportorders) | `https://exportorders-h5wenirx2q-rj.a.run.app` | `operator`, `admin` |
-| [`runFact`](#runfact) | `https://runfact-h5wenirx2q-rj.a.run.app` | `billing`, `admin` |
 
 Local emulator (`bun run emulators`): `http://localhost:5001/aibrasper/southamerica-east1/<functionName>`.
 
-Instance limits: `maxInstances` is 10 for all of them and 5 for `assistantGenerate`. `runFact` has 512 MiB and a 120 s timeout; `assistantGenerate` has a 60 s timeout.
+Instance limits: `maxInstances` is 10 for all of them and 5 for `assistantGenerate`, which has a 60 s timeout.
 
 ## 2. Calling a function
 
@@ -56,7 +52,7 @@ Callable functions speak a small protocol on top of HTTPS:
 
 - `POST` with `Content-Type: application/json`.
 - Body: `{"data": { ...the request... }}`. The `data` wrapper is required, even when the request is empty (`{"data": {}}`).
-- Header `Authorization: Bearer <Firebase ID token>` (see [section 3](#3-authentication-and-roles)).
+- Header `Authorization: Bearer <Firebase ID token>` (see [section 3](#3-authentication)).
 - Success: HTTP 200 with `{"result": { ...the response... }}`.
 - Failure: a 4xx/5xx with `{"error": {"status": "INVALID_ARGUMENT", "message": "invalid-input", "details": ...}}`. `message` is the stable reason code listed in [section 4](#4-errors).
 
@@ -84,33 +80,11 @@ call() {  # call <functionName> '<json data>'
 }
 ```
 
-## 3. Authentication and roles
+## 3. Authentication
 
 **Clients** are anonymous Firebase Auth users. The app signs them in silently; over HTTP you create one with `accounts:signUp` (above). The returned `idToken` lasts one hour; renew it with the `refreshToken` against `securetoken.googleapis.com/v1/token`. Everything a client owns is tied to its `uid`: it can only touch its own quotes, orders, proofs and tickets.
 
-**Staff** are email/password users with a custom claim `role`:
-
-| Role | May call |
-|---|---|
-| `validator` | `reviewOrder` |
-| `operator` | `exportOrders` |
-| `billing` | `runFact` |
-| `admin` | all of the above |
-
-```bash
-# sign in as staff
-STAFF_TOKEN=$(curl -s "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$API_KEY" \
-  -H 'content-type: application/json' \
-  -d '{"email":"you@brasper.com","password":"...","returnSecureToken":true}' | jq -r .idToken)
-```
-
-Create a staff user and give it a role (needs Application Default Credentials, `gcloud auth application-default login`):
-
-```bash
-node functions/scripts/grant-staff.mjs you@brasper.com admin --password '<choose one>'
-```
-
-The role is read from the token, so a user must **sign out and in again** after being granted it.
+There are no staff users or roles in these functions: a request with a valid token is a client, and it only ever sees its own data.
 
 ## 4. Errors
 
@@ -119,20 +93,13 @@ Every function throws `HttpsError`s with a stable reason in `error.message`. The
 | HTTP | `error.status` | `error.message` (reason) | Meaning |
 |---|---|---|---|
 | 401 | `UNAUTHENTICATED` | `sign-in-required` | No or invalid token |
-| 403 | `PERMISSION_DENIED` | `staff-only` | Caller has no `role` claim |
-| 403 | `PERMISSION_DENIED` | `role-not-allowed` | Role not allowed for this function |
-| 403 | `PERMISSION_DENIED` | `not-your-order` | `getReceipt` on someone else's order |
 | 400 | `INVALID_ARGUMENT` | `invalid-input` | Body failed validation; `error.details` is `[{path, message}]` |
 | 400 | `INVALID_ARGUMENT` | `invalid-amount`, `same-currency`, `amount-too-small` | `createQuote` input problems |
 | 400 | `INVALID_ARGUMENT` | `invalid-operation-no`, `invalid-proof-path`, `proof-too-large` | `submitProof` input problems |
-| 400 | `INVALID_ARGUMENT` | `reason-required` | `reviewOrder` reject without a reason |
 | 400 | `FAILED_PRECONDITION` | `requires-human` | Amount above the large-amount limit; `details` carries the computed quote |
 | 400 | `FAILED_PRECONDITION` | `quote-already-used` | The quote already became an order |
 | 400 | `FAILED_PRECONDITION` | `order-not-pending` | The order has already moved on |
 | 400 | `FAILED_PRECONDITION` | `proof-not-uploaded` | No file at `proofPath` in Storage |
-| 400 | `FAILED_PRECONDITION` | `receipt-not-ready` | Fact has not accepted the sale yet |
-| 400 | `FAILED_PRECONDITION` | `only-approved-orders` | `exportOrders` got an order that is not `approved`; `details.blocked` lists them |
-| 400 | `FAILED_PRECONDITION` | `cannot-approved-from-<status>`, `cannot-rejected-from-<status>` | Illegal status change in `reviewOrder` |
 | 404 | `NOT_FOUND` | `quote-not-found`, `order-not-found`, `handoff-not-found` | Missing, or not yours |
 | 409 | `ALREADY_EXISTS` | `operation-no-duplicate` | Same bank operation number on another live order |
 | 504 | `DEADLINE_EXCEEDED` | `quote-expired` | The quote's rate guarantee ran out |
@@ -266,20 +233,6 @@ The client cancels an order that is still `pending`.
 - **Response:** `{"ok": true, "orderId": "BR-0012"}`
 - **Errors:** `order-not-found`, `order-not-pending`.
 
-### getReceipt
-
-The PDF receipt, once Fact accepted the sale. The owner or any staff role can read it.
-
-- **Request:** `{"orderId": "BR-0004"}`
-- **Response:** `{"filename": "B001-00000001.pdf", "contentType": "application/pdf", "base64": "<pdf bytes>"}`
-
-```bash
-call getReceipt '{"orderId":"BR-0004"}' | jq -r .result.base64 | base64 -d > receipt.pdf
-```
-
-- **Errors:** `receipt-not-ready` (no invoice yet, or not accepted), `not-your-order`.
-- Receipts are in **TEST MODE** until KeyFácil / Omni are connected: the PDF is labelled and has no fiscal validity.
-
 ### requestHuman
 
 "Hablar con una persona": puts the client in the seller queue with a summary of what was gathered, so nothing has to be retyped. A client has **one live ticket**; asking again returns the original place.
@@ -345,67 +298,11 @@ When the model wants a tool, `parts` holds a `functionCall`; run the tool, appen
 - Override the model or point at a mock with `GEMMA_MODEL` / `GEMINI_BASE_URL` (see `functions/scripts/mock-gemma.mjs`).
 - Status: the Gemini API returned `402 prepayment credits depleted` for this project when tested, so live replies need credits or a free-tier key in AI Studio.
 
-### reviewOrder
-
-The validator checked the bank and the proof photo and decides. Records who and when.
-
-- **Role:** `validator` or `admin`.
-- **Request:**
-
-| Field | Type | Rules |
-|---|---|---|
-| `orderId` | string | |
-| `decision` | `approve` \| `reject` | |
-| `reason` | string, max 300 | **required** for `reject` |
-
-- **Response:** `{"ok": true}`
-- **Effect:** `validating → approved` or `validating → rejected` (sets `validatedBy` to the staff email, `validatedAt`, `rejectionReason`).
-- **Errors:** `staff-only`, `role-not-allowed`, `reason-required`, `order-not-found`, `cannot-approved-from-<status>`, `cannot-rejected-from-<status>`.
-
-```bash
-TOKEN=$STAFF_TOKEN call reviewOrder '{"orderId":"BR-0009","decision":"approve"}'
-```
-
-### exportOrders
-
-The operator exports approved orders for the Dashboard. Everything exported is recorded as a batch (`batches/{id}`) and the orders move to `exported` in the same step.
-
-- **Role:** `operator` or `admin`.
-- **Request:** `{"orderIds": ["BR-0006", "BR-0007"]}` (1-200 ids)
-- **Response:** `{"batchId": "…", "count": 2, "filename": "brasper-orders-2026-10-12-ab12cd.csv", "csv": "<file contents>"}`. Save `csv` to a file; its columns follow the plan's `orders` table.
-- **All or nothing:** if any id is missing or not `approved`, nothing changes and you get `only-approved-orders` with `details.blocked`.
-
-### runFact
-
-Fact, the billing step, **in test mode**. For each `exported` order it reserves the next invoice number (series `B001`), registers the sale with a stand-in provider that always accepts, keeps the XML, builds the PDF from that XML, and writes the result to the order (`invoiceStatus`). **Safe to run twice:** an order that already has an accepted invoice is skipped.
-
-- **Role:** `billing` or `admin`.
-- **Request:** `{"orderIds": ["BR-0004", "BR-0005"]}` (1-100 ids)
-- **Response:** one result per order. Failures are reported per order, not as an HTTP error:
-
-```json
-{"results": [
-  {"orderId": "BR-0004", "outcome": "accepted", "invoice": "B001-00000001"},
-  {"orderId": "BR-0005", "outcome": "skipped",  "invoice": "B001-00000002"},
-  {"orderId": "BR-0006", "outcome": "set-aside", "detail": "not-exported"}
-]}
-```
-
-| `outcome` | Meaning |
-|---|---|
-| `accepted` | Invoice issued; the client can now download the receipt |
-| `skipped` | Already accepted or sent earlier |
-| `set-aside` | Not billed. `detail`: `order-not-found`, `not-exported`, `invalid-email`, `invalid-document`, `amount-mismatch` |
-| `rejected` | The PDF total differed from the XML (`pdf-total-differs-from-xml`) |
-
-- The invoice total is the commission plus its tax, not the whole transfer. The issuer is derived from the send currency (PEN → INGENITECH S.A.C., BRL → Brasper 21).
-- Real KeyFácil (SUNAT) / Omni plug in at the stand-in provider step in `functions/src/fact.ts`; a real rejection is not retried automatically.
-
 ---
 
 ## 6. Typical flows
 
-### A client pays and gets a receipt
+### A client creates an order and pays
 
 ```
 getRates          (optional, to price live in the UI)
@@ -414,13 +311,11 @@ createOrder       → orderId, paymentAccount          status: pending
    client pays the paymentAccount by PIX / transfer
 Storage upload    → proofs/<uid>/<orderId>/proof.png
 submitProof       → status: validating
-   reviewOrder    (validator)  approve → approved
-   exportOrders   (operator)             → exported   + CSV for the Dashboard
-   runFact        (billing)              → invoiceStatus: accepted
-getReceipt        → PDF
+   the back office validates the payment and moves the order on
+   (validating → approved → exported); the client follows it live
 ```
 
-Status machine: `pending → validating → approved → exported`; `validating → rejected`; `pending → cancelled` (client). Statuses never go backwards. The client can follow its order live by reading Firestore `orders/{orderId}` (read-only for clients).
+Status machine: `pending → validating → approved → exported`; `validating → rejected`; `pending → cancelled` (client). Statuses never go backwards; after `validating` only the back office changes them. The client can follow its order live by reading Firestore `orders/{orderId}` (read-only for clients).
 
 ### The client wants a person
 
@@ -434,12 +329,12 @@ Quotes above `pricing.largeAmountUsd` (default 3,000 USD) fail with `requires-hu
 
 ### Try it end to end
 
-Without touching production, use the emulator script, which runs the whole path plus the security checks:
+Without touching production, use the emulator script, which runs quote → order → proof → human queue plus the access checks:
 
 ```bash
 bun run emulators        # terminal 1
 bun run e2e:emulator     # terminal 2
-TARGET=prod FIREBASE_API_KEY=$API_KEY node functions/scripts/e2e-emulator.mjs   # client half only, against production
+TARGET=prod FIREBASE_API_KEY=$API_KEY node functions/scripts/e2e-emulator.mjs   # the same checks against production
 ```
 
 ## 7. Reference values
@@ -459,4 +354,4 @@ TARGET=prod FIREBASE_API_KEY=$API_KEY node functions/scripts/e2e-emulator.mjs   
 
 All values above are placeholders until the business and the accountant confirm them. Pricing changes apply to the next quote with no redeploy.
 
-Source: `functions/src/` (one file per area: `quotes`, `orders`, `handoff`, `staff`, `fact`, `assistant`, `rates`). The rules for pricing, validation and the status machine live once in `src/domain` and `src/models` and are copied into the functions at build.
+Source: `functions/src/` (one file per area: `quotes`, `orders`, `handoff`, `assistant`, `rates`). The rules for pricing, validation and the status machine live once in `src/domain` and `src/models` and are copied into the functions at build.

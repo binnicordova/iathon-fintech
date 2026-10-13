@@ -1,17 +1,12 @@
 rules_version = '2';
 
-// Clients read their own records; only Cloud Functions write orders, quotes,
-// invoices and handoffs, so the rate, fees and status can never be set from
-// the app. Staff are Firebase Auth users with a `role` custom claim.
+// Clients read their own records; only Cloud Functions write orders, quotes
+// and handoffs, so the rate, fees and status can never be set from the app.
 service cloud.firestore {
   match /databases/{database}/documents {
 
     function signedIn() {
       return request.auth != null;
-    }
-
-    function isStaff() {
-      return signedIn() && request.auth.token.role in ['admin', 'validator', 'operator', 'billing'];
     }
 
     function isOwner() {
@@ -25,27 +20,17 @@ service cloud.firestore {
     }
 
     match /quotes/{id} {
-      allow read: if isOwner() || isStaff();
+      allow read: if isOwner();
       allow write: if false;
     }
 
     match /orders/{id} {
-      allow read: if isOwner() || isStaff();
-      allow write: if false;
-    }
-
-    match /invoices/{id} {
-      allow read: if isOwner() || isStaff();
+      allow read: if isOwner();
       allow write: if false;
     }
 
     match /handoffs/{id} {
-      allow read: if isOwner() || isStaff();
-      allow write: if false;
-    }
-
-    match /batches/{id} {
-      allow read: if isStaff();
+      allow read: if isOwner();
       allow write: if false;
     }
 

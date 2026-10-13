@@ -25,7 +25,6 @@ const SYMBOL: Record<IconName, IonIconName> = {
     send: "send",
     quote: "cash-outline",
     orders: "receipt-outline",
-    team: "shield-checkmark-outline",
     close: "close",
     clock: "time-outline",
     download: "download-outline",

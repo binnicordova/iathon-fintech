@@ -9,7 +9,7 @@ import {
 } from "firebase/firestore";
 import {getDownloadURL, ref, uploadBytes} from "firebase/storage";
 import type {Handoff} from "@/models/handoff";
-import type {Order, OrderStatus} from "@/models/order";
+import type {Order} from "@/models/order";
 import {db, storage} from "@/services/firebase/app";
 
 type Unsubscribe = () => void;
@@ -38,29 +38,6 @@ export const watchMyOrders = (
             orderBy("createdAt", "desc"),
             limit(50)
         ),
-        (snap) => onOrders(snap.docs.map((d) => d.data() as Order)),
-        onError
-    );
-
-/** The VIEW: every order, newest first. Staff only (enforced by the rules). */
-export const watchAllOrders = (
-    onOrders: (orders: Order[]) => void,
-    onError: ErrorHandler,
-    status?: OrderStatus
-): Unsubscribe =>
-    onSnapshot(
-        status
-            ? query(
-                  collection(db, "orders"),
-                  where("status", "==", status),
-                  orderBy("createdAt", "desc"),
-                  limit(200)
-              )
-            : query(
-                  collection(db, "orders"),
-                  orderBy("createdAt", "desc"),
-                  limit(200)
-              ),
         (snap) => onOrders(snap.docs.map((d) => d.data() as Order)),
         onError
     );
@@ -97,14 +74,3 @@ export const uploadProof = async (
 
 export const proofDownloadUrl = (path: string): Promise<string> =>
     getDownloadURL(ref(storage, path));
-
-/** How many clients are waiting for a person right now (staff only). */
-export const watchWaitingHandoffs = (
-    onCount: (count: number) => void,
-    onError: ErrorHandler
-): Unsubscribe =>
-    onSnapshot(
-        query(collection(db, "handoffs"), where("status", "==", "waiting")),
-        (snap) => onCount(snap.size),
-        onError
-    );

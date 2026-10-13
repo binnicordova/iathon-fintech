@@ -1,6 +1,6 @@
 # BRASPER MVP: WhatsApp chat to tracked operation
 
-> Product exploration **and a working Expo Go MVP** for **BRASPER**, a Brazil ⇄ Peru money-transfer / currency-exchange service (PIX ⇄ PEN). It turns a manual, WhatsApp-and-spreadsheet workflow into a tracked, auditable operation with a validation VIEW and an invoice/receipt step.
+> Product exploration **and a working Expo Go MVP** for **BRASPER**, a Brazil ⇄ Peru money-transfer / currency-exchange service (PIX ⇄ PEN). It turns a manual, WhatsApp-and-spreadsheet workflow into a tracked, auditable operation with a client app (web form and in-app assistant) that creates the order and takes the payment proof. Validation, export and billing belong to the back office and are not part of this app.
 
 **🔗 Product plan: https://binnicordova.github.io/iathon-fintech/**
 
@@ -19,10 +19,8 @@ One codebase at the repo root, built from the [`expo-go-boilerplate`](https://ww
 | Web App form, 5 screens | **Quote** → **Data (1/3)** → **Pay (2/3)** → **Proof (3/3)** → **Status** timeline (`src/app/(tabs)/index.tsx`, `src/app/order/*`) |
 | In-app assistant, same service and steps | **Assistant** tab: a LangGraph agent with Gemma, one question at a time, rate card / payment / proof / status drawn by the app (`src/assistant/*`) |
 | Human attention flow | "Hablar con una persona": queue position + estimated wait, leave for the assistant or the form any time (`src/app/human.tsx`) |
-| VIEW for the team | **Team** tab: staff sign-in, filters, proof photo, approve / reject, mark + export orders CSV, run Fact |
-| `orders` / `invoices` tables | Firestore `orders`, `invoices` (+ `quotes`, `handoffs`, `clients`), written **only** by Cloud Functions |
+| `orders` table | Firestore `orders` (+ `quotes`, `handoffs`, `clients`), written **only** by Cloud Functions; the back office moves orders on (`validating → approved → exported`) from its own system |
 | Exchange-rate provider | `open.er-api.com` primary, `fawazahmed0` backup, cached by our server; Brasper rate = market − spread; "next update" = last refresh + interval; never shows 0 |
-| Fact billing script | Idempotent test-mode run: reserve number → XML → PDF built from the XML → result on the order; client downloads the PDF |
 | Hours, fees, tax | Mon–Fri 7–18 / Sat 8–14 / Sun 12–14 (Lima); commission + 18% tax; "outside hours" message on the pay screen |
 | ES · PT · EN | Whole UI and the assistant |
 
@@ -64,17 +62,17 @@ Expo app (web / iOS / Android)                       Firebase project aibrasper 
 ┌─────────────────────────────────────┐             ┌────────────────────────────────────────────┐
 │ Form screens ─┐                     │  callable   │ getRates · createQuote · createOrder       │
 │               ├─ same stores/services├────────────▶│ submitProof · cancelOrder · requestHuman   │
-│ Assistant ────┘  (Jotai + Firebase)  │             │ reviewOrder · exportOrders · runFact       │
-│  LangGraph graph                    │             │ getReceipt · assistantGenerate (Gemma)     │
+│ Assistant ────┘  (Jotai + Firebase)  │             │ assistantGenerate (Gemma)                  │
+│  LangGraph graph                    │             │                                            │
 │  └ agent ⇄ tools (zod, validated)   │  Firestore  │                                            │
-│  Sentry.instrumentStateGraph        │◀───────────▶│ orders · invoices · quotes · handoffs ...  │
-└─────────────────────────────────────┘  (read-only │ rules: clients read their own, staff all,  │
+│  Sentry.instrumentStateGraph        │◀───────────▶│ orders · quotes · handoffs · clients       │
+└─────────────────────────────────────┘  (read-only │ rules: clients read only their own,        │
         │ proof photo (private)           for clients)│        nobody writes from the app          │
         └────────────────────────────────▶ Storage    └────────────────────────────────────────────┘
 ```
 
 * **Server is the source of truth.** The app prices live for a good calculator feel, but `createQuote` re-prices on the server and freezes the rate; `createOrder` takes rate, fees and the payment account from that quote, never from the request. Pricing, validators and the status machine live once in `src/domain` and are copied into the functions at build (`functions/scripts/copy-shared.mjs`), so both sides compute the same numbers.
-* **Roles.** Clients are anonymous Firebase users (no sign-up friction). Staff are email users with a `role` custom claim: `validator`, `operator`, `billing` or `admin` (`functions/scripts/grant-staff.mjs`).
+* **Clients only.** Everyone using the app is an anonymous Firebase user (no sign-up friction) who can read only their own records. There are no staff screens, roles or functions here: validation, export and billing are done by the back office, which uses the Admin SDK.
 * **Money rules in code, not in the prompt.** The assistant has no tool that approves, exports or creates an order. Order creation, hand-over and payment steps run from the app's own buttons. Tool arguments are validated with zod, a wrong tool call comes back as an error, and a runaway loop stops at the recursion limit.
 
 ### The assistant: LangGraph + Gemma + Sentry
@@ -99,28 +97,21 @@ Expo app (web / iOS / Android)                       Firebase project aibrasper 
 
 ## Firebase project `aibrasper`
 
-Deployed: Firestore (`southamerica-east1`) + rules + indexes, Storage rules (private proof photos), 13 callable Cloud Functions (Node 24, 2nd gen), Auth (anonymous + email/password), secret `GEMINI_API_KEY`.
+Deployed: Firestore (`southamerica-east1`) + rules + indexes, Storage rules (private proof photos), 9 callable Cloud Functions (Node 24, 2nd gen), Auth (anonymous), secret `GEMINI_API_KEY`.
 
 ```bash
 bun run deploy:backend      # firestore rules + indexes, storage rules, functions
 bun run build:web && firebase deploy --only hosting   # optional: publish the web app (not done yet)
 ```
 
-**Create a staff user** (your own email; nothing is pre-created in production):
-
-```bash
-gcloud auth application-default login
-node functions/scripts/grant-staff.mjs you@brasper.com admin --password '<choose one>'   # creates the user, then sets the role
-```
-
-**Reset the test data before launch.** Testing leaves orders, quotes, a client, proof photos and anonymous users in production, and the order counter would start at `BR-0002`. The script lists what it would remove and deletes nothing without `--yes`; it keeps `config/*` and every user that has an email:
+**Reset the test data before launch.** Testing leaves orders, quotes, a client, proof photos and anonymous users in production, and the order counter would start at `BR-0002`. The script lists what it would remove and deletes nothing without `--yes`; it keeps `config/*` and any user that has an email:
 
 ```bash
 bun run reset:test-data                           # dry run
 bun run reset:test-data -- --yes --anonymous-users
 ```
 
-**Synthetic demo data.** `bun run seed:demo` adds 12 made-up orders in every status (with proof photos), and hand-over tickets, all marked `synthetic: true` and using `example.com` emails, so the Team tab is not empty in the demo. Run it after `reset:test-data`; it refuses to run twice without `--force`. Invoices are not seeded: press Fact on the approved orders.
+**Synthetic demo data.** `bun run seed:demo` adds 12 made-up orders in every status (with proof photos), and hand-over tickets, all marked `synthetic: true` and using `example.com` emails, so the orders list and the status screens have something to show. Run it after `reset:test-data`; it refuses to run twice without `--force`.
 
 **Gemma credits.** The Gemini API answered `402 prepayment credits depleted` for this project when tested, so live Gemma replies need credits (or a free-tier key) in [AI Studio](https://ai.studio/projects). Until then the app runs in basic mode. Once fixed, no redeploy is needed for the same project; to use a different key:
 
@@ -133,10 +124,10 @@ firebase functions:secrets:set GEMINI_API_KEY --project aibrasper   # then: fire
 ## Tests
 
 ```bash
-bun run test                  # 101 Jest tests: pricing, validators, hours, status machine, assistant graph, tools, basic mode
+bun run test                  # 100 Jest tests: pricing, validators, hours, status machine, assistant graph, tools, basic mode
 bun run functions:build       # compile the functions (copies src/domain + src/models first)
 bun run emulators             # in another terminal, then:
-bun run e2e:emulator          # quote → order → proof → validate → export → Fact → receipt, plus the security checks
+bun run e2e:emulator          # quote → order → proof → human queue, plus the access checks
 TARGET=prod FIREBASE_API_KEY=<web api key> node functions/scripts/e2e-emulator.mjs   # client half against production
 ```
 
@@ -148,12 +139,9 @@ TARGET=prod FIREBASE_API_KEY=<web api key> node functions/scripts/e2e-emulator.m
 
 | Piece | Status |
 |---|---|
-| Quote, form, assistant, queue, VIEW, order/invoice records, CSV export, PDF receipt | Full flow verified on web against the emulators (`e2e:emulator`); client half verified against production; in Expo Go on iOS the quote, the form and the assistant (LangGraph + Sentry spans, basic mode) were driven against production |
-| KeyFácil (SUNAT) / Omni | **Not connected** (no test access yet). Fact runs against a stand-in provider that always accepts; the XML and PDF are labelled **TEST MODE, no fiscal validity** |
-| Receipt email | Not sent (no mail provider). The client downloads the PDF in the app |
+| Quote, form, assistant, queue, order records | Full flow verified on web against the emulators (`e2e:emulator`); client half verified against production; in Expo Go on iOS the quote, the form and the assistant (LangGraph + Sentry spans, basic mode) were driven against production |
 | Fees and tax | Placeholders: 2.4% commission (back-solved from the spec's 11.98 on 500), 18% tax, 2% rate spread. Real values go in Firestore `config/public` (`pricing`) |
 | Brasper bank accounts | **DEMO** accounts, flagged on screen. Real ones go in `config/payment` |
-| Dashboard import format | Unknown (open question #1): the exported CSV follows the plan's `orders` table |
 | WhatsApp / Telegram | The assistant graph is transport-agnostic (`AssistantDeps`) and can move to a function; the in-app channel is what ships. The WhatsApp button opens a prefilled chat |
 | Android | **Not run on a device or emulator** (no disk for an AVD here). `expo export --platform android` compiles the Hermes bundle, and Android uses the Compose-backed Expo UI code path; try it in Expo Go before the demo |
 
@@ -167,7 +155,7 @@ TARGET=prod FIREBASE_API_KEY=<web api key> node functions/scripts/e2e-emulator.m
 | `src/assistant/` | LangGraph graph, tools, prompt, Gemini adapter, basic mode |
 | `src/services/`, `src/stores/`, `src/hooks/` | Firebase access, Jotai state, data hooks |
 | `src/i18n/` | ES, PT, EN |
-| `functions/` | Cloud Functions + scripts (`grant-staff`, `e2e-emulator`, `mock-gemma`) |
+| `functions/` | Cloud Functions + scripts (`e2e-emulator`, `seed-demo-data`, `reset-test-data`, `mock-gemma`) |
 | `firestore.rules`, `storage.rules`, `firebase.json` | Firebase project config |
 | `reference/` | Static planning docs, screenshots and whiteboard (published to GitHub Pages) |
 | `.github/workflows/pages.yml` | Deploys **only** `reference/` to Pages |

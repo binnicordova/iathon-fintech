@@ -1,6 +1,5 @@
 // Fills Firestore (and Storage, for proof photos) with SYNTHETIC orders so the
-// team VIEW, the filters and the CSV export have something to
-// show. Every record uses example.com emails and made-up people, and carries
+// orders list and the status screens have something to show. Every record uses example.com emails and made-up people, and carries
 // `synthetic: true`.
 //
 //   node scripts/seed-demo-data.mjs            # production (needs ADC)
@@ -8,8 +7,7 @@
 //
 // Orders continue the real counter (counters/orders). Run `functions:build`
 // first: the pricing rules are read from lib/shared. Refuses to run twice
-// unless --force is passed. Invoices are left out on purpose: run Fact from the
-// Team tab on the approved orders to produce them.
+// unless --force is passed.
 import {deflateSync, crc32} from "node:zlib";
 import {createRequire} from "node:module";
 import {applicationDefault, initializeApp} from "firebase-admin/app";
@@ -185,7 +183,6 @@ for (const [personIndex, amount, status] of PLAN) {
         rejectionReason: status === "rejected" ? "Operation number does not match the bank statement (demo)." : null,
         exportBatchId: status === "exported" ? "BATCH-DEMO-1" : null,
         exportedAt: status === "exported" ? afterProof(90) : null,
-        invoiceStatus: null,
         synthetic: true,
     };
     delete order.requiresHuman;

@@ -317,7 +317,6 @@ const getOrderStatus = defineTool({
                 status: "order_shown",
                 order_id: order.orderId,
                 order_status: order.status,
-                receipt_ready: order.invoiceStatus === "accepted",
                 note: "A status timeline is on screen. Summarise the status in one sentence without times.",
             },
             cards: [{kind: "status", orderId: order.orderId}],

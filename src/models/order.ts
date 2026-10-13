@@ -1,5 +1,4 @@
 import type {Channel, Currency, Language} from "./currency";
-import type {InvoiceStatus} from "./invoice";
 import type {PaymentAccount} from "./settings";
 
 export const ORDER_STATUSES = [
@@ -71,8 +70,6 @@ export type Order = OrderClientData & {
     rejectionReason: string | null;
     exportBatchId: string | null;
     exportedAt: string | null;
-    /** Mirrored from `invoices/{orderId}`, which only Fact writes. */
-    invoiceStatus: InvoiceStatus | null;
 };
 
 export type TimelineStepKey = "registered" | "verifying" | "sent" | "received";

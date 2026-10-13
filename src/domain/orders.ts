@@ -1,4 +1,3 @@
-import type {Invoice} from "../models/invoice";
 import type {
     Order,
     OrderStatus,
@@ -32,18 +31,13 @@ export const isOpenOrder = (status: OrderStatus): boolean =>
 export const isTerminalOrder = (status: OrderStatus): boolean =>
     TRANSITIONS[status].length === 0;
 
-type TimelineInput = Pick<Order, "status" | "invoiceStatus">;
+type TimelineInput = Pick<Order, "status">;
 
 /**
  * Client-facing progress: registered → verifying → money sent → money received.
  * Derived from the order, so the form and the assistant always agree.
  */
-export const timelineFor = ({
-    status,
-    invoiceStatus,
-}: TimelineInput): TimelineStep[] => {
-    const receiptReady =
-        invoiceStatus === "accepted" || invoiceStatus === "sent";
+export const timelineFor = ({status}: TimelineInput): TimelineStep[] => {
     const failed = status === "rejected" || status === "cancelled";
 
     const verifying: TimelineStepState = failed
@@ -55,11 +49,8 @@ export const timelineFor = ({
             : "todo";
     const sent: TimelineStepState =
         status === "approved" || status === "exported" ? "done" : "todo";
-    const received: TimelineStepState = receiptReady
-        ? "done"
-        : status === "exported"
-          ? "active"
-          : "todo";
+    const received: TimelineStepState =
+        status === "exported" ? "active" : "todo";
 
     return [
         {key: "registered", state: "done"},
@@ -68,21 +59,3 @@ export const timelineFor = ({
         {key: "received", state: received},
     ];
 };
-
-/**
- * Issuer follows the send currency (PEN → INGENITECH S.A.C., BRL → Brasper 21).
- * The plan does not say who invoices USD; INGENITECH is an assumption to
- * confirm with the accountant.
- */
-export const INVOICE_ISSUER = {
-    PEN: "INGENITECH S.A.C.",
-    BRL: "Brasper 21",
-    USD: "INGENITECH S.A.C.",
-} as const;
-
-export const invoiceNumber = (series: string, number: number): string =>
-    `${series}-${String(number).padStart(8, "0")}`;
-
-export const isReceiptReady = (
-    invoice: Pick<Invoice, "status"> | null
-): boolean => invoice?.status === "accepted" || invoice?.status === "sent";

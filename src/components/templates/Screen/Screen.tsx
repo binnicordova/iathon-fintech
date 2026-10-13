@@ -31,8 +31,6 @@ export type ScreenProps = {
      * still fills upward and scrolls.
      */
     bottomAligned?: boolean;
-    /** Wider column for desktop web (the team's VIEW); phones are unaffected. */
-    wide?: boolean;
 };
 
 const styles = StyleSheet.create({
@@ -41,9 +39,6 @@ const styles = StyleSheet.create({
         width: "100%",
         alignSelf: "center",
         maxWidth: 560,
-    },
-    hostWide: {
-        maxWidth: 1180,
     },
 });
 
@@ -63,7 +58,6 @@ export const Screen = ({
     footer,
     resetKey,
     bottomAligned = false,
-    wide = false,
 }: ScreenProps) => {
     const {accent, background} = useTheme();
 
@@ -93,11 +87,7 @@ export const Screen = ({
 
     return (
         <Host
-            style={[
-                styles.host,
-                wide && styles.hostWide,
-                {backgroundColor: background},
-            ]}
+            style={[styles.host, {backgroundColor: background}]}
             seedColor={accent}
             useViewportSizeMeasurement
         >

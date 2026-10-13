@@ -111,6 +111,5 @@ export default ({config}: {config: ExpoConfig}): ExpoConfig => ({
         "expo-status-bar",
         "expo-font",
         "expo-localization",
-        "expo-sharing",
     ],
 });

@@ -16,7 +16,6 @@ export const ICON_NAMES = [
     "send",
     "quote",
     "orders",
-    "team",
     "close",
     "clock",
     "download",

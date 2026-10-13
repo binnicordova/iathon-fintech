@@ -19,11 +19,8 @@ export type ApiErrorCode =
     | "operation-no-duplicate"
     | "order-not-found"
     | "order-not-pending"
-    | "receipt-not-ready"
     | "model-unavailable"
     | "sign-in-required"
-    | "staff-only"
-    | "role-not-allowed"
     | "network"
     | "unknown";
 
@@ -56,11 +53,8 @@ const KNOWN: ReadonlySet<string> = new Set<ApiErrorCode>([
     "operation-no-duplicate",
     "order-not-found",
     "order-not-pending",
-    "receipt-not-ready",
     "model-unavailable",
     "sign-in-required",
-    "staff-only",
-    "role-not-allowed",
 ]);
 
 type FirebaseLikeError = Error & {

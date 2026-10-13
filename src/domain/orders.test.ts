@@ -1,7 +1,6 @@
 import {
     canTransition,
     formatOrderId,
-    invoiceNumber,
     isOpenOrder,
     parseOrderSeq,
     timelineFor,
@@ -13,10 +12,6 @@ describe("order ids", () => {
         expect(formatOrderId(12345)).toBe("BR-12345");
         expect(parseOrderSeq("br-0042")).toBe(42);
         expect(parseOrderSeq("XX-1")).toBeNull();
-    });
-
-    it("zero-pads invoice numbers", () => {
-        expect(invoiceNumber("B001", 3)).toBe("B001-00000003");
     });
 });
 
@@ -38,10 +33,8 @@ describe("status machine", () => {
 });
 
 describe("timelineFor", () => {
-    const states = (
-        status: Parameters<typeof timelineFor>[0]["status"],
-        invoiceStatus = null
-    ) => timelineFor({status, invoiceStatus}).map((step) => step.state);
+    const states = (status: Parameters<typeof timelineFor>[0]["status"]) =>
+        timelineFor({status}).map((step) => step.state);
 
     it("starts registered, waiting for proof", () => {
         expect(states("pending")).toEqual(["done", "todo", "todo", "todo"]);
@@ -60,13 +53,7 @@ describe("timelineFor", () => {
         expect(states("approved")).toEqual(["done", "done", "done", "todo"]);
     });
 
-    it("completes when the receipt is ready", () => {
-        expect(states("exported", "accepted" as never)).toEqual([
-            "done",
-            "done",
-            "done",
-            "done",
-        ]);
+    it("waits for the money to arrive once exported", () => {
         expect(states("exported")).toEqual(["done", "done", "done", "active"]);
     });
 
