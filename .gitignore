@@ -2,15 +2,37 @@
 reference.zip
 __MACOSX/
 
-# Expo / React Native (app code will live at the repo root)
+# Expo / React Native
 node_modules/
 .expo/
 dist/
 web-build/
+public/
+ios/
+android/
 *.jks
 *.p8
 *.p12
 *.key
 *.mobileprovision
-.env*.local
+*.orig.*
 npm-debug.*
+
+# Secrets (copy .env.example to .env.local)
+.env
+.env.local
+.env*.local
+
+# Tests
+coverage/
+
+# Firebase
+.firebase/
+firebase-debug.log*
+firebase-debug.*.log*
+ui-debug.log
+functions/node_modules/
+functions/lib/
+# Copied from src/domain + src/models by `bun run functions:prepare`
+functions/src/shared/
+firestore-debug.log

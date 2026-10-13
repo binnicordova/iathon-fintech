@@ -1,0 +1,28 @@
+rules_version = '2';
+
+// Payment proofs are private: the client uploads to their own folder, and only
+// the client and staff can read them. XML and PDF invoices are written and read
+// by Cloud Functions only.
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function staff() {
+      return request.auth != null
+        && request.auth.token.role in ['admin', 'validator', 'operator', 'billing'];
+    }
+
+    match /proofs/{uid}/{orderId}/{file} {
+      allow read: if request.auth != null && (request.auth.uid == uid || staff());
+      allow create: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.size < 8 * 1024 * 1024
+        && (request.resource.contentType.matches('image/.*')
+            || request.resource.contentType == 'application/pdf');
+      allow update, delete: if false;
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
