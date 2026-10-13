@@ -20,7 +20,6 @@ const COLLECTIONS = [
     "handoffs",
     "clients",
     "counters",
-    "rateLimits",
 ];
 const args = new Set(process.argv.slice(2));
 const apply = args.has("--yes");

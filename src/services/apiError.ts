@@ -20,7 +20,6 @@ export type ApiErrorCode =
     | "order-not-found"
     | "order-not-pending"
     | "receipt-not-ready"
-    | "assistant-rate-limit"
     | "model-unavailable"
     | "sign-in-required"
     | "staff-only"
@@ -58,7 +57,6 @@ const KNOWN: ReadonlySet<string> = new Set<ApiErrorCode>([
     "order-not-found",
     "order-not-pending",
     "receipt-not-ready",
-    "assistant-rate-limit",
     "model-unavailable",
     "sign-in-required",
     "staff-only",

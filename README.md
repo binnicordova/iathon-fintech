@@ -80,7 +80,7 @@ Expo app (web / iOS / Android)                       Firebase project aibrasper 
 ### The assistant: LangGraph + Gemma + Sentry
 
 * `src/assistant/graph.ts`: a `StateGraph` (`agent` ⇄ `tools`) whose state carries the messages plus the cards and quick replies the UI draws. It follows [Sentry's React Native LangGraph guide](https://docs.sentry.io/platforms/react-native/guides/expo/integrations/langgraph/): the OpenTelemetry integration does not run in React Native, so the graph is wrapped with `Sentry.instrumentStateGraph` before `compile()`, and model/tool calls get `gen_ai.chat` / `gen_ai.execute_tool` spans.
-* **Model: Gemma 4** (`gemma-4-26b-a4b-it`, Google's open model) through the Gemini API, called by the `assistantGenerate` function, so **the API key never reaches the app bundle** (the same advice Sentry gives). The function allow-lists the request shape and rate-limits per client.
+* **Model: Gemma 4** (`gemma-4-26b-a4b-it`, Google's open model) through the Gemini API, called by the `assistantGenerate` function, so **the API key never reaches the app bundle** (the same advice Sentry gives). The function allow-lists the request shape.
 * **Rate card, fees and accounts are never written by the model.** Tools return a card id; the app renders the numbers from the server's quote or order. The model is told it must not repeat figures.
 * **Basic mode.** If the model is unreachable (no credits, offline, quota), the same tools drive a scripted conversation (`src/assistant/basic.ts`), so a client can still finish a transfer in chat. The assistant tab shows a notice when this is on.
 * **Hand-over.** `request_human` queues the client with a summary of the quote, collected fields and order, so the seller starts with context.
@@ -113,7 +113,7 @@ gcloud auth application-default login
 node functions/scripts/grant-staff.mjs you@brasper.com admin --password '<choose one>'   # creates the user, then sets the role
 ```
 
-**Reset the test data before launch.** Testing leaves orders, quotes, a client, rate-limit counters, proof photos and anonymous users in production, and the order counter would start at `BR-0002`. The script lists what it would remove and deletes nothing without `--yes`; it keeps `config/*` and every user that has an email:
+**Reset the test data before launch.** Testing leaves orders, quotes, a client, proof photos and anonymous users in production, and the order counter would start at `BR-0002`. The script lists what it would remove and deletes nothing without `--yes`; it keeps `config/*` and every user that has an email:
 
 ```bash
 bun run reset:test-data                           # dry run
