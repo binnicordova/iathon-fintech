@@ -10,6 +10,7 @@
 //   node scripts/simulate-back-office.mjs BR-0023           # approve, export, bill
 //   node scripts/simulate-back-office.mjs BR-0023 --reject  # reject instead
 //   node scripts/simulate-back-office.mjs BR-0023 --pdf out.pdf   # also save the receipt
+//   node scripts/simulate-back-office.mjs BR-0023 --delay 10      # wait 10 s between steps, to watch the app update
 //
 // Run `bun run functions:build` first. Uses Application Default Credentials
 // (gcloud auth application-default login) and writes to production unless the
@@ -18,8 +19,16 @@ import {writeFileSync} from "node:fs";
 import {createRequire} from "node:module";
 
 const [orderId, ...flags] = process.argv.slice(2);
+const delayAt = flags.indexOf("--delay");
+const delayMs = delayAt === -1 ? 0 : Number(flags[delayAt + 1]) * 1000;
+const pause = (label) => {
+    if (delayMs > 0) {
+        console.log(`   ...waiting ${delayMs / 1000}s (${label})`);
+    }
+    return new Promise((resolve) => setTimeout(resolve, delayMs));
+};
 if (!orderId) {
-    console.error("Usage: node scripts/simulate-back-office.mjs <orderId> [--reject] [--pdf file]");
+    console.error("Usage: node scripts/simulate-back-office.mjs <orderId> [--reject] [--delay seconds] [--pdf file]");
     process.exit(1);
 }
 const project = process.env.GCLOUD_PROJECT ?? "aibrasper";
@@ -65,6 +74,7 @@ show(`1. reviewOrder → ${order.status}`, order, KEYS);
 if (reject) {
     process.exit(0);
 }
+await pause("approved");
 
 // 2. The operator exports the approved order for the Dashboard.
 const batch = db().collection("batches").doc();
@@ -73,6 +83,7 @@ await batch.set({id: batch.id, type: "export", orderIds: [orderId], createdBy: w
 await ref().update({status: "exported", exportBatchId: batch.id, exportedAt: stamp, updatedAt: stamp});
 order = await read();
 show("2. exportOrders → exported", order, KEYS);
+await pause("exported");
 
 // 3. Billing (Fact, test mode): reserve a number, XML, PDF, result on the order.
 const result = await issueInvoice(order);
