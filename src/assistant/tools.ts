@@ -12,6 +12,7 @@ import {
     maskAccount,
     normalizeDocNumber,
 } from "@/domain/validators";
+import type {TranslationKey} from "@/i18n";
 import {CURRENCIES} from "@/models/currency";
 import type {ClientDraft} from "@/models/draft";
 import {FUNDS_SOURCES} from "@/models/order";
@@ -24,6 +25,12 @@ export type ToolOutcome = {
     cards?: ChatCard[];
     /** Quick replies to offer; the last tool to set any wins. */
     actions?: QuickActionId[];
+    /**
+     * When every tool of a turn has one, the app answers with this text itself
+     * and skips the second model call (about 1.5 s saved). Only for tools whose
+     * card already says everything.
+     */
+    reply?: TranslationKey;
 };
 
 type ToolDefinition<S extends z.ZodType> = {
@@ -93,6 +100,7 @@ const getQuote = defineTool({
                 },
                 cards: [{kind: "quote", quote}],
                 actions: ["continue", "changeAmount", "human"],
+                reply: "assistant.quoteReady",
             };
         } catch (error) {
             const failure =
@@ -195,11 +203,14 @@ const afterSave = (deps: AssistantDeps): ToolOutcome => {
             },
             cards: [{kind: "review", quote}],
             actions: ["review", "form", "human"],
+            reply: "assistant.reviewReady",
         };
     }
     return {
         result: {status: "saved", complete: false, next_missing_field: next},
         actions: ["human"],
+        // One question at a time, as in the plan: the next one needs no model.
+        ...(next ? {reply: `assistant.ask.${next}` as TranslationKey} : {}),
     };
 };
 
@@ -322,6 +333,7 @@ const getOrderStatus = defineTool({
             },
             cards: [{kind: "status", orderId: order.orderId}],
             actions: order.status === "pending" ? ["paid", "human"] : ["human"],
+            reply: "assistant.statusIntro",
         };
     },
 });
@@ -343,6 +355,7 @@ const getPaymentInstructions = defineTool({
             },
             cards: [{kind: "payment", orderId: order.orderId}],
             actions: ["paid", "human"],
+            reply: "assistant.paymentReady",
         };
     },
 });
@@ -378,6 +391,7 @@ const requestHuman = defineTool({
                 note: "A button that opens BRASPER on WhatsApp is on screen, with the context ready. Say so in one sentence.",
             },
             actions: ["human", "form"],
+            reply: "assistant.humanOffer",
         };
     },
 });

@@ -201,6 +201,11 @@ export const pt: Dictionary = {
         "A cotação expirou. Diga o valor de novo para fixar uma nova taxa.",
     "assistant.proofSaved":
         "Recebido. Uma pessoa validará seu pagamento em cerca de 15 min. Aviso você aqui.",
+    "assistant.quoteReady": "Aqui está sua cotação. Seguimos?",
+    "assistant.paymentReady":
+        'Aqui está como pagar. Quando terminar, toque em "Já transferi".',
+    "assistant.humanOffer":
+        "Vou te passar para uma pessoa da equipe pelo WhatsApp.",
     "assistant.statusIntro": "Isto é o que sua operação mostra agora.",
     "assistant.cannotQuote":
         "Não consegui cotar agora. Tente de novo ou fale com uma pessoa.",

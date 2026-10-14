@@ -201,6 +201,11 @@ export const en: Dictionary = {
         "The quote expired. Tell me the amount again to lock a new rate.",
     "assistant.proofSaved":
         "Received. A person will verify your payment in about 15 min. I'll update you here.",
+    "assistant.quoteReady": "Here is your quote. Shall we continue?",
+    "assistant.paymentReady":
+        'Here is how to pay. When you are done, tap "I\'ve transferred".',
+    "assistant.humanOffer":
+        "I will pass you to a person on the team on WhatsApp.",
     "assistant.statusIntro": "Here is what your order shows right now.",
     "assistant.cannotQuote":
         "I couldn't quote right now. Try again or talk to a person.",
