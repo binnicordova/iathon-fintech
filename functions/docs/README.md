@@ -258,6 +258,8 @@ call getReceipt '{"orderId":"BR-0004"}' | jq -r .result.base64 | base64 -d > rec
 - **Errors:** `receipt-not-ready` (no invoice yet, or not accepted), `not-your-order`.
 - Receipts are in **TEST MODE** until KeyFácil / Omni are connected: the PDF is labelled and has no fiscal validity.
 
+> The app no longer calls the three queue functions below (`requestHuman`, `getQueueInfo`, `leaveQueue`): "Talk to a person" now opens BRASPER on WhatsApp. They stay deployed for a future back-office queue.
+
 ### requestHuman
 
 "Hablar con una persona": puts the client in the seller queue with a summary of what was gathered, so nothing has to be retyped. A client has **one live ticket**; asking again returns the original place.

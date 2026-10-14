@@ -8,7 +8,6 @@ import {
     where,
 } from "firebase/firestore";
 import {getDownloadURL, ref, uploadBytes} from "firebase/storage";
-import type {Handoff} from "@/models/handoff";
 import type {Order} from "@/models/order";
 import {db, storage} from "@/services/firebase/app";
 
@@ -39,17 +38,6 @@ export const watchMyOrders = (
             limit(50)
         ),
         (snap) => onOrders(snap.docs.map((d) => d.data() as Order)),
-        onError
-    );
-
-export const watchHandoff = (
-    handoffId: string,
-    onHandoff: (handoff: Handoff | null) => void,
-    onError: ErrorHandler
-): Unsubscribe =>
-    onSnapshot(
-        doc(db, "handoffs", handoffId),
-        (snap) => onHandoff(snap.exists() ? (snap.data() as Handoff) : null),
         onError
     );
 

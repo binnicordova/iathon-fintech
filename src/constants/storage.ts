@@ -4,5 +4,4 @@ export const STORAGE_KEYS = {
     clientDraft: "brasper.clientDraft",
     activeOrderId: "brasper.activeOrderId",
     lockedQuote: "brasper.lockedQuote",
-    queue: "brasper.queue",
 } as const;

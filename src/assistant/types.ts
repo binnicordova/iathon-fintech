@@ -1,5 +1,4 @@
 import type {Language} from "@/models/currency";
-import type {QueueInfo} from "@/models/handoff";
 import type {Quote} from "@/models/quote";
 
 /**
@@ -11,8 +10,7 @@ export type ChatCard =
     | {kind: "review"; quote: Quote}
     | {kind: "payment"; orderId: string}
     | {kind: "proof"; orderId: string}
-    | {kind: "status"; orderId: string}
-    | {kind: "queue"; queue: QueueInfo};
+    | {kind: "status"; orderId: string};
 
 /** One-tap replies under the latest assistant message. */
 export type QuickActionId =

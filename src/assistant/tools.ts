@@ -15,7 +15,7 @@ import {
 import {CURRENCIES} from "@/models/currency";
 import type {ClientDraft} from "@/models/draft";
 import {FUNDS_SOURCES} from "@/models/order";
-import {ApiError, toApiError} from "@/services/apiError";
+import {toApiError} from "@/services/apiError";
 import {nextMissingField, validateClientDraft} from "@/utils/clientDraft";
 
 export type ToolOutcome = {
@@ -367,32 +367,18 @@ export const buildHandoffSummary = async (
 const requestHuman = defineTool({
     name: "request_human",
     description:
-        "Hand the client to a person on the team, with the context already gathered. Use when asked, for large or negotiated amounts, or when unsure.",
+        "Offer to pass the client to a person at BRASPER on WhatsApp. Use when asked, for large or negotiated amounts, or when unsure.",
     schema: z.object({
         reason: z.string().max(200).describe("Why the client needs a person."),
     }),
-    async execute({reason}, deps) {
-        const summary = `${await buildHandoffSummary(deps)} Reason: ${reason}`;
-        const orderId = deps.getActiveOrderId();
-        try {
-            const queue = await deps.requestHuman(summary, orderId);
-            return {
-                result: {
-                    status: "handed_off",
-                    note: "The client is in the queue and the summary was shared. Say so in one sentence without numbers.",
-                },
-                cards: [{kind: "queue", queue}],
-                actions: ["form"],
-            };
-        } catch (error) {
-            return {
-                result: {
-                    status: "error",
-                    code: error instanceof ApiError ? error.code : "unknown",
-                },
-                actions: ["form"],
-            };
-        }
+    async execute() {
+        return {
+            result: {
+                status: "whatsapp_offered",
+                note: "A button that opens BRASPER on WhatsApp is on screen, with the context ready. Say so in one sentence.",
+            },
+            actions: ["human", "form"],
+        };
     },
 });
 

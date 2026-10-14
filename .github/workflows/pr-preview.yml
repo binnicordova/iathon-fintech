@@ -21,6 +21,9 @@ jobs:
     env:
       EAS_OWNER: ${{ secrets.EAS_OWNER }}
       EAS_PROJECT_ID: ${{ secrets.EAS_PROJECT_ID }}
+      # "Talk to a person" opens this WhatsApp line. Set the repository variable
+      # WHATSAPP_NUMBER (digits with country code); empty opens WhatsApp's chat picker.
+      EXPO_PUBLIC_WHATSAPP_NUMBER: ${{ vars.WHATSAPP_NUMBER }}
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v4
@@ -61,12 +64,11 @@ jobs:
       # YAML comment and truncated the command mid-flag, and a title is
       # attacker-controlled text being pasted into a shell command.
       #
-      # NOTE FOR TESTERS: scan this QR with the **development build**, not Expo
-      # Go. This app has native modules (WebView, Firebase) that Expo Go cannot
-      # load, and the `preview` build profile is pinned to the `preview` channel
-      # so it cannot load a per-PR branch either. Only the dev client can open
-      # an arbitrary branch from a QR.
+      # NOTE FOR TESTERS: scan this QR with **Expo Go** (SDK 57, logged in to an
+      # Expo account). The app uses only Expo Go's bundled native modules (Firebase
+      # runs on its JS SDK), so no development build is needed.
       - name: 🚀 Create preview
         uses: expo/expo-github-action/preview@v8
         with:
+          qr-target: expo-go
           command: eas update --branch pr-${{ github.event.number }} --message "PR ${{ github.event.number }} at ${{ github.event.pull_request.head.sha }}"

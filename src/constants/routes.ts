@@ -5,7 +5,6 @@ export const PATHS = {
     ASSISTANT: "/assistant",
     ORDERS: "/orders",
     DATA: "/order/data",
-    HUMAN: "/human",
     pay: (orderId: string): Href => `/order/${orderId}/pay`,
     proof: (orderId: string): Href => `/order/${orderId}/proof`,
     status: (orderId: string): Href => `/order/${orderId}`,

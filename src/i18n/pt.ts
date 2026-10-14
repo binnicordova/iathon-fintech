@@ -43,8 +43,8 @@ export const pt: Dictionary = {
         "Para valores altos e taxas negociadas, uma pessoa da equipe atende você.",
     "quote.swap": "Inverter",
     "quote.help": "Dúvidas?",
-    "quote.whatsapp": "Fale pelo WhatsApp",
     "quote.askAssistant": "Falar com o assistente",
+    "whatsapp.person": "Olá BrasPer, gostaria de falar com uma pessoa.",
     "quote.askHuman": "Falar com uma pessoa",
     "quote.continue": "Continuar",
     "quote.expired": "A cotação expirou. Atualize para fixar uma nova taxa.",
@@ -178,8 +178,6 @@ export const pt: Dictionary = {
     "assistant.proofCard":
         "Envie a foto do comprovante e o número da operação.",
     "assistant.orderCreated": "Operação {id} criada · Aguardando pagamento",
-    "assistant.humanHandoff":
-        "Vou passar você a uma pessoa da equipe. Já compartilhei o resumo.",
     "assistant.ask.docNumber": "Qual é o seu CPF ou DNI?",
     "assistant.ask.clientName": "Qual é o seu nome completo?",
     "assistant.ask.email": "Para qual e-mail enviamos seu comprovante?",
@@ -211,24 +209,8 @@ export const pt: Dictionary = {
         "Não consegui enviar sua mensagem. Verifique sua conexão.",
     "assistant.proofTitle": "Comprovante de pagamento",
     "assistant.reviewTitle": "Revise sua operação",
-    "assistant.queueTitle": "Atendimento por uma pessoa",
     "assistant.guard.noApprove":
         "Eu não aprovo pagamentos: uma pessoa da equipe verifica sua transferência.",
-
-    "human.title": "Atendimento por uma pessoa",
-    "human.queue": "Fila de atendimento #{n}",
-    "human.wait": "espera estimada ≈ {min} min",
-    "human.context":
-        "Já compartilhei o resumo com a equipe, você não precisará repetir.",
-    "human.assistant": "Falar com o assistente, sem fila",
-    "human.form": "Usar o formulário",
-    "human.leave": "Sair da fila",
-    "human.joining": "Procurando um lugar na fila…",
-    "human.assigned": "Uma pessoa já está atendendo você.",
-    "human.closed": "Você saiu da fila.",
-    "human.intro":
-        "Para valores altos e taxas negociadas, uma pessoa da equipe atende você. Você pode sair da fila quando quiser.",
-    "human.join": "Entrar na fila",
 
     "lang.es": "Español",
     "lang.pt": "Português",

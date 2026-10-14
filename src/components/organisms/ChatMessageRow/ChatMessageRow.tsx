@@ -11,13 +11,12 @@ import {useTheme} from "@/theme/useTheme";
 export type ChatMessageRowProps = {
     message: ChatMessage;
     onAction: (action: QuickActionId) => void;
-    onUseAssistantInstead: () => void;
     busy: boolean;
 };
 
 /** One message with its cards and quick replies, in its own Expo UI host. */
 export const ChatMessageRow = memo(
-    ({message, onAction, onUseAssistantInstead, busy}: ChatMessageRowProps) => {
+    ({message, onAction, busy}: ChatMessageRowProps) => {
         const {accent} = useTheme();
 
         return (
@@ -41,10 +40,7 @@ export const ChatMessageRow = memo(
                         </ChatBubble>
                     ) : null}
                     {message.cards.length > 0 && (
-                        <ChatCards
-                            cards={message.cards}
-                            onUseAssistantInstead={onUseAssistantInstead}
-                        />
+                        <ChatCards cards={message.cards} />
                     )}
                     <QuickReplies
                         actions={message.actions}

@@ -7,11 +7,12 @@ import {
     buildAssistantGraph,
     runTurn,
 } from "@/assistant/graph";
-import {runTool} from "@/assistant/tools";
+import {buildHandoffSummary, runTool} from "@/assistant/tools";
 import type {ChatCard, ChatMessage, QuickActionId} from "@/assistant/types";
 import {translate} from "@/i18n";
 import {api} from "@/services/api";
 import {RECORD_AI_CONTENT, reportError, Sentry} from "@/services/monitoring";
+import {openWhatsApp} from "@/services/whatsapp";
 import {languageAtom} from "@/stores/language";
 import {
     activeOrderIdAtom,
@@ -206,20 +207,6 @@ export const runActionAtom = atom(
             case "changeAmount":
                 say(set, t("assistant.greeting"), [], ["human", "form"]);
                 return;
-            case "human": {
-                const outcome = await runTool(
-                    "request_human",
-                    {reason: "The client asked for a person."},
-                    deps
-                );
-                say(
-                    set,
-                    t("assistant.humanHandoff"),
-                    outcome.cards ?? [],
-                    outcome.actions ?? ["form"]
-                );
-                return;
-            }
             case "review": {
                 set(chatBusyAtom, true);
                 try {
@@ -277,8 +264,9 @@ export const runActionAtom = atom(
                 }
                 return;
             }
+            case "human":
             case "form":
-                // Navigation lives in the screen (it owns the router).
+                // Navigation and the WhatsApp hand-over live in the screen.
                 return;
         }
     }
@@ -304,3 +292,9 @@ export const resetChatAtom = atom(null, (_get, set) => {
     set(lockedQuoteAtom, null);
     degradedAt = 0;
 });
+
+/** "Talk to a person": opens BRASPER on WhatsApp with what the assistant knows already. */
+export const handOverToWhatsApp = async (greeting: string): Promise<void> => {
+    const summary = await buildHandoffSummary(createDefaultDeps());
+    openWhatsApp(`${greeting}\n\n${summary}`);
+};

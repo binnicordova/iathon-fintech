@@ -18,7 +18,7 @@ One codebase at the repo root, built from the [`expo-go-boilerplate`](https://ww
 |---|---|
 | Web App form, 5 screens | **Quote** → **Data (1/3)** → **Pay (2/3)** → **Proof (3/3)** → **Status** timeline (`src/app/(tabs)/index.tsx`, `src/app/order/*`) |
 | In-app assistant, same service and steps | **Assistant** tab: a LangGraph agent with Gemma, one question at a time, rate card / payment / proof / status drawn by the app (`src/assistant/*`) |
-| Human attention flow | "Hablar con una persona": queue position + estimated wait, leave for the assistant or the form any time (`src/app/human.tsx`) |
+| Human attention flow | "Hablar con una persona" opens BRASPER on WhatsApp with the quote and what the assistant knows already prefilled (`src/services/whatsapp.ts`) |
 | Validate and export | `reviewOrder` (approve / reject with who and when) and `exportOrders` (marks orders exported and returns the Dashboard CSV) |
 | Fact billing script | `runFact` (billing role): idempotent test-mode run that reserves a number → XML → PDF built from the XML → result on the order; the client downloads the PDF with `getReceipt` |
 | `orders` / `invoices` tables | Firestore `orders` (+ `invoices`, `quotes`, `handoffs`, `clients`), written **only** by Cloud Functions; the back office moves orders on (`validating → approved → exported`) from its own system |
@@ -52,7 +52,7 @@ Expo Go notes:
 |---|---|
 | `EXPO_PUBLIC_SENTRY_DSN` | Turns Sentry on (errors, traces, the LangGraph `gen_ai.*` spans). Empty = every Sentry call is a no-op |
 | `EXPO_PUBLIC_SENTRY_RECORD_AI_CONTENT` | `true` also sends prompts/replies to Sentry. **Off by default**: the chat carries ID numbers and bank accounts |
-| `EXPO_PUBLIC_WHATSAPP_NUMBER` | Number for the "Talk on WhatsApp" button (`wa.me`); empty opens WhatsApp's chat picker |
+| `EXPO_PUBLIC_WHATSAPP_NUMBER` | BRASPER's WhatsApp line (digits with country code) for "Talk to a person"; empty opens WhatsApp's chat picker |
 | `EXPO_PUBLIC_FIREBASE_EMULATOR_HOST` | Use the local emulators |
 
 ---
@@ -63,7 +63,7 @@ Expo Go notes:
 Expo app (web / iOS / Android)                       Firebase project aibrasper (southamerica-east1)
 ┌─────────────────────────────────────┐             ┌────────────────────────────────────────────┐
 │ Form screens ─┐                     │  callable   │ getRates · createQuote · createOrder       │
-│               ├─ same stores/services├────────────▶│ submitProof · cancelOrder · requestHuman   │
+│               ├─ same stores/services├────────────▶│ submitProof · cancelOrder                  │
 │ Assistant ────┘  (Jotai + Firebase)  │             │ assistantGenerate (Gemma)                  │
 │  LangGraph graph                    │             │                                            │
 │  └ agent ⇄ tools (zod, validated)   │  Firestore  │                                            │
@@ -83,7 +83,7 @@ Expo app (web / iOS / Android)                       Firebase project aibrasper 
 * **Model: Gemma 4** (`gemma-4-26b-a4b-it`, Google's open model) through the Gemini API, called by the `assistantGenerate` function, so **the API key never reaches the app bundle** (the same advice Sentry gives). The function allow-lists the request shape.
 * **Rate card, fees and accounts are never written by the model.** Tools return a card id; the app renders the numbers from the server's quote or order. The model is told it must not repeat figures.
 * **Basic mode.** If the model is unreachable (no credits, offline, quota), the same tools drive a scripted conversation (`src/assistant/basic.ts`), so a client can still finish a transfer in chat. The assistant tab shows a notice when this is on.
-* **Hand-over.** `request_human` queues the client with a summary of the quote, collected fields and order, so the seller starts with context.
+* **Hand-over.** `request_human` offers the client a button that opens BRASPER on WhatsApp with a summary of the quote, collected fields and order, so the seller starts with context. Set the number in `EXPO_PUBLIC_WHATSAPP_NUMBER`.
 
 ### Making LangGraph run on a phone (what was needed)
 
@@ -141,7 +141,7 @@ TARGET=prod FIREBASE_API_KEY=<web api key> node functions/scripts/e2e-emulator.m
 
 | Piece | Status |
 |---|---|
-| Quote, form, assistant, queue, order records, PDF receipt |
+| Quote, form, assistant, WhatsApp hand-over, order records, PDF receipt |
 | KeyFácil (SUNAT) / Omni | **Not connected** (no test access yet). Fact runs against a stand-in provider that always accepts; the XML and PDF are labelled **TEST MODE, no fiscal validity** |
 | Receipt email | Not sent (no mail provider). The client downloads the PDF in the app | Full flow verified on web against the emulators (`e2e:emulator`); client half verified against production; in Expo Go on iOS the quote, the form and the assistant (LangGraph + Sentry spans, basic mode) were driven against production |
 | Fees and tax | Placeholders: 2.4% commission (back-solved from the spec's 11.98 on 500), 18% tax, 2% rate spread. Real values go in Firestore `config/public` (`pricing`) |
@@ -153,7 +153,7 @@ TARGET=prod FIREBASE_API_KEY=<web api key> node functions/scripts/e2e-emulator.m
 
 | Path | Purpose |
 |---|---|
-| `src/app/` | Expo Router routes (tabs, order steps, human queue) |
+| `src/app/` | Expo Router routes (tabs, order steps) |
 | `src/components/` | Atomic design: atoms, molecules, organisms, templates |
 | `src/domain/`, `src/models/` | Pure rules and types, shared with the functions |
 | `src/assistant/` | LangGraph graph, tools, prompt, Gemini adapter, basic mode |

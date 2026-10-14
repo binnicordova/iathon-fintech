@@ -11,3 +11,8 @@ export const SENTRY_TRACES_SAMPLE_RATE = Number(
  */
 export const SENTRY_RECORD_AI_CONTENT =
     process.env.EXPO_PUBLIC_SENTRY_RECORD_AI_CONTENT === "true";
+
+/** BRASPER's WhatsApp line, digits with country code (e.g. 51999888777). */
+export const WHATSAPP_NUMBER = (
+    process.env.EXPO_PUBLIC_WHATSAPP_NUMBER ?? ""
+).replace(/\D/g, "");
