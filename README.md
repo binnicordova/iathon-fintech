@@ -1,6 +1,6 @@
 # BRASPER MVP: WhatsApp chat to tracked operation
 
-> Product exploration **and a working Expo Go MVP** for **BRASPER**, a Brazil ⇄ Peru money-transfer / currency-exchange service (PIX ⇄ PEN). It turns a manual, WhatsApp-and-spreadsheet workflow into a tracked, auditable operation with a client app (web form and in-app assistant) that creates the order, takes the payment proof and shows the receipt. Validation and export belong to the back office and are not part of this app.
+> Product exploration **and a working Expo Go MVP** for **BRASPER**, a Brazil ⇄ Peru money-transfer / currency-exchange service (PIX ⇄ PEN). It turns a manual, WhatsApp-and-spreadsheet workflow into a tracked, auditable operation with a client app (web form and in-app assistant) that creates the order, takes the payment proof and shows the receipt. Validation, export and billing are Cloud Functions for staff roles, with no screen in the app.
 
 **🔗 Product plan: https://binnicordova.github.io/iathon-fintech/**
 
@@ -19,6 +19,7 @@ One codebase at the repo root, built from the [`expo-go-boilerplate`](https://ww
 | Web App form, 5 screens | **Quote** → **Data (1/3)** → **Pay (2/3)** → **Proof (3/3)** → **Status** timeline (`src/app/(tabs)/index.tsx`, `src/app/order/*`) |
 | In-app assistant, same service and steps | **Assistant** tab: a LangGraph agent with Gemma, one question at a time, rate card / payment / proof / status drawn by the app (`src/assistant/*`) |
 | Human attention flow | "Hablar con una persona": queue position + estimated wait, leave for the assistant or the form any time (`src/app/human.tsx`) |
+| Validate and export | `reviewOrder` (approve / reject with who and when) and `exportOrders` (marks orders exported and returns the Dashboard CSV) |
 | Fact billing script | `runFact` (billing role): idempotent test-mode run that reserves a number → XML → PDF built from the XML → result on the order; the client downloads the PDF with `getReceipt` |
 | `orders` / `invoices` tables | Firestore `orders` (+ `invoices`, `quotes`, `handoffs`, `clients`), written **only** by Cloud Functions; the back office moves orders on (`validating → approved → exported`) from its own system |
 | Exchange-rate provider | `open.er-api.com` primary, `fawazahmed0` backup, cached by our server; Brasper rate = market − spread; "next update" = last refresh + interval; never shows 0 |
@@ -73,7 +74,7 @@ Expo app (web / iOS / Android)                       Firebase project aibrasper 
 ```
 
 * **Server is the source of truth.** The app prices live for a good calculator feel, but `createQuote` re-prices on the server and freezes the rate; `createOrder` takes rate, fees and the payment account from that quote, never from the request. Pricing, validators and the status machine live once in `src/domain` and are copied into the functions at build (`functions/scripts/copy-shared.mjs`), so both sides compute the same numbers.
-* **Clients only.** Everyone using the app is an anonymous Firebase user (no sign-up friction) who can read only their own records. There are no staff screens here: validation and export are done by the back office (Admin SDK). The one staff-only function is `runFact`, for users with the `billing` or `admin` claim.
+* **Clients only.** Everyone using the app is an anonymous Firebase user (no sign-up friction) who can read only their own records. There are no staff screens in the app. Staff are email users with a `role` custom claim (`validator`, `operator`, `billing`, `admin`) and use the `reviewOrder`, `exportOrders` and `runFact` functions directly; give a user a role with the Admin SDK `setCustomUserClaims`.
 * **Money rules in code, not in the prompt.** The assistant has no tool that approves, exports or creates an order. Order creation, hand-over and payment steps run from the app's own buttons. Tool arguments are validated with zod, a wrong tool call comes back as an error, and a runaway loop stops at the recursion limit.
 
 ### The assistant: LangGraph + Gemma + Sentry
@@ -98,7 +99,7 @@ Expo app (web / iOS / Android)                       Firebase project aibrasper 
 
 ## Firebase project `aibrasper`
 
-Deployed: Firestore (`southamerica-east1`) + rules + indexes, Storage rules (private proof photos), 11 callable Cloud Functions (Node 24, 2nd gen), Auth (anonymous), secret `GEMINI_API_KEY`.
+Deployed: Firestore (`southamerica-east1`) + rules + indexes, Storage rules (private proof photos), 13 callable Cloud Functions (Node 24, 2nd gen), Auth (anonymous), secret `GEMINI_API_KEY`.
 
 ```bash
 bun run deploy:backend      # firestore rules + indexes, storage rules, functions

@@ -54,6 +54,13 @@ export type FactResult = {
     invoice?: string;
 };
 
+export type ExportResult = {
+    batchId: string;
+    count: number;
+    filename: string;
+    csv: string;
+};
+
 export type AssistantPart = {
     text?: string;
     functionCall?: {name: string; args: Record<string, unknown>};
@@ -98,6 +105,11 @@ export const api = {
         {orderId: string},
         {filename: string; contentType: string; base64: string}
     >("getReceipt"),
+    reviewOrder: call<
+        {orderId: string; decision: "approve" | "reject"; reason?: string},
+        {ok: true}
+    >("reviewOrder"),
+    exportOrders: call<{orderIds: string[]}, ExportResult>("exportOrders"),
     runFact: call<{orderIds: string[]}, {results: FactResult[]}>("runFact"),
     assistantGenerate: call<AssistantRequest, AssistantResponse>(
         "assistantGenerate"

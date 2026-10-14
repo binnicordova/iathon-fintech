@@ -1,8 +1,8 @@
 # BRASPER Cloud Functions: how to use them
 
-Project `aibrasper` · region `southamerica-east1` · Cloud Functions 2nd gen (Node 24) · 11 **callable** functions.
+Project `aibrasper` · region `southamerica-east1` · Cloud Functions 2nd gen (Node 24) · 13 **callable** functions.
 
-The app, the assistant and any other client (a WhatsApp bot, a script, Postman) use the same functions. Each one checks who is calling, validates the input, and is the only place that writes orders, quotes and hand-over tickets. Validating payments and exporting orders are done by the back office, outside these functions; `runFact` is the only billing step here. Clients never write those collections directly (see `firestore.rules`).
+The app, the assistant and any other client (a WhatsApp bot, a script, Postman) use the same functions. Each one checks who is calling, validates the input, and is the only place that writes orders, quotes and hand-over tickets. Clients never write those collections directly (see `firestore.rules`).
 
 - [1. Endpoints](#1-endpoints)
 - [2. Calling a function](#2-calling-a-function)
@@ -30,6 +30,8 @@ Every function is served at `https://<name-lowercase>-h5wenirx2q-rj.a.run.app`.
 | [`getQueueInfo`](#getqueueinfo) | `https://getqueueinfo-h5wenirx2q-rj.a.run.app` | the ticket's owner |
 | [`leaveQueue`](#leavequeue) | `https://leavequeue-h5wenirx2q-rj.a.run.app` | the ticket's owner |
 | [`assistantGenerate`](#assistantgenerate) | `https://assistantgenerate-h5wenirx2q-rj.a.run.app` | any signed-in user |
+| [`reviewOrder`](#revieworder) | `https://revieworder-h5wenirx2q-rj.a.run.app` | `validator`, `admin` |
+| [`exportOrders`](#exportorders) | `https://exportorders-h5wenirx2q-rj.a.run.app` | `operator`, `admin` |
 | [`runFact`](#runfact) | `https://runfact-h5wenirx2q-rj.a.run.app` | `billing`, `admin` |
 
 Local emulator (`bun run emulators`): `http://localhost:5001/aibrasper/southamerica-east1/<functionName>`.
@@ -86,7 +88,7 @@ call() {  # call <functionName> '<json data>'
 
 **Clients** are anonymous Firebase Auth users. The app signs them in silently; over HTTP you create one with `accounts:signUp` (above). The returned `idToken` lasts one hour; renew it with the `refreshToken` against `securetoken.googleapis.com/v1/token`. Everything a client owns is tied to its `uid`: it can only touch its own quotes, orders, proofs and tickets.
 
-**Staff** (only needed for `runFact`) are email/password users with a custom claim `role` = `billing` or `admin`. Sign in with `accounts:signInWithPassword` and use that token. The claim has to be set with the Admin SDK (`admin.auth().setCustomUserClaims(uid, {role: "billing"})`); sign out and in again after it changes. Everyone else is a client and only ever sees their own data.
+**Staff** are email/password users with a custom claim `role`: `validator` (`reviewOrder`), `operator` (`exportOrders`), `billing` (`runFact`) or `admin` (all). Sign in with `accounts:signInWithPassword` and use that token. The claim has to be set with the Admin SDK (`admin.auth().setCustomUserClaims(uid, {role: "validator"})`); sign out and in again after it changes. Everyone else is a client and only ever sees their own data.
 
 ## 4. Errors
 
@@ -95,12 +97,15 @@ Every function throws `HttpsError`s with a stable reason in `error.message`. The
 | HTTP | `error.status` | `error.message` (reason) | Meaning |
 |---|---|---|---|
 | 401 | `UNAUTHENTICATED` | `sign-in-required` | No or invalid token |
-| 403 | `PERMISSION_DENIED` | `staff-only` | Caller has no `role` claim (`runFact`) |
+| 403 | `PERMISSION_DENIED` | `staff-only` | Caller has no `role` claim |
 | 403 | `PERMISSION_DENIED` | `role-not-allowed` | Role not allowed for this function |
 | 403 | `PERMISSION_DENIED` | `not-your-order` | `getReceipt` on someone else's order |
 | 400 | `FAILED_PRECONDITION` | `receipt-not-ready` | Fact has not accepted the sale yet |
 | 400 | `INVALID_ARGUMENT` | `invalid-input` | Body failed validation; `error.details` is `[{path, message}]` |
 | 400 | `INVALID_ARGUMENT` | `invalid-amount`, `same-currency`, `amount-too-small` | `createQuote` input problems |
+| 400 | `INVALID_ARGUMENT` | `reason-required` | `reviewOrder` reject without a reason |
+| 400 | `FAILED_PRECONDITION` | `only-approved-orders` | `exportOrders` got an order that is not `approved`; `details.blocked` lists them |
+| 400 | `FAILED_PRECONDITION` | `cannot-approved-from-<status>`, `cannot-rejected-from-<status>` | Illegal status change in `reviewOrder` |
 | 400 | `INVALID_ARGUMENT` | `invalid-operation-no`, `invalid-proof-path`, `proof-too-large` | `submitProof` input problems |
 | 400 | `FAILED_PRECONDITION` | `requires-human` | Amount above the large-amount limit; `details` carries the computed quote |
 | 400 | `FAILED_PRECONDITION` | `quote-already-used` | The quote already became an order |
@@ -318,6 +323,36 @@ When the model wants a tool, `parts` holds a `functionCall`; run the tool, appen
 - Override the model or point at a mock with `GEMMA_MODEL` / `GEMINI_BASE_URL` (see `functions/scripts/mock-gemma.mjs`).
 - Status: the Gemini API returned `402 prepayment credits depleted` for this project when tested, so live replies need credits or a free-tier key in AI Studio.
 
+### reviewOrder
+
+The validator checked the bank and the proof photo and decides. Records who and when.
+
+- **Role:** `validator` or `admin`.
+- **Request:**
+
+| Field | Type | Rules |
+|---|---|---|
+| `orderId` | string | |
+| `decision` | `approve` \| `reject` | |
+| `reason` | string, max 300 | **required** for `reject` |
+
+- **Response:** `{"ok": true}`
+- **Effect:** `validating → approved` or `validating → rejected` (sets `validatedBy` to the staff email, `validatedAt`, `rejectionReason`).
+- **Errors:** `staff-only`, `role-not-allowed`, `reason-required`, `order-not-found`, `cannot-approved-from-<status>`, `cannot-rejected-from-<status>`.
+
+```bash
+TOKEN=$STAFF_TOKEN call reviewOrder '{"orderId":"BR-0009","decision":"approve"}'
+```
+
+### exportOrders
+
+The operator exports approved orders for the Dashboard. Everything exported is recorded as a batch (`batches/{id}`) and the orders move to `exported` in the same step.
+
+- **Role:** `operator` or `admin`.
+- **Request:** `{"orderIds": ["BR-0006", "BR-0007"]}` (1-200 ids)
+- **Response:** `{"batchId": "…", "count": 2, "filename": "brasper-orders-2026-10-12-ab12cd.csv", "csv": "<file contents>"}`. Save `csv` to a file; its columns follow the plan's `orders` table.
+- **All or nothing:** if any id is missing or not `approved`, nothing changes and you get `only-approved-orders` with `details.blocked`.
+
 ### runFact
 
 Fact, the billing step, **in test mode**. For each `exported` order it reserves the next invoice number (series `B001`), registers the sale with a stand-in provider that always accepts, keeps the XML, builds the PDF from that XML, and writes the result to the order (`invoiceStatus`). **Safe to run twice:** an order that already has an accepted invoice is skipped.
@@ -357,8 +392,8 @@ createOrder       → orderId, paymentAccount          status: pending
    client pays the paymentAccount by PIX / transfer
 Storage upload    → proofs/<uid>/<orderId>/proof.png
 submitProof       → status: validating
-   the back office validates the payment and moves the order on
-   (validating → approved → exported); the client follows it live
+   reviewOrder    (validator)  approve → approved
+   exportOrders   (operator)             → exported   + CSV for the Dashboard
    runFact        (billing)              → invoice accepted (test mode)
 getReceipt        → PDF
 ```
@@ -402,4 +437,4 @@ TARGET=prod FIREBASE_API_KEY=$API_KEY node functions/scripts/e2e-emulator.mjs   
 
 All values above are placeholders until the business and the accountant confirm them. Pricing changes apply to the next quote with no redeploy.
 
-Source: `functions/src/` (one file per area: `quotes`, `orders`, `handoff`, `fact`, `assistant`, `rates`). The rules for pricing, validation and the status machine live once in `src/domain` and `src/models` and are copied into the functions at build.
+Source: `functions/src/` (one file per area: `quotes`, `orders`, `handoff`, `staff`, `fact`, `assistant`, `rates`). The rules for pricing, validation and the status machine live once in `src/domain` and `src/models` and are copied into the functions at build.

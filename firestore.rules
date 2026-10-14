@@ -39,6 +39,11 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    match /batches/{id} {
+      allow read: if false;
+      allow write: if false;
+    }
+
     // Saved name, document and accounts, so returning clients do not retype.
     match /clients/{uid} {
       allow read: if signedIn() && request.auth.uid == uid;

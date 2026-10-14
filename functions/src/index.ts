@@ -10,3 +10,4 @@ export {getQueueInfo, leaveQueue, requestHuman} from "./handoff";
 export {cancelOrder, createOrder, submitProof} from "./orders";
 export {createQuote} from "./quotes";
 export {getRates} from "./rates";
+export {exportOrders, reviewOrder} from "./staff";
