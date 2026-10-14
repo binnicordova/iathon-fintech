@@ -1,8 +1,9 @@
-import {Column} from "@expo/ui";
+import {Column, Row, Spacer} from "@expo/ui";
 import {useRouter} from "expo-router";
 import {useAtomValue, useSetAtom} from "jotai";
 import {useState} from "react";
 import {Chip} from "@/components/atoms/Chip/Chip";
+import {Surface} from "@/components/atoms/Surface/Surface";
 import {Text} from "@/components/atoms/Text/Text";
 import {Card} from "@/components/molecules/Card/Card";
 import {AppHeader} from "@/components/organisms/AppHeader/AppHeader";
@@ -104,26 +105,30 @@ export default function QuoteScreen() {
                 <Text type="label" color={muted}>
                     {t("quote.help")}
                 </Text>
-                <Column
-                    spacing={SPACING[2]}
-                    alignment="start"
-                    style={{width: "100%"}}
-                >
-                    <Chip
-                        testID="help-assistant"
-                        icon="assistant"
-                        label={t("quote.askAssistant")}
-                        tone="ai"
-                        onPress={() => router.navigate(PATHS.ASSISTANT)}
-                    />
-                    <Chip
-                        testID="help-human"
-                        icon="person"
-                        label={t("quote.askHuman")}
-                        tone="success"
-                        onPress={talkToPerson}
-                    />
-                </Column>
+                <Surface fill>
+                    <Row spacing={SPACING[2]} alignment="center">
+                        <Chip
+                            testID="help-assistant"
+                            icon="assistant"
+                            label={t("quote.askAssistant")}
+                            tone="ai"
+                            onPress={() => router.navigate(PATHS.ASSISTANT)}
+                        />
+                        <Spacer flexible />
+                    </Row>
+                </Surface>
+                <Surface fill>
+                    <Row spacing={SPACING[2]} alignment="center">
+                        <Chip
+                            testID="help-human"
+                            icon="person"
+                            label={t("quote.askHuman")}
+                            tone="success"
+                            onPress={talkToPerson}
+                        />
+                        <Spacer flexible />
+                    </Row>
+                </Surface>
             </Card>
         </Screen>
     );
