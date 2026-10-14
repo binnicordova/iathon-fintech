@@ -2,6 +2,8 @@
 
 > A mobile app and an AI assistant for **BRASPER**, a Brazil ⇄ Peru money-exchange and transfer business (PIX ⇄ PEN). Built for **IATHON Perú 2026** as a working MVP on web, iOS and Android.
 
+**Author:** [BinniCordova.com](https://binnicordova.com) · **Team 5.5**, [IATHON 2026](https://lnkd.in/p/d5fZDx7k)
+
 **Product plan and analysis:** https://binnicordova.github.io/iathon-fintech/ · **Back-end API guide:** [functions/docs/README.md](functions/docs/README.md) · **Order lifecycle:** [functions/docs/order-lifecycle.md](functions/docs/order-lifecycle.md)
 
 <p align="center">
