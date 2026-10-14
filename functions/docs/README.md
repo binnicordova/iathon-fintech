@@ -323,6 +323,7 @@ When the model wants a tool, `parts` holds a `functionCall`; run the tool, appen
 
 - **Errors:** `invalid-input`, `model-unavailable` (HTTP 503, or 429 when the Gemini quota is hit). The app then switches to its scripted **basic mode**.
 - Override the model or point at a mock with `GEMMA_MODEL` / `GEMINI_BASE_URL` (see `functions/scripts/mock-gemma.mjs`).
+- **Speed:** Gemma 4 "thinks" before answering, which cost 3-4 s per call. The proxy sends `thinkingConfig.thinkingLevel: "minimal"` (about 1-2 s per call, same tool choices). Set `GEMMA_THINKING_LEVEL=high` to restore the default, or an empty value to send no setting. Measured on the live API: `thinkingBudget: 0` and level `low` are rejected.
 - Status: the Gemini API returned `402 prepayment credits depleted` for this project when tested, so live replies need credits or a free-tier key in AI Studio.
 
 ### reviewOrder

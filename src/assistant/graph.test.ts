@@ -81,8 +81,7 @@ describe("assistant graph", () => {
                 amount: 500,
                 send_currency: "BRL",
                 receive_currency: "PEN",
-            }),
-            [{text: "Listo, ¿continuamos?"}]
+            })
         );
         const graph = buildAssistantGraph({deps, generate});
 
@@ -93,7 +92,9 @@ describe("assistant graph", () => {
         );
 
         expect(turn.cards).toEqual([{kind: "quote", quote: QUOTE}]);
-        expect(turn.text).toBe("Listo, ¿continuamos?");
+        // The app words the answer itself: one model call, not two.
+        expect(calls).toHaveLength(1);
+        expect(turn.text).toBe("Aquí tienes tu cotización. ¿Seguimos?");
         expect(turn.actions).toEqual(["continue", "changeAmount", "human"]);
         expect(deps.lockQuote).toHaveBeenCalledWith({
             amount: 500,
@@ -107,10 +108,6 @@ describe("assistant graph", () => {
             (m) => m instanceof ToolMessage
         ) as ToolMessage;
         expect(String(toolReply.content)).not.toMatch(/337|514|0\.6749/);
-        // ...and the second model call carries the tool result back.
-        expect(calls[1].contents.at(-1)?.parts[0].functionResponse?.name).toBe(
-            "get_quote"
-        );
         expect(calls[0].systemInstruction).toContain(
             "Never state exchange rates"
         );
@@ -133,6 +130,20 @@ describe("assistant graph", () => {
         expect(JSON.parse(String(toolReply.content)).status).toBe("invalid");
         expect(deps.getDraft().docNumber).toBe("");
         expect(turn.cards).toEqual([]);
+    });
+
+    it("asks the next question itself after a valid field, with one model call", async () => {
+        const deps = makeDeps();
+        const {generate, calls} = scripted(
+            call("save_client_data", {field: "docNumber", value: "72547104"})
+        );
+        const graph = buildAssistantGraph({deps, generate});
+
+        const turn = await runTurn(graph, [], "mi dni es 72547104");
+
+        expect(calls).toHaveLength(1);
+        expect(deps.getDraft().docNumber).toBe("72547104");
+        expect(turn.text).toBe("¿Cuál es tu nombre completo?");
     });
 
     it("saves valid fields one at a time and shows the review card when complete", async () => {

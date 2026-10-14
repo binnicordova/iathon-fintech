@@ -16,7 +16,7 @@ import {fromParts, type Generate, toContents} from "@/assistant/model";
 import {buildSystemPrompt, type PromptContext} from "@/assistant/prompt";
 import {runTool, TOOL_DECLARATIONS} from "@/assistant/tools";
 import type {ChatCard, QuickActionId} from "@/assistant/types";
-import {translate} from "@/i18n";
+import {type TranslationKey, translate} from "@/i18n";
 import {nextMissingField, validateClientDraft} from "@/utils/clientDraft";
 
 const FIELDS = [
@@ -158,6 +158,7 @@ export const buildAssistantGraph = ({
         const messages: ToolMessage[] = [];
         const cards: ChatCard[] = [];
         let actions: QuickActionId[] = [];
+        const replies: TranslationKey[] = [];
 
         for (const call of calls) {
             const outcome = await span(
@@ -172,6 +173,9 @@ export const buildAssistantGraph = ({
             if (outcome.actions?.length) {
                 actions = outcome.actions;
             }
+            if (outcome.reply) {
+                replies.push(outcome.reply);
+            }
             messages.push(
                 new ToolMessage({
                     content: JSON.stringify(outcome.result),
@@ -180,7 +184,13 @@ export const buildAssistantGraph = ({
                 })
             );
         }
-        return {messages, cards, actions};
+        // Every tool had a canned line: answer now instead of asking the model
+        // to put a card into words. Anything else goes back to the model.
+        const canned =
+            calls.length > 0 && replies.length === calls.length
+                ? [new AIMessage(translate(deps.language(), replies[0]))]
+                : [];
+        return {messages: [...messages, ...canned], cards, actions};
     };
 
     const route = (state: AssistantState): "tools" | typeof END => {
@@ -190,12 +200,15 @@ export const buildAssistantGraph = ({
             : END;
     };
 
+    const afterTools = (state: AssistantState): "agent" | typeof END =>
+        state.messages.at(-1) instanceof AIMessage ? END : "agent";
+
     const builder = new StateGraph(AssistantState)
         .addNode("agent", agent)
         .addNode("tools", tools)
         .addEdge(START, "agent")
         .addConditionalEdges("agent", route, ["tools", END])
-        .addEdge("tools", "agent");
+        .addConditionalEdges("tools", afterTools, ["agent", END]);
 
     // Sentry's React Native SDK cannot auto-instrument LangGraph: wrap the graph
     // before compiling to get gen_ai.create_agent / gen_ai.invoke_agent spans.

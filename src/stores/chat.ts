@@ -172,36 +172,9 @@ export const runActionAtom = atom(
                     say(set, t("assistant.quoteExpired"));
                     return;
                 }
-                if (get(chatDegradedAtom)) {
-                    const next = askNext(deps);
-                    say(set, next.text, next.cards, next.actions);
-                    return;
-                }
-                if (modelRecentlyDown()) {
-                    const next = askNext(deps);
-                    say(set, next.text, next.cards, next.actions);
-                    return;
-                }
-                // Let the model ask the first question; the user sees no extra bubble.
-                set(chatBusyAtom, true);
-                try {
-                    const turn = await runTurn(
-                        getGraph(),
-                        get(chatHistoryAtom),
-                        "(The client pressed Continue on the rate card.)"
-                    );
-                    set(chatHistoryAtom, turn.history);
-                    if (turn.degraded) {
-                        degradedAt = Date.now();
-                        set(chatDegradedAtom, true);
-                        const next = askNext(deps);
-                        say(set, next.text, next.cards, next.actions);
-                    } else {
-                        say(set, turn.text, turn.cards, turn.actions);
-                    }
-                } finally {
-                    set(chatBusyAtom, false);
-                }
+                // The first question is always the same one: no model call, no wait.
+                const next = askNext(deps);
+                say(set, next.text, next.cards, next.actions);
                 return;
             }
             case "changeAmount":

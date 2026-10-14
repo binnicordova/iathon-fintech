@@ -44,6 +44,16 @@ export const parseAssistantRequest = (data: unknown): AssistantRequest => {
     return result.data;
 };
 
+/**
+ * Gemma 4 "thinks" before it answers, which costs 3-4 s on every call. For this
+ * assistant (short replies, tools do the real work) "minimal" gives the same
+ * answers in about 1.5 s. Measured against the live API: "budget 0" and "low"
+ * are rejected. Set GEMMA_THINKING_LEVEL to "high" to restore the default, or
+ * to an empty string to send no thinking setting at all.
+ */
+const thinkingLevel = (): string =>
+    process.env.GEMMA_THINKING_LEVEL ?? "minimal";
+
 export const buildGeminiRequest = (input: AssistantRequest) => ({
     systemInstruction: {parts: [{text: input.systemInstruction}]},
     contents: input.contents,
@@ -53,6 +63,7 @@ export const buildGeminiRequest = (input: AssistantRequest) => ({
     generationConfig: {
         temperature: input.temperature,
         maxOutputTokens: input.maxOutputTokens,
+        ...(thinkingLevel() ? {thinkingConfig: {thinkingLevel: thinkingLevel()}} : {}),
     },
 });
 

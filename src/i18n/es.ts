@@ -200,6 +200,10 @@ export const es = {
         "La cotización venció. Dime el monto de nuevo para fijar una nueva tasa.",
     "assistant.proofSaved":
         "Recibido. Una persona validará tu pago en unos 15 min. Te aviso aquí.",
+    "assistant.quoteReady": "Aquí tienes tu cotización. ¿Seguimos?",
+    "assistant.paymentReady":
+        'Aquí tienes cómo pagar. Cuando termines, toca "Ya transferí".',
+    "assistant.humanOffer": "Te paso con una persona del equipo por WhatsApp.",
     "assistant.statusIntro": "Esto dice tu operación ahora mismo.",
     "assistant.cannotQuote":
         "No pude cotizar ahora mismo. Intenta de nuevo o habla con una persona.",
