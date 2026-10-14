@@ -73,6 +73,8 @@ export type Order = OrderClientData & {
     exportedAt: string | null;
     /** Mirrored from `invoices/{orderId}`, which only Fact writes. */
     invoiceStatus: InvoiceStatus | null;
+    /** Staff email, only on operations registered by a seller (channel "human"). */
+    createdBy?: string;
 };
 
 export type TimelineStepKey = "registered" | "verifying" | "sent" | "received";
