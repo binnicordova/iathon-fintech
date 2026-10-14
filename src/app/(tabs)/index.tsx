@@ -1,4 +1,4 @@
-import {Column, Row} from "@expo/ui";
+import {Column} from "@expo/ui";
 import {useRouter} from "expo-router";
 import {useAtomValue, useSetAtom} from "jotai";
 import {useState} from "react";
@@ -104,7 +104,7 @@ export default function QuoteScreen() {
                 <Text type="label" color={muted}>
                     {t("quote.help")}
                 </Text>
-                <Row spacing={SPACING[2]} alignment="center">
+                <Column spacing={SPACING[2]} alignment="start">
                     <Chip
                         testID="help-assistant"
                         icon="assistant"
@@ -119,7 +119,7 @@ export default function QuoteScreen() {
                         tone="success"
                         onPress={talkToPerson}
                     />
-                </Row>
+                </Column>
             </Card>
         </Screen>
     );

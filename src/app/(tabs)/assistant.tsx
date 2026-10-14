@@ -2,13 +2,7 @@ import {Column, Host, Row, Spacer} from "@expo/ui";
 import {useRouter} from "expo-router";
 import {useAtomValue, useSetAtom} from "jotai";
 import {useCallback, useMemo} from "react";
-import {
-    FlatList,
-    KeyboardAvoidingView,
-    Platform,
-    StyleSheet,
-    View,
-} from "react-native";
+import {FlatList, Platform, StyleSheet, View} from "react-native";
 import type {ChatMessage, QuickActionId} from "@/assistant/types";
 import {Icon} from "@/components/atoms/Icon/Icon";
 import {IconButton} from "@/components/atoms/IconButton/IconButton";
@@ -18,6 +12,7 @@ import {ChatComposer} from "@/components/organisms/ChatComposer/ChatComposer";
 import {ChatMessageRow} from "@/components/organisms/ChatMessageRow/ChatMessageRow";
 import {ChatSummary} from "@/components/organisms/ChatSummary/ChatSummary";
 import {PATHS} from "@/constants/routes";
+import {useKeyboard} from "@/hooks/useKeyboard";
 import {useT} from "@/hooks/useT";
 import {
     chatBusyAtom,
@@ -29,6 +24,7 @@ import {
     sendMessageAtom,
 } from "@/stores/chat";
 import {lockedQuoteAtom} from "@/stores/quote";
+import {useBottomSpace} from "@/theme/safeArea";
 import {SPACING} from "@/theme/spacing";
 import {ICON_SIZE} from "@/theme/typography";
 import {useTheme} from "@/theme/useTheme";
@@ -51,6 +47,8 @@ export default function AssistantScreen() {
     const send = useSetAtom(sendMessageAtom);
     const runAction = useSetAtom(runActionAtom);
     const reset = useSetAtom(resetChatAtom);
+    const {visible: typing} = useKeyboard();
+    const bottomSpace = useBottomSpace();
 
     const onAction = useCallback(
         (action: QuickActionId) => {
@@ -86,10 +84,11 @@ export default function AssistantScreen() {
     );
 
     return (
-        <KeyboardAvoidingView
-            style={[styles.root, {backgroundColor: background}]}
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
-            keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
+        <View
+            style={[
+                styles.root,
+                {backgroundColor: background, paddingBottom: bottomSpace},
+            ]}
         >
             <Host
                 matchContents={{vertical: true}}
@@ -126,8 +125,9 @@ export default function AssistantScreen() {
                             onPress={() => reset()}
                         />
                     </Row>
-                    <ChatSummary />
-                    {degraded && (
+                    {/* The summary and the notice give way to the chat while typing. */}
+                    {!typing && <ChatSummary />}
+                    {degraded && !typing && (
                         <Notice tone="warning">
                             {t("assistant.basicMode")}
                         </Notice>
@@ -141,6 +141,10 @@ export default function AssistantScreen() {
                 data={data}
                 keyExtractor={(item) => item.id}
                 keyboardShouldPersistTaps="handled"
+                keyboardDismissMode={
+                    Platform.OS === "ios" ? "interactive" : "on-drag"
+                }
+                automaticallyAdjustKeyboardInsets={false}
                 ListHeaderComponent={
                     busy ? (
                         <Host
@@ -178,6 +182,6 @@ export default function AssistantScreen() {
                     />
                 </Host>
             </View>
-        </KeyboardAvoidingView>
+        </View>
     );
 }

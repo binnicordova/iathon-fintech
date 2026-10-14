@@ -51,6 +51,7 @@ const RootLayout = () => {
         <SafeAreaProvider initialMetrics={initialWindowMetrics}>
             <Provider store={getDefaultStore()}>
                 <SafeAreaView
+                    edges={["top", "left", "right"]}
                     style={[styles.baseLayer, {backgroundColor: background}]}
                 >
                     <StatusBar style="auto" />

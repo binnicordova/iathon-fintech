@@ -1,7 +1,8 @@
 import {Column, Host, ScrollView, Spacer} from "@expo/ui";
 import type {ReactNode} from "react";
-import {StyleSheet} from "react-native";
+import {StyleSheet, View} from "react-native";
 import {Surface} from "@/components/atoms/Surface/Surface";
+import {useBottomSpace} from "@/theme/safeArea";
 import {SPACING} from "@/theme/spacing";
 import {surfaceModifiers, surfaceStyle} from "@/theme/surface";
 import {useTheme} from "@/theme/useTheme";
@@ -34,6 +35,7 @@ export type ScreenProps = {
 };
 
 const styles = StyleSheet.create({
+    frame: {flex: 1, width: "100%", alignItems: "center"},
     host: {
         flex: 1,
         width: "100%",
@@ -60,6 +62,7 @@ export const Screen = ({
     bottomAligned = false,
 }: ScreenProps) => {
     const {accent, background} = useTheme();
+    const bottomSpace = useBottomSpace();
 
     const content = (
         <Column
@@ -86,41 +89,48 @@ export const Screen = ({
     );
 
     return (
-        <Host
-            style={[styles.host, {backgroundColor: background}]}
-            seedColor={accent}
-            useViewportSizeMeasurement
+        <View
+            style={[
+                styles.frame,
+                {backgroundColor: background, paddingBottom: bottomSpace},
+            ]}
         >
-            <Column
-                spacing={0}
-                modifiers={surfaceModifiers({fillHeight: true})}
-                style={surfaceStyle({fillHeight: true})}
+            <Host
+                style={[styles.host, {backgroundColor: background}]}
+                seedColor={accent}
+                useViewportSizeMeasurement
             >
-                {header && (
-                    <Surface
-                        fill
-                        paddingHorizontal={SPACING[4]}
-                        paddingTop={SPACING[3]}
-                        spacing={SPACING[3]}
-                        backgroundColor={background}
-                    >
-                        {header}
-                    </Surface>
-                )}
+                <Column
+                    spacing={0}
+                    modifiers={surfaceModifiers({fillHeight: true})}
+                    style={surfaceStyle({fillHeight: true})}
+                >
+                    {header && (
+                        <Surface
+                            fill
+                            paddingHorizontal={SPACING[4]}
+                            paddingTop={SPACING[3]}
+                            spacing={SPACING[3]}
+                            backgroundColor={background}
+                        >
+                            {header}
+                        </Surface>
+                    )}
 
-                {bottomAligned && <Spacer flexible />}
-                {body}
-                {footer && (
-                    <Surface
-                        fill
-                        paddingHorizontal={SPACING[4]}
-                        paddingVertical={SPACING[3]}
-                        backgroundColor={background}
-                    >
-                        {footer}
-                    </Surface>
-                )}
-            </Column>
-        </Host>
+                    {bottomAligned && <Spacer flexible />}
+                    {body}
+                    {footer && (
+                        <Surface
+                            fill
+                            paddingHorizontal={SPACING[4]}
+                            paddingVertical={SPACING[3]}
+                            backgroundColor={background}
+                        >
+                            {footer}
+                        </Surface>
+                    )}
+                </Column>
+            </Host>
+        </View>
     );
 };
