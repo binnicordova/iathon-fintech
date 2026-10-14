@@ -104,7 +104,11 @@ export default function QuoteScreen() {
                 <Text type="label" color={muted}>
                     {t("quote.help")}
                 </Text>
-                <Column spacing={SPACING[2]} alignment="start">
+                <Column
+                    spacing={SPACING[2]}
+                    alignment="start"
+                    style={{width: "100%"}}
+                >
                     <Chip
                         testID="help-assistant"
                         icon="assistant"
