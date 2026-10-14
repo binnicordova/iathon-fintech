@@ -7,7 +7,8 @@
 //
 // Orders continue the real counter (counters/orders). Run `functions:build`
 // first: the pricing rules are read from lib/shared. Refuses to run twice
-// unless --force is passed.
+// unless --force is passed. Invoices are left out on purpose: run runFact on
+// the exported orders to produce them.
 import {deflateSync, crc32} from "node:zlib";
 import {createRequire} from "node:module";
 import {applicationDefault, initializeApp} from "firebase-admin/app";
@@ -183,6 +184,7 @@ for (const [personIndex, amount, status] of PLAN) {
         rejectionReason: status === "rejected" ? "Operation number does not match the bank statement (demo)." : null,
         exportBatchId: status === "exported" ? "BATCH-DEMO-1" : null,
         exportedAt: status === "exported" ? afterProof(90) : null,
+        invoiceStatus: null,
         synthetic: true,
     };
     delete order.requiresHuman;

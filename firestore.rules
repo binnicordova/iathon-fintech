@@ -1,7 +1,7 @@
 rules_version = '2';
 
-// Clients read their own records; only Cloud Functions write orders, quotes
-// and handoffs, so the rate, fees and status can never be set from the app.
+// Clients read their own records; only Cloud Functions write orders, quotes,
+// invoices and handoffs, so the rate, fees and status can never be set from the app.
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -25,6 +25,11 @@ service cloud.firestore {
     }
 
     match /orders/{id} {
+      allow read: if isOwner();
+      allow write: if false;
+    }
+
+    match /invoices/{id} {
       allow read: if isOwner();
       allow write: if false;
     }

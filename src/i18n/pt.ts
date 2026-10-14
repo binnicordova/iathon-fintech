@@ -135,6 +135,11 @@ export const pt: Dictionary = {
     "status.rejected": "Não conseguimos verificar seu pagamento.",
     "status.rejectedReason": "Motivo: {reason}",
     "status.cancelled": "Operação cancelada.",
+    "status.receipt": "Baixar comprovante",
+    "status.receiptTest": "Comprovante de teste, sem validade fiscal.",
+    "status.receiptWaiting":
+        "Seu comprovante aparecerá aqui quando estiver pronto.",
+    "status.receiptError": "Não conseguimos baixar o comprovante.",
     "status.askAssistant": "Onde está meu pedido? Pergunte ao assistente",
     "status.finishPayment": "Continuar com o pagamento",
     "status.notFound": "Não encontramos essa operação.",

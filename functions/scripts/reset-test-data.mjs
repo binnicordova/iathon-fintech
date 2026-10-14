@@ -16,6 +16,7 @@ import {getStorage} from "firebase-admin/storage";
 const COLLECTIONS = [
     "orders",
     "quotes",
+    "invoices",
     "handoffs",
     "clients",
     "counters",

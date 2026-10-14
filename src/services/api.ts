@@ -47,6 +47,13 @@ export type RequestHumanInput = {
 
 export type QueueStatus = QueueInfo & {status?: Handoff["status"]};
 
+export type FactResult = {
+    orderId: string;
+    outcome: "accepted" | "skipped" | "set-aside" | "rejected";
+    detail?: string;
+    invoice?: string;
+};
+
 export type AssistantPart = {
     text?: string;
     functionCall?: {name: string; args: Record<string, unknown>};
@@ -87,6 +94,11 @@ export const api = {
     requestHuman: call<RequestHumanInput, QueueInfo>("requestHuman"),
     getQueueInfo: call<{handoffId: string}, QueueStatus>("getQueueInfo"),
     leaveQueue: call<{handoffId: string}, {ok: true}>("leaveQueue"),
+    getReceipt: call<
+        {orderId: string},
+        {filename: string; contentType: string; base64: string}
+    >("getReceipt"),
+    runFact: call<{orderIds: string[]}, {results: FactResult[]}>("runFact"),
     assistantGenerate: call<AssistantRequest, AssistantResponse>(
         "assistantGenerate"
     ),

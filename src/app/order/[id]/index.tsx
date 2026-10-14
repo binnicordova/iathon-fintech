@@ -1,4 +1,6 @@
+import {Column} from "@expo/ui";
 import {useLocalSearchParams, useRouter} from "expo-router";
+import {useState} from "react";
 import {Button} from "@/components/atoms/Button/Button";
 import {Chip} from "@/components/atoms/Chip/Chip";
 import {Text} from "@/components/atoms/Text/Text";
@@ -13,6 +15,8 @@ import {formatMoney, formatRate} from "@/domain/money";
 import {maskAccount} from "@/domain/validators";
 import {useOrder} from "@/hooks/useOrder";
 import {useLanguage, useT} from "@/hooks/useT";
+import {reportError} from "@/services/monitoring";
+import {downloadReceipt} from "@/services/receipt";
 import {SPACING} from "@/theme/spacing";
 import {useTheme} from "@/theme/useTheme";
 
@@ -23,6 +27,8 @@ export default function StatusScreen() {
     const {muted} = useTheme();
     const {id} = useLocalSearchParams<{id: string}>();
     const {data: order, loading} = useOrder(id ?? null);
+    const [receiptError, setReceiptError] = useState(false);
+    const [downloading, setDownloading] = useState(false);
 
     if (!order) {
         return (
@@ -33,6 +39,22 @@ export default function StatusScreen() {
             </Screen>
         );
     }
+
+    const receiptReady =
+        order.invoiceStatus === "accepted" || order.invoiceStatus === "sent";
+
+    const onReceipt = async () => {
+        setDownloading(true);
+        setReceiptError(false);
+        try {
+            await downloadReceipt(order.orderId);
+        } catch (error) {
+            reportError(error, "receipt");
+            setReceiptError(true);
+        } finally {
+            setDownloading(false);
+        }
+    };
 
     return (
         <Screen
@@ -98,6 +120,27 @@ export default function StatusScreen() {
                     onPress={() => router.push(PATHS.pay(order.orderId))}
                 />
             )}
+
+            {receiptReady ? (
+                <Column spacing={SPACING[2]}>
+                    <Button
+                        testID="status-receipt"
+                        title={t("status.receipt")}
+                        disabled={downloading}
+                        onPress={onReceipt}
+                    />
+                    <Text type="caption" color={muted}>
+                        {t("status.receiptTest")}
+                    </Text>
+                    {receiptError && (
+                        <Notice tone="error">{t("status.receiptError")}</Notice>
+                    )}
+                </Column>
+            ) : order.status !== "rejected" && order.status !== "cancelled" ? (
+                <Text type="caption" color={muted}>
+                    {t("status.receiptWaiting")}
+                </Text>
+            ) : null}
 
             <Chip
                 testID="status-ask-assistant"

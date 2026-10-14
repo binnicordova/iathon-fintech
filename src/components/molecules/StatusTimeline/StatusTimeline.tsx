@@ -41,7 +41,11 @@ const timeFor = (key: TimelineStepKey, order: Order): string | null => {
 export type StatusTimelineProps = {
     order: Pick<
         Order,
-        "status" | "createdAt" | "proofSubmittedAt" | "validatedAt"
+        | "status"
+        | "invoiceStatus"
+        | "createdAt"
+        | "proofSubmittedAt"
+        | "validatedAt"
     >;
 };
 

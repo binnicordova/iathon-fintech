@@ -5,6 +5,7 @@ import "./lib/firebase";
 setGlobalOptions({region: "southamerica-east1", maxInstances: 10});
 
 export {assistantGenerate} from "./assistant";
+export {getReceipt, runFact} from "./fact";
 export {getQueueInfo, leaveQueue, requestHuman} from "./handoff";
 export {cancelOrder, createOrder, submitProof} from "./orders";
 export {createQuote} from "./quotes";

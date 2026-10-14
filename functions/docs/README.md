@@ -1,8 +1,8 @@
 # BRASPER Cloud Functions: how to use them
 
-Project `aibrasper` · region `southamerica-east1` · Cloud Functions 2nd gen (Node 24) · 9 **callable** functions.
+Project `aibrasper` · region `southamerica-east1` · Cloud Functions 2nd gen (Node 24) · 11 **callable** functions.
 
-The app, the assistant and any other client (a WhatsApp bot, a script, Postman) use the same functions. Each one checks who is calling, validates the input, and is the only place that writes orders, quotes and hand-over tickets. These are **client** services only: validating payments, exporting orders and billing are done by the back office, outside this project's functions. Clients never write those collections directly (see `firestore.rules`).
+The app, the assistant and any other client (a WhatsApp bot, a script, Postman) use the same functions. Each one checks who is calling, validates the input, and is the only place that writes orders, quotes and hand-over tickets. Validating payments and exporting orders are done by the back office, outside these functions; `runFact` is the only billing step here. Clients never write those collections directly (see `firestore.rules`).
 
 - [1. Endpoints](#1-endpoints)
 - [2. Calling a function](#2-calling-a-function)
@@ -25,14 +25,16 @@ Every function is served at `https://<name-lowercase>-h5wenirx2q-rj.a.run.app`.
 | [`createOrder`](#createorder) | `https://createorder-h5wenirx2q-rj.a.run.app` | the quote's owner |
 | [`submitProof`](#submitproof) | `https://submitproof-h5wenirx2q-rj.a.run.app` | the order's owner |
 | [`cancelOrder`](#cancelorder) | `https://cancelorder-h5wenirx2q-rj.a.run.app` | the order's owner |
+| [`getReceipt`](#getreceipt) | `https://getreceipt-h5wenirx2q-rj.a.run.app` | the order's owner or any staff |
 | [`requestHuman`](#requesthuman) | `https://requesthuman-h5wenirx2q-rj.a.run.app` | any signed-in user |
 | [`getQueueInfo`](#getqueueinfo) | `https://getqueueinfo-h5wenirx2q-rj.a.run.app` | the ticket's owner |
 | [`leaveQueue`](#leavequeue) | `https://leavequeue-h5wenirx2q-rj.a.run.app` | the ticket's owner |
 | [`assistantGenerate`](#assistantgenerate) | `https://assistantgenerate-h5wenirx2q-rj.a.run.app` | any signed-in user |
+| [`runFact`](#runfact) | `https://runfact-h5wenirx2q-rj.a.run.app` | `billing`, `admin` |
 
 Local emulator (`bun run emulators`): `http://localhost:5001/aibrasper/southamerica-east1/<functionName>`.
 
-Instance limits: `maxInstances` is 10 for all of them and 5 for `assistantGenerate`, which has a 60 s timeout.
+Instance limits: `maxInstances` is 10 for all of them and 5 for `assistantGenerate`. `runFact` has 512 MiB and a 120 s timeout; `assistantGenerate` has a 60 s timeout.
 
 ## 2. Calling a function
 
@@ -84,7 +86,7 @@ call() {  # call <functionName> '<json data>'
 
 **Clients** are anonymous Firebase Auth users. The app signs them in silently; over HTTP you create one with `accounts:signUp` (above). The returned `idToken` lasts one hour; renew it with the `refreshToken` against `securetoken.googleapis.com/v1/token`. Everything a client owns is tied to its `uid`: it can only touch its own quotes, orders, proofs and tickets.
 
-There are no staff users or roles in these functions: a request with a valid token is a client, and it only ever sees its own data.
+**Staff** (only needed for `runFact`) are email/password users with a custom claim `role` = `billing` or `admin`. Sign in with `accounts:signInWithPassword` and use that token. The claim has to be set with the Admin SDK (`admin.auth().setCustomUserClaims(uid, {role: "billing"})`); sign out and in again after it changes. Everyone else is a client and only ever sees their own data.
 
 ## 4. Errors
 
@@ -93,6 +95,10 @@ Every function throws `HttpsError`s with a stable reason in `error.message`. The
 | HTTP | `error.status` | `error.message` (reason) | Meaning |
 |---|---|---|---|
 | 401 | `UNAUTHENTICATED` | `sign-in-required` | No or invalid token |
+| 403 | `PERMISSION_DENIED` | `staff-only` | Caller has no `role` claim (`runFact`) |
+| 403 | `PERMISSION_DENIED` | `role-not-allowed` | Role not allowed for this function |
+| 403 | `PERMISSION_DENIED` | `not-your-order` | `getReceipt` on someone else's order |
+| 400 | `FAILED_PRECONDITION` | `receipt-not-ready` | Fact has not accepted the sale yet |
 | 400 | `INVALID_ARGUMENT` | `invalid-input` | Body failed validation; `error.details` is `[{path, message}]` |
 | 400 | `INVALID_ARGUMENT` | `invalid-amount`, `same-currency`, `amount-too-small` | `createQuote` input problems |
 | 400 | `INVALID_ARGUMENT` | `invalid-operation-no`, `invalid-proof-path`, `proof-too-large` | `submitProof` input problems |
@@ -233,6 +239,20 @@ The client cancels an order that is still `pending`.
 - **Response:** `{"ok": true, "orderId": "BR-0012"}`
 - **Errors:** `order-not-found`, `order-not-pending`.
 
+### getReceipt
+
+The PDF receipt, once Fact accepted the sale. The owner or any staff role can read it.
+
+- **Request:** `{"orderId": "BR-0004"}`
+- **Response:** `{"filename": "B001-00000001.pdf", "contentType": "application/pdf", "base64": "<pdf bytes>"}`
+
+```bash
+call getReceipt '{"orderId":"BR-0004"}' | jq -r .result.base64 | base64 -d > receipt.pdf
+```
+
+- **Errors:** `receipt-not-ready` (no invoice yet, or not accepted), `not-your-order`.
+- Receipts are in **TEST MODE** until KeyFácil / Omni are connected: the PDF is labelled and has no fiscal validity.
+
 ### requestHuman
 
 "Hablar con una persona": puts the client in the seller queue with a summary of what was gathered, so nothing has to be retyped. A client has **one live ticket**; asking again returns the original place.
@@ -298,11 +318,37 @@ When the model wants a tool, `parts` holds a `functionCall`; run the tool, appen
 - Override the model or point at a mock with `GEMMA_MODEL` / `GEMINI_BASE_URL` (see `functions/scripts/mock-gemma.mjs`).
 - Status: the Gemini API returned `402 prepayment credits depleted` for this project when tested, so live replies need credits or a free-tier key in AI Studio.
 
+### runFact
+
+Fact, the billing step, **in test mode**. For each `exported` order it reserves the next invoice number (series `B001`), registers the sale with a stand-in provider that always accepts, keeps the XML, builds the PDF from that XML, and writes the result to the order (`invoiceStatus`). **Safe to run twice:** an order that already has an accepted invoice is skipped.
+
+- **Role:** `billing` or `admin`.
+- **Request:** `{"orderIds": ["BR-0004", "BR-0005"]}` (1-100 ids)
+- **Response:** one result per order. Failures are reported per order, not as an HTTP error:
+
+```json
+{"results": [
+  {"orderId": "BR-0004", "outcome": "accepted", "invoice": "B001-00000001"},
+  {"orderId": "BR-0005", "outcome": "skipped",  "invoice": "B001-00000002"},
+  {"orderId": "BR-0006", "outcome": "set-aside", "detail": "not-exported"}
+]}
+```
+
+| `outcome` | Meaning |
+|---|---|
+| `accepted` | Invoice issued; the client can now download the receipt |
+| `skipped` | Already accepted or sent earlier |
+| `set-aside` | Not billed. `detail`: `order-not-found`, `not-exported`, `invalid-email`, `invalid-document`, `amount-mismatch` |
+| `rejected` | The PDF total differed from the XML (`pdf-total-differs-from-xml`) |
+
+- The invoice total is the commission plus its tax, not the whole transfer. The issuer is derived from the send currency (PEN → INGENITECH S.A.C., BRL → Brasper 21).
+- Real KeyFácil (SUNAT) / Omni plug in at the stand-in provider step in `functions/src/fact.ts`; a real rejection is not retried automatically.
+
 ---
 
 ## 6. Typical flows
 
-### A client creates an order and pays
+### A client pays and gets a receipt
 
 ```
 getRates          (optional, to price live in the UI)
@@ -313,6 +359,8 @@ Storage upload    → proofs/<uid>/<orderId>/proof.png
 submitProof       → status: validating
    the back office validates the payment and moves the order on
    (validating → approved → exported); the client follows it live
+   runFact        (billing)              → invoice accepted (test mode)
+getReceipt        → PDF
 ```
 
 Status machine: `pending → validating → approved → exported`; `validating → rejected`; `pending → cancelled` (client). Statuses never go backwards; after `validating` only the back office changes them. The client can follow its order live by reading Firestore `orders/{orderId}` (read-only for clients).
@@ -354,4 +402,4 @@ TARGET=prod FIREBASE_API_KEY=$API_KEY node functions/scripts/e2e-emulator.mjs   
 
 All values above are placeholders until the business and the accountant confirm them. Pricing changes apply to the next quote with no redeploy.
 
-Source: `functions/src/` (one file per area: `quotes`, `orders`, `handoff`, `assistant`, `rates`). The rules for pricing, validation and the status machine live once in `src/domain` and `src/models` and are copied into the functions at build.
+Source: `functions/src/` (one file per area: `quotes`, `orders`, `handoff`, `fact`, `assistant`, `rates`). The rules for pricing, validation and the status machine live once in `src/domain` and `src/models` and are copied into the functions at build.

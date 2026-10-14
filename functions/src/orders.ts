@@ -129,6 +129,7 @@ export const createOrder = onCall(async (request) => {
             rejectionReason: null,
             exportBatchId: null,
             exportedAt: null,
+            invoiceStatus: null,
         };
 
         tx.set(counterRef, {seq}, {merge: true});
