@@ -35,7 +35,7 @@ type FactResult = {
     invoice?: string;
 };
 
-const issueInvoice = async (order: Order): Promise<FactResult> => {
+export const issueInvoice = async (order: Order): Promise<FactResult> => {
     const invoiceRef = db().doc(`invoices/${order.orderId}`);
 
     // Idempotency: one invoice per order, ever. The row is the lock.
