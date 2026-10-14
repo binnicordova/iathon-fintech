@@ -43,8 +43,8 @@ export const en: Dictionary = {
         "For large amounts and negotiated rates, a person from the team will help you.",
     "quote.swap": "Swap",
     "quote.help": "Questions?",
-    "quote.whatsapp": "Talk on WhatsApp",
     "quote.askAssistant": "Talk to the assistant",
+    "whatsapp.person": "Hello BrasPer, I would like to talk to a person.",
     "quote.askHuman": "Talk to a person",
     "quote.continue": "Continue",
     "quote.expired": "The quote expired. Refresh to lock a new rate.",
@@ -178,8 +178,6 @@ export const en: Dictionary = {
     "assistant.proofCard":
         "Send me the photo of the receipt and the operation number.",
     "assistant.orderCreated": "Order {id} created · Awaiting payment",
-    "assistant.humanHandoff":
-        "I'm passing you to a person on the team. I've already shared the summary.",
     "assistant.ask.docNumber": "What is your DNI or CPF?",
     "assistant.ask.clientName": "What is your full name?",
     "assistant.ask.email": "Which email should we send your receipt to?",
@@ -211,24 +209,8 @@ export const en: Dictionary = {
         "I couldn't send your message. Check your connection.",
     "assistant.proofTitle": "Payment proof",
     "assistant.reviewTitle": "Review your order",
-    "assistant.queueTitle": "Talk to a person",
     "assistant.guard.noApprove":
         "I don't approve payments: a person on the team verifies your transfer.",
-
-    "human.title": "Talk to a person",
-    "human.queue": "Queue position #{n}",
-    "human.wait": "estimated wait ≈ {min} min",
-    "human.context":
-        "I've shared the summary with the team, so you won't need to repeat it.",
-    "human.assistant": "Talk to the assistant, no queue",
-    "human.form": "Use the form",
-    "human.leave": "Leave the queue",
-    "human.joining": "Finding you a place in line…",
-    "human.assigned": "A person is already helping you.",
-    "human.closed": "You left the queue.",
-    "human.intro":
-        "For large amounts and negotiated rates, a person from the team will help you. You can leave the queue any time.",
-    "human.join": "Join the queue",
 
     "lang.es": "Español",
     "lang.pt": "Português",

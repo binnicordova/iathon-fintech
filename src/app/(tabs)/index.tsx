@@ -2,7 +2,6 @@ import {Column, Row} from "@expo/ui";
 import {useRouter} from "expo-router";
 import {useAtomValue, useSetAtom} from "jotai";
 import {useState} from "react";
-import {Linking} from "react-native";
 import {Chip} from "@/components/atoms/Chip/Chip";
 import {Text} from "@/components/atoms/Text/Text";
 import {Card} from "@/components/molecules/Card/Card";
@@ -15,11 +14,10 @@ import {QuoteError} from "@/domain/pricing";
 import {useLanguage, useT} from "@/hooks/useT";
 import {type ApiError, toApiError} from "@/services/api";
 import {reportError} from "@/services/monitoring";
+import {openWhatsApp} from "@/services/whatsapp";
 import {liveQuoteAtom, lockQuoteAtom} from "@/stores/quote";
 import {SPACING} from "@/theme/spacing";
 import {useTheme} from "@/theme/useTheme";
-
-const WHATSAPP_NUMBER = process.env.EXPO_PUBLIC_WHATSAPP_NUMBER ?? "";
 
 export default function QuoteScreen() {
     const t = useT();
@@ -69,20 +67,20 @@ export default function QuoteScreen() {
         }
     };
 
-    const openWhatsApp = () => {
+    const talkToPerson = () => {
         if (live.status !== "ready") {
+            openWhatsApp(t("whatsapp.person"));
             return;
         }
         const {amounts} = live;
-        const text = t("quote.whatsappText", {
-            amount: formatNumber(amounts.sendAmount, language),
-            from: amounts.sendCurrency,
-            to: amounts.receiveCurrency,
-            rate: String(amounts.rate),
-        });
-        Linking.openURL(
-            `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`
-        ).catch((failure) => reportError(failure, "whatsapp"));
+        openWhatsApp(
+            `${t("whatsapp.person")}\n${t("quote.whatsappText", {
+                amount: formatNumber(amounts.sendAmount, language),
+                from: amounts.sendCurrency,
+                to: amounts.receiveCurrency,
+                rate: String(amounts.rate),
+            })}`
+        );
     };
 
     return (
@@ -99,23 +97,13 @@ export default function QuoteScreen() {
                 busy={busy}
                 error={error}
                 requiresHuman={requiresHuman}
-                onHuman={() => router.push(PATHS.HUMAN)}
+                onHuman={talkToPerson}
             />
 
             <Card spacing={SPACING[2]}>
                 <Text type="label" color={muted}>
                     {t("quote.help")}
                 </Text>
-                <Row spacing={SPACING[2]} alignment="center">
-                    <Chip
-                        testID="help-whatsapp"
-                        icon="send"
-                        label={t("quote.whatsapp")}
-                        tone="success"
-                        onPress={openWhatsApp}
-                        disabled={live.status !== "ready"}
-                    />
-                </Row>
                 <Row spacing={SPACING[2]} alignment="center">
                     <Chip
                         testID="help-assistant"
@@ -128,8 +116,8 @@ export default function QuoteScreen() {
                         testID="help-human"
                         icon="person"
                         label={t("quote.askHuman")}
-                        tone="neutral"
-                        onPress={() => router.push(PATHS.HUMAN)}
+                        tone="success"
+                        onPress={talkToPerson}
                     />
                 </Row>
             </Card>

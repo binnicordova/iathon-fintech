@@ -41,8 +41,8 @@ export const es = {
         "Para montos grandes y tasas negociadas te atiende una persona del equipo.",
     "quote.swap": "Invertir",
     "quote.help": "¿Dudas?",
-    "quote.whatsapp": "Habla por WhatsApp",
     "quote.askAssistant": "Hablar con el asistente",
+    "whatsapp.person": "Hola BrasPer, quisiera hablar con una persona.",
     "quote.askHuman": "Hablar con una persona",
     "quote.continue": "Continuar",
     "quote.expired":
@@ -177,8 +177,6 @@ export const es = {
     "assistant.proofCard":
         "Envíame la foto del comprobante y el número de operación.",
     "assistant.orderCreated": "Operación {id} creada · Pendiente de pago",
-    "assistant.humanHandoff":
-        "Te paso con una persona del equipo. Ya le compartí el resumen.",
     "assistant.ask.docNumber": "¿Cuál es tu DNI o CPF?",
     "assistant.ask.clientName": "¿Cuál es tu nombre completo?",
     "assistant.ask.email": "¿A qué correo enviamos tu comprobante?",
@@ -209,24 +207,8 @@ export const es = {
     "assistant.errorSend": "No pude enviar tu mensaje. Revisa tu conexión.",
     "assistant.proofTitle": "Constancia de pago",
     "assistant.reviewTitle": "Revisa tu operación",
-    "assistant.queueTitle": "Atención por una persona",
     "assistant.guard.noApprove":
         "Yo no apruebo pagos: una persona del equipo verifica tu transferencia.",
-
-    "human.title": "Atención por una persona",
-    "human.queue": "Fila de atención #{n}",
-    "human.wait": "espera estimada ≈ {min} min",
-    "human.context":
-        "Ya compartí el resumen con el equipo, no tendrás que repetirlo.",
-    "human.assistant": "Hablar con el asistente, sin fila",
-    "human.form": "Usar el formulario",
-    "human.leave": "Salir de la fila",
-    "human.joining": "Buscándote un lugar en la fila…",
-    "human.assigned": "Una persona ya te está atendiendo.",
-    "human.closed": "Saliste de la fila.",
-    "human.intro":
-        "Para montos grandes y tasas negociadas te atiende una persona del equipo. Puedes dejar la fila cuando quieras.",
-    "human.join": "Ponerme en la fila",
 
     "lang.es": "Español",
     "lang.pt": "Português",

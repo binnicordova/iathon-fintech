@@ -43,11 +43,6 @@ const makeDeps = (overrides: Partial<AssistantDeps> = {}) => {
         }),
         getActiveOrderId: () => null,
         fetchOrder: jest.fn(async () => null),
-        requestHuman: jest.fn(async () => ({
-            handoffId: "h1",
-            position: 14,
-            estimatedWaitMinutes: 35,
-        })),
         ...overrides,
     };
     return deps;
@@ -174,7 +169,7 @@ describe("assistant graph", () => {
         expect(turn.actions).toEqual(["review", "form", "human"]);
     });
 
-    it("hands over to a person with context and shows the queue card", async () => {
+    it("offers WhatsApp when the client needs a person", async () => {
         const deps = makeDeps();
         const {generate} = scripted(
             call("request_human", {reason: "wants a better rate for 5000 USD"}),
@@ -184,19 +179,8 @@ describe("assistant graph", () => {
 
         const turn = await runTurn(graph, [], "¿me pueden mejorar la tasa?");
 
-        expect(turn.cards).toEqual([
-            {
-                kind: "queue",
-                queue: {
-                    handoffId: "h1",
-                    position: 14,
-                    estimatedWaitMinutes: 35,
-                },
-            },
-        ]);
-        const [summary] = (deps.requestHuman as jest.Mock).mock.calls[0];
-        expect(summary).toContain("Reason: wants a better rate");
-        expect(summary).toContain("Channel: assistant");
+        expect(turn.cards).toEqual([]);
+        expect(turn.actions).toEqual(["human", "form"]);
     });
 
     it("rejects unknown tools and malformed arguments without crashing", async () => {

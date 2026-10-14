@@ -12,7 +12,6 @@ import {StatusTimeline} from "@/components/molecules/StatusTimeline/StatusTimeli
 import {SummaryRow} from "@/components/molecules/SummaryRow/SummaryRow";
 import {PaymentInstructions} from "@/components/organisms/PaymentInstructions/PaymentInstructions";
 import {ProofForm} from "@/components/organisms/ProofForm/ProofForm";
-import {QueueCard} from "@/components/organisms/QueueCard/QueueCard";
 import {PATHS} from "@/constants/routes";
 import {formatLimaClock} from "@/domain/hours";
 import {formatMoney, formatRate} from "@/domain/money";
@@ -27,8 +26,6 @@ import {useTheme} from "@/theme/useTheme";
 
 export type ChatCardsProps = {
     cards: ChatCard[];
-    /** Quick-reply ids that the queue card can trigger. */
-    onUseAssistantInstead?: () => void;
 };
 
 const cardKey = (card: ChatCard): string => {
@@ -36,33 +33,21 @@ const cardKey = (card: ChatCard): string => {
         case "quote":
         case "review":
             return `${card.kind}-${card.quote.id}`;
-        case "queue":
-            return `queue-${card.queue.handoffId}`;
         default:
             return `${card.kind}-${card.orderId}`;
     }
 };
 
 /** Every figure here comes from the server's quote or order, never from model text. */
-export const ChatCards = ({cards, onUseAssistantInstead}: ChatCardsProps) => (
+export const ChatCards = ({cards}: ChatCardsProps) => (
     <Column spacing={SPACING[2]} style={{width: "100%"}}>
         {cards.map((card) => (
-            <CardView
-                key={cardKey(card)}
-                card={card}
-                onUseAssistantInstead={onUseAssistantInstead}
-            />
+            <CardView key={cardKey(card)} card={card} />
         ))}
     </Column>
 );
 
-const CardView = ({
-    card,
-    onUseAssistantInstead,
-}: {
-    card: ChatCard;
-    onUseAssistantInstead?: () => void;
-}) => {
+const CardView = ({card}: {card: ChatCard}) => {
     switch (card.kind) {
         case "quote":
             return <QuoteCard quote={card.quote} />;
@@ -74,13 +59,6 @@ const CardView = ({
             return <ProofCard orderId={card.orderId} />;
         case "status":
             return <StatusCard orderId={card.orderId} />;
-        case "queue":
-            return (
-                <QueueCard
-                    queue={card.queue}
-                    onUseAssistantInstead={onUseAssistantInstead}
-                />
-            );
     }
 };
 

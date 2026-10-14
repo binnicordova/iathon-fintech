@@ -11,7 +11,6 @@ import {
 import {getDefaultStore} from "jotai";
 import type {AssistantDeps} from "@/assistant/deps";
 import type {Order} from "@/models/order";
-import {api} from "@/services/api";
 import {db} from "@/services/firebase/app";
 import {languageAtom} from "@/stores/language";
 import {activeOrderIdAtom, clientDraftAtom, profileAtom} from "@/stores/order";
@@ -70,12 +69,5 @@ export const createDefaultDeps = (): AssistantDeps => {
             );
             return latest.empty ? null : (latest.docs[0].data() as Order);
         },
-        requestHuman: (summary, orderId) =>
-            api.requestHuman({
-                orderId,
-                summary,
-                language: store.get(languageAtom),
-                channel: "assistant",
-            }),
     };
 };

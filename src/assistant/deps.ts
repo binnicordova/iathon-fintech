@@ -1,7 +1,6 @@
 import type {ClientProfile} from "@/models/client";
 import type {Channel, Currency, Language} from "@/models/currency";
 import type {ClientDraft} from "@/models/draft";
-import type {QueueInfo} from "@/models/handoff";
 import type {Order} from "@/models/order";
 import type {Quote} from "@/models/quote";
 
@@ -29,5 +28,4 @@ export type AssistantDeps = {
     getActiveOrderId(): string | null;
     /** The given order, else the active one, else the client's latest. */
     fetchOrder(orderId: string | null): Promise<Order | null>;
-    requestHuman(summary: string, orderId: string | null): Promise<QueueInfo>;
 };

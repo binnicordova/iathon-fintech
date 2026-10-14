@@ -23,6 +23,7 @@ import {
     chatBusyAtom,
     chatDegradedAtom,
     chatMessagesAtom,
+    handOverToWhatsApp,
     resetChatAtom,
     runActionAtom,
     sendMessageAtom,
@@ -57,9 +58,13 @@ export default function AssistantScreen() {
                 router.push(hasQuote ? PATHS.DATA : PATHS.QUOTE);
                 return;
             }
+            if (action === "human") {
+                void handOverToWhatsApp(t("whatsapp.person"));
+                return;
+            }
             void runAction(action);
         },
-        [hasQuote, router, runAction]
+        [hasQuote, router, runAction, t]
     );
 
     // The first message is always the greeting, drawn by the app: it costs no model call.
@@ -157,9 +162,6 @@ export default function AssistantScreen() {
                         message={item}
                         busy={busy}
                         onAction={onAction}
-                        onUseAssistantInstead={() =>
-                            void runAction("changeAmount")
-                        }
                     />
                 )}
             />

@@ -77,7 +77,6 @@ const makeDeps = (quote: Quote | null = null) => {
         lockQuote: jest.fn(async () => QUOTE),
         getActiveOrderId: () => null,
         fetchOrder: jest.fn(async () => null),
-        requestHuman: jest.fn(),
     } as unknown as AssistantDeps;
 };
 

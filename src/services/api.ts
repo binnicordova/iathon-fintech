@@ -1,6 +1,5 @@
 import {httpsCallable} from "firebase/functions";
 import type {Channel, Language} from "@/models/currency";
-import type {Handoff, QueueInfo} from "@/models/handoff";
 import type {Order, OrderClientData} from "@/models/order";
 import type {Quote, QuoteAmounts, QuoteInput} from "@/models/quote";
 import type {MarketRates} from "@/models/rates";
@@ -37,15 +36,6 @@ export type CreateOrderInput = OrderClientData & {
     quoteId: string;
     language: Language;
 };
-
-export type RequestHumanInput = {
-    orderId: string | null;
-    summary: string;
-    language: Language;
-    channel: Channel;
-};
-
-export type QueueStatus = QueueInfo & {status?: Handoff["status"]};
 
 export type FactResult = {
     orderId: string;
@@ -98,9 +88,6 @@ export const api = {
         {ok: true; orderId: string}
     >("submitProof"),
     cancelOrder: call<{orderId: string}, {ok: true}>("cancelOrder"),
-    requestHuman: call<RequestHumanInput, QueueInfo>("requestHuman"),
-    getQueueInfo: call<{handoffId: string}, QueueStatus>("getQueueInfo"),
-    leaveQueue: call<{handoffId: string}, {ok: true}>("leaveQueue"),
     getReceipt: call<
         {orderId: string},
         {filename: string; contentType: string; base64: string}
