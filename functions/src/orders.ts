@@ -29,7 +29,8 @@ const CreateOrderRequest = z
         email: text(160),
         fundsSource: z.enum(FUNDS_SOURCES),
         sourceBank: text(60),
-        sourceAccount: text(60),
+        // The client only names the bank they pay from; the number is optional.
+        sourceAccount: z.string().trim().max(60).default(""),
         destinationBank: text(60),
         destinationAccount: text(60),
     })
@@ -38,7 +39,6 @@ const CreateOrderRequest = z
             [isValidName(value.clientName), "clientName"],
             [isValidDocNumber(value.docType, value.docNumber), "docNumber"],
             [isValidEmail(value.email), "email"],
-            [isValidAccount(value.sourceAccount), "sourceAccount"],
             [isValidAccount(value.destinationAccount), "destinationAccount"],
         ];
         for (const [ok, path] of checks) {
@@ -159,7 +159,9 @@ export const createOrder = onCall(async (request) => {
             accounts.set(key, {id: key, bank, accountNumber, currency});
         }
     };
-    addAccount(order.sourceBank, order.sourceAccount, order.sendCurrency);
+    if (order.sourceAccount) {
+        addAccount(order.sourceBank, order.sourceAccount, order.sendCurrency);
+    }
     addAccount(order.destinationBank, order.destinationAccount, order.receiveCurrency);
     await profileRef.set({...profile, accounts: [...accounts.values()].slice(-12)});
 

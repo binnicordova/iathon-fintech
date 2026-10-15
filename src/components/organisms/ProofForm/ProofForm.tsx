@@ -1,16 +1,14 @@
-import {Column, RNHostView, Row} from "@expo/ui";
-import {Image} from "expo-image";
+import {Column, Row} from "@expo/ui";
 import {Chip} from "@/components/atoms/Chip/Chip";
-import {Surface} from "@/components/atoms/Surface/Surface";
 import {Text} from "@/components/atoms/Text/Text";
 import {TextField} from "@/components/atoms/TextField/TextField";
 import {Card} from "@/components/molecules/Card/Card";
 import {Field} from "@/components/molecules/Field/Field";
+import {ImagePreview} from "@/components/molecules/ImagePreview/ImagePreview";
 import {Notice} from "@/components/molecules/Notice/Notice";
 import type {ProofImage, ProofIssue} from "@/hooks/useProofUpload";
 import {useT} from "@/hooks/useT";
 import type {TranslationKey} from "@/i18n";
-import {RADIUS} from "@/theme/border";
 import {SPACING} from "@/theme/spacing";
 import {useTheme} from "@/theme/useTheme";
 
@@ -32,8 +30,6 @@ export type ProofFormProps = {
     disabled?: boolean;
 };
 
-const PREVIEW_HEIGHT = 220;
-
 /**
  * "Envía tu constancia": the bank operation number and the proof photo. The
  * photo goes straight to private storage; nobody here judges it.
@@ -47,7 +43,7 @@ export const ProofForm = ({
     disabled,
 }: ProofFormProps) => {
     const t = useT();
-    const {muted, line, lightness} = useTheme();
+    const {muted} = useTheme();
 
     return (
         <Column spacing={SPACING[4]}>
@@ -77,22 +73,7 @@ export const ProofForm = ({
                     {t("proof.photo")}
                 </Text>
                 {image ? (
-                    <Surface
-                        fill
-                        radius={RADIUS[5] * 1.5}
-                        backgroundColor={lightness}
-                        borderColor={line}
-                        borderWidth={1}
-                    >
-                        <RNHostView matchContents={false}>
-                            <Image
-                                testID="proof-preview"
-                                source={{uri: image.uri}}
-                                contentFit="contain"
-                                style={{width: "100%", height: PREVIEW_HEIGHT}}
-                            />
-                        </RNHostView>
-                    </Surface>
+                    <ImagePreview testID="proof-preview" uri={image.uri} />
                 ) : null}
                 <Row spacing={SPACING[2]} alignment="center">
                     <Chip

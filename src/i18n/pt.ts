@@ -59,12 +59,14 @@ export const pt: Dictionary = {
     "data.docType": "Documento",
     "data.docNumber": "N.º do documento",
     "data.fundsSource": "Origem dos fundos",
-    "data.sourceBank": "De qual banco você envia?",
-    "data.sourceAccount": "Conta de origem",
+    "data.sourceBank": "De qual banco você nos envia seu dinheiro?",
     "data.destBank": "Onde você recebe?",
     "data.destAccount": "Conta de destino",
-    "data.ownName": "As duas contas devem estar no seu nome.",
-    "data.saved": "Contas salvas",
+    "data.ownName":
+        "Lembre-se: as duas contas (origem e destino) devem estar no seu nome.",
+    "data.destPick": "Em qual conta você quer receber seu dinheiro?",
+    "data.newAccount": "Outra conta",
+    "data.you": "Seus dados",
     "data.otherBank": "Outro banco",
     "data.bankName": "Nome do banco",
     "data.err.name": "Escreva seu nome e sobrenome.",
@@ -184,8 +186,6 @@ export const pt: Dictionary = {
     "assistant.ask.fundsSource":
         "De onde vêm os fundos? Poupança, salário, negócio, venda de um bem, doação ou outro.",
     "assistant.ask.sourceBank": "De qual banco você envia?",
-    "assistant.ask.sourceAccount":
-        "Qual é a sua conta de origem? Deve estar no seu nome.",
     "assistant.ask.destinationBank": "Em qual banco você recebe o dinheiro?",
     "assistant.ask.destinationAccount":
         "Qual é a sua conta de destino? Deve estar no seu nome.",

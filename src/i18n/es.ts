@@ -58,12 +58,14 @@ export const es = {
     "data.docType": "Documento",
     "data.docNumber": "N° de documento",
     "data.fundsSource": "Origen de fondos",
-    "data.sourceBank": "¿Desde qué banco envías?",
-    "data.sourceAccount": "Cuenta de origen",
+    "data.sourceBank": "¿Desde qué banco nos envías tu dinero?",
     "data.destBank": "¿Dónde recibes?",
     "data.destAccount": "Cuenta de destino",
-    "data.ownName": "Ambas cuentas deben estar a tu nombre.",
-    "data.saved": "Cuentas guardadas",
+    "data.ownName":
+        "Recuerda que ambas cuentas (origen y destino) deben estar a tu nombre.",
+    "data.destPick": "¿En qué cuenta deseas recibir tu dinero?",
+    "data.newAccount": "Otra cuenta",
+    "data.you": "Tus datos",
     "data.otherBank": "Otro banco",
     "data.bankName": "Nombre del banco",
     "data.err.name": "Escribe tu nombre y apellido.",
@@ -183,8 +185,6 @@ export const es = {
     "assistant.ask.fundsSource":
         "¿De dónde provienen los fondos? Ahorros, sueldo, negocio, venta de un bien, donación u otro.",
     "assistant.ask.sourceBank": "¿Desde qué banco envías?",
-    "assistant.ask.sourceAccount":
-        "¿Cuál es tu cuenta de origen? Debe estar a tu nombre.",
     "assistant.ask.destinationBank": "¿En qué banco recibes el dinero?",
     "assistant.ask.destinationAccount":
         "¿Cuál es tu cuenta de destino? Debe estar a tu nombre.",

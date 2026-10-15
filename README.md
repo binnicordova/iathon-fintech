@@ -16,6 +16,65 @@
 
 ---
 
+## How an operation flows
+
+Who does what, from the quote to the PDF receipt. The client never waits on a person until the proof is in; the assistant and the form fill the same draft, so the client can switch between them.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor C as Client
+    participant A as App (form + assistant)
+    participant F as Cloud Functions
+    participant D as Firestore / Storage
+    actor B as Back office (staff)
+    participant S as Fact (billing)
+
+    C->>A: Amount and currencies
+    A->>F: createQuote
+    F-->>A: Locked rate, fees, total (valid minutes)
+
+    Note over C,A: Step 1, three questions (name, email and document only the first time)
+    C->>A: Bank you pay from
+    C->>A: Receiving account (saved list or a new one)
+    C->>A: Source of funds
+    A->>F: createOrder
+    F->>D: orders/BR-xxxx = pending, client profile and accounts saved
+    F-->>A: Order with the BRASPER account to pay
+
+    Note over C,A: Step 2, transfer
+    C->>C: Pays by PIX / bank transfer
+    Note over C,A: Step 3, proof
+    C->>A: Operation number and photo (previewed at once)
+    A->>D: Photo to private Storage
+    A->>F: submitProof
+    F->>D: status = validating
+    D-->>A: Live status timeline
+
+    opt The client needs a person
+        C->>A: Talk to a person
+        A-->>C: Opens BRASPER on WhatsApp with the context written
+    end
+
+    Note over B,S: Back office
+    B->>F: reviewOrder (approve or reject with a reason)
+    F->>D: status = approved
+    B->>F: exportOrders
+    F->>D: status = exported, batch CSV
+    B->>F: runFact
+    F->>S: Issue the receipt
+    S-->>F: Accepted, XML and PDF
+    F->>D: invoice stored
+    D-->>A: Timeline complete
+    C->>A: Download receipt
+    A->>F: getReceipt
+    F-->>A: PDF
+```
+
+The fields that change at each back-office step are in the [order lifecycle](functions/docs/order-lifecycle.md).
+
+---
+
 ## Resumen en español
 
 BRASPER cambia dinero entre Brasil y Perú. Hoy una operación vive en chats de WhatsApp y hojas de cálculo: el cliente cotiza en la web, termina en WhatsApp, un asesor pide los datos, revisa una captura del pago y vuelve a escribirlo en el sistema; la boleta puede tardar hasta 3 días. Esta solución agrega **un canal más**, una app (Expo, funciona en web, iOS y Android) con un **asistente de IA** que cotiza, recoge los datos, guía el pago y muestra el estado, y **guarda cada operación en un solo registro** para que una persona la valide y se facture sin reescribir nada. WhatsApp sigue como canal de ayuda: "Hablar con una persona" abre el chat de BRASPER con el contexto ya escrito. Más abajo están el análisis del negocio, las capturas, la arquitectura y las referencias.
@@ -69,7 +128,7 @@ flowchart LR
 |---|---|
 | **Quote** | Live calculator (BRL · PEN · USD). The server re-prices and freezes the rate for 15 minutes; the exchange rate never shows 0. |
 | **Assistant** | A LangGraph agent on Google's open model Gemma 4. It asks one question at a time, never states a rate or an account number itself (the app draws those from the server), and never approves anything. |
-| **Data → Pay → Proof** | The same three steps by form or by chat: source of funds, accounts in the client's own name, where to pay with copy buttons, operation number and proof photo. Saved accounts so returning clients do not retype. |
+| **Data → Pay → Proof** | The same three steps by form or by chat: step 1 asks three questions (the bank you pay from, the account you receive in, where the funds come from). The receiving account is picked from the accounts used before, or typed once; name, email and document are asked only the first time. Then where to pay with copy buttons, and the operation number plus a proof photo that is previewed as soon as it is attached. |
 | **Operations / Status** | A live timeline (registered → verifying → sent → received) and a PDF receipt when billing accepts the sale. |
 | **Talk to a person** | Opens BRASPER on WhatsApp with the quote and what the assistant already collected, so the seller starts with context. |
 
@@ -171,7 +230,7 @@ flowchart TB
 - **The server is the source of truth.** The app prices live for a good feel, but `createQuote` re-prices and freezes the rate, and `createOrder` takes rate, fees and the payment account from that quote, never from the request. Pricing, validators and the status machine live once in `src/domain` and are copied into the functions at build, so both sides compute the same numbers.
 - **Clients are anonymous Firebase users** (no sign-up friction) who can read only their own records. Nothing writes orders, quotes or invoices from the app: Firestore rules deny it.
 - **Status machine:** `pending → validating → approved → exported`, plus `rejected` and `cancelled`. After the client's proof, only the back office moves an order on.
-- **Back office:** `reviewOrder`, `exportOrders` and `runFact` are Cloud Functions for staff roles (`validator`, `operator`, `billing`, `admin`). There is no staff screen in the app on purpose. See the [API guide](functions/docs/README.md) and the [order lifecycle](functions/docs/order-lifecycle.md) (a sequence diagram and every field involved).
+- **Back office:** `reviewOrder`, `exportOrders` and `runFact` are Cloud Functions for staff roles (`validator`, `operator`, `billing`, `admin`). There is no staff screen in the app on purpose; the back office reads the same orders and calls these functions. See the [API guide](functions/docs/README.md) and the [order lifecycle](functions/docs/order-lifecycle.md) (a sequence diagram and every field involved).
 
 ### Run it
 
