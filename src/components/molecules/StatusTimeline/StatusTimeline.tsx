@@ -8,6 +8,7 @@ import {timelineFor} from "@/domain/orders";
 import {useT} from "@/hooks/useT";
 import type {TranslationKey} from "@/i18n";
 import type {Order, TimelineStepKey, TimelineStepState} from "@/models/order";
+import {fullWidth} from "@/theme/fullWidth";
 import {SPACING} from "@/theme/spacing";
 import {ICON_SIZE} from "@/theme/typography";
 import {useTheme} from "@/theme/useTheme";
@@ -70,7 +71,7 @@ export const StatusTimeline = ({order}: StatusTimelineProps) => {
                         key={step.key}
                         alignment="center"
                         spacing={SPACING[3]}
-                        style={{width: "100%"}}
+                        {...fullWidth()}
                     >
                         <Icon
                             name={ICON[step.state]}

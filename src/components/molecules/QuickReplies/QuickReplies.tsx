@@ -4,6 +4,7 @@ import {Chip, type ChipTone} from "@/components/atoms/Chip/Chip";
 import type {IconName} from "@/components/atoms/Icon/icons";
 import {useT} from "@/hooks/useT";
 import type {TranslationKey} from "@/i18n";
+import {fullWidth} from "@/theme/fullWidth";
 import {SPACING} from "@/theme/spacing";
 
 const ACTION: Record<
@@ -49,7 +50,7 @@ export const QuickReplies = ({
         <ScrollView
             direction="horizontal"
             showsIndicators={false}
-            style={{width: "100%"}}
+            {...fullWidth()}
         >
             <Row spacing={SPACING[2]} alignment="center">
                 {actions.map((action) => {

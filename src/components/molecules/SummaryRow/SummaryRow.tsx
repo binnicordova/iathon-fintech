@@ -1,5 +1,6 @@
 import {Row, Spacer} from "@expo/ui";
 import {Text, type TextType} from "@/components/atoms/Text/Text";
+import {fullWidth} from "@/theme/fullWidth";
 import {SPACING} from "@/theme/spacing";
 import {useTheme} from "@/theme/useTheme";
 
@@ -22,7 +23,7 @@ export const SummaryRow = ({
     const {muted, text} = useTheme();
 
     return (
-        <Row alignment="center" spacing={SPACING[2]} style={{width: "100%"}}>
+        <Row alignment="center" spacing={SPACING[2]} {...fullWidth()}>
             <Text
                 type={emphasis ? "default" : "label"}
                 color={emphasis ? text : muted}

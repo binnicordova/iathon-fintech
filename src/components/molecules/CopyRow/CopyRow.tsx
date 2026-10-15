@@ -5,6 +5,7 @@ import {IconButton} from "@/components/atoms/IconButton/IconButton";
 import {Surface} from "@/components/atoms/Surface/Surface";
 import {Text} from "@/components/atoms/Text/Text";
 import {useT} from "@/hooks/useT";
+import {fullWidth} from "@/theme/fullWidth";
 import {SPACING} from "@/theme/spacing";
 import {useTheme} from "@/theme/useTheme";
 
@@ -44,11 +45,7 @@ export const CopyRow = ({
             <Text type="caption" color={muted}>
                 {label}
             </Text>
-            <Row
-                alignment="center"
-                spacing={SPACING[2]}
-                style={{width: "100%"}}
-            >
+            <Row alignment="center" spacing={SPACING[2]} {...fullWidth()}>
                 <Text
                     type={emphasis ? "subtitle" : "default"}
                     testID={testID ? `${testID}-value` : undefined}

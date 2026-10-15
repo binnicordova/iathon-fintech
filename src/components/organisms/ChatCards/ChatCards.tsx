@@ -21,6 +21,7 @@ import {useProofUpload} from "@/hooks/useProofUpload";
 import {useLanguage, useT} from "@/hooks/useT";
 import {proofSubmittedAtom} from "@/stores/chat";
 import {clientDraftAtom} from "@/stores/order";
+import {fullWidth} from "@/theme/fullWidth";
 import {SPACING} from "@/theme/spacing";
 import {useTheme} from "@/theme/useTheme";
 
@@ -40,7 +41,7 @@ const cardKey = (card: ChatCard): string => {
 
 /** Every figure here comes from the server's quote or order, never from model text. */
 export const ChatCards = ({cards}: ChatCardsProps) => (
-    <Column spacing={SPACING[2]} style={{width: "100%"}}>
+    <Column spacing={SPACING[2]} {...fullWidth()}>
         {cards.map((card) => (
             <CardView key={cardKey(card)} card={card} />
         ))}

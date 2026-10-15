@@ -1,5 +1,6 @@
 import {Host} from "@expo/ui";
 import {memo} from "react";
+import {View} from "react-native";
 import type {ChatMessage, QuickActionId} from "@/assistant/types";
 import {Surface} from "@/components/atoms/Surface/Surface";
 import {ChatBubble} from "@/components/molecules/ChatBubble/ChatBubble";
@@ -14,41 +15,50 @@ export type ChatMessageRowProps = {
     busy: boolean;
 };
 
-/** One message with its cards and quick replies, in its own Expo UI host. */
+/**
+ * One message with its cards and quick replies, in its own Expo UI host.
+ *
+ * The plain View around the host is for Android: a Compose host that starts at
+ * zero height inside a list cell is never composed, so it never reports the
+ * height of its content and the whole row stays invisible. A non-zero parent
+ * lets it measure, and the View then grows to fit it.
+ */
 export const ChatMessageRow = memo(
     ({message, onAction, busy}: ChatMessageRowProps) => {
         const {accent} = useTheme();
 
         return (
-            <Host
-                matchContents={{vertical: true}}
-                seedColor={accent}
-                style={{width: "100%"}}
-            >
-                <Surface
-                    fill
-                    spacing={SPACING[2]}
-                    paddingHorizontal={SPACING[4]}
-                    paddingVertical={SPACING[1]}
+            <View style={{minHeight: 1}}>
+                <Host
+                    matchContents={{vertical: true}}
+                    seedColor={accent}
+                    style={{width: "100%"}}
                 >
-                    {message.text ? (
-                        <ChatBubble
-                            role={message.role}
-                            testID={`bubble-${message.role}`}
-                        >
-                            {message.text}
-                        </ChatBubble>
-                    ) : null}
-                    {message.cards.length > 0 && (
-                        <ChatCards cards={message.cards} />
-                    )}
-                    <QuickReplies
-                        actions={message.actions}
-                        onAction={onAction}
-                        disabled={busy}
-                    />
-                </Surface>
-            </Host>
+                    <Surface
+                        fill
+                        spacing={SPACING[2]}
+                        paddingHorizontal={SPACING[4]}
+                        paddingVertical={SPACING[1]}
+                    >
+                        {message.text ? (
+                            <ChatBubble
+                                role={message.role}
+                                testID={`bubble-${message.role}`}
+                            >
+                                {message.text}
+                            </ChatBubble>
+                        ) : null}
+                        {message.cards.length > 0 && (
+                            <ChatCards cards={message.cards} />
+                        )}
+                        <QuickReplies
+                            actions={message.actions}
+                            onAction={onAction}
+                            disabled={busy}
+                        />
+                    </Surface>
+                </Host>
+            </View>
         );
     }
 );

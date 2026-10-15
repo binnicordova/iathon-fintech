@@ -9,6 +9,7 @@ import {Text} from "@/components/atoms/Text/Text";
 import {useKeyboard} from "@/hooks/useKeyboard";
 import {useT} from "@/hooks/useT";
 import type {TranslationKey} from "@/i18n";
+import {fullWidth} from "@/theme/fullWidth";
 import {SPACING} from "@/theme/spacing";
 import {ICON_SIZE} from "@/theme/typography";
 import {useTheme} from "@/theme/useTheme";
@@ -43,7 +44,7 @@ export const TabBar = ({state, navigation}: BottomTabBarProps) => {
                 }}
                 seedColor={accent}
             >
-                <Row alignment="center" spacing={0} style={{width: "100%"}}>
+                <Row alignment="center" spacing={0} {...fullWidth()}>
                     {state.routes.map((route, index) => {
                         const tab = TABS[route.name];
                         if (!tab) {
