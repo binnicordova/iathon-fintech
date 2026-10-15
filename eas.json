@@ -19,6 +19,7 @@
         },
         "production:local": {
             "channel": "production",
+            "environment": "production",
             "ios": {
                 "simulator": true
             },
