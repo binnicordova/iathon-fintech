@@ -1,6 +1,6 @@
 # BRASPER Cloud Functions: how to use them
 
-Project `aibrasper` · region `southamerica-east1` · Cloud Functions 2nd gen (Node 24) · 13 **callable** functions.
+Project `aibrasper` · region `southamerica-east1` · Cloud Functions 2nd gen (Node 24) · 14 **callable** functions.
 
 The app, the assistant and any other client (a WhatsApp bot, a script, Postman) use the same functions. Each one checks who is calling, validates the input, and is the only place that writes orders, quotes and hand-over tickets. Clients never write those collections directly (see `firestore.rules`).
 
@@ -32,6 +32,7 @@ Every function is served at `https://<name-lowercase>-h5wenirx2q-rj.a.run.app`.
 | [`assistantGenerate`](#assistantgenerate) | `https://assistantgenerate-h5wenirx2q-rj.a.run.app` | any signed-in user |
 | [`reviewOrder`](#revieworder) | `https://revieworder-h5wenirx2q-rj.a.run.app` | `validator`, `admin` |
 | [`exportOrders`](#exportorders) | `https://exportorders-h5wenirx2q-rj.a.run.app` | `operator`, `admin` |
+| [`createManualOrder`](#createmanualorder) | `https://createmanualorder-h5wenirx2q-rj.a.run.app` | `validator`, `operator`, `admin` |
 | [`runFact`](#runfact) | `https://runfact-h5wenirx2q-rj.a.run.app` | `billing`, `admin` |
 
 Local emulator (`bun run emulators`): `http://localhost:5001/aibrasper/southamerica-east1/<functionName>`.
@@ -355,6 +356,16 @@ The operator exports approved orders for the Dashboard. Everything exported is r
 - **Request:** `{"orderIds": ["BR-0006", "BR-0007"]}` (1-200 ids)
 - **Response:** `{"batchId": "…", "count": 2, "filename": "brasper-orders-2026-10-12-ab12cd.csv", "csv": "<file contents>"}`. Save `csv` to a file; its columns follow the plan's `orders` table.
 - **All or nothing:** if any id is missing or not `approved`, nothing changes and you get `only-approved-orders` with `details.blocked`.
+
+### createManualOrder
+
+A seller closed the deal by phone or chat and registers it, so it follows the same path as every other operation. Rate and commission are the **negotiated** ones; the server computes the tax (`taxBps` of the commission), `receiveAmount = sendAmount × rate` and `total = sendAmount + commission + tax`. The order is `pending`, `channel: "human"`, owned by the staff member who creates it (`createdBy` holds their email), so that same person attaches the proof with `submitProof`.
+
+- **Role:** `validator`, `operator` or `admin`.
+- **Request:** `clientName`, `docType`, `docNumber`, `email`, `fundsSource`, `sourceBank`, `sourceAccount`, `destinationBank`, `destinationAccount` (same rules as `createOrder`), plus `sendCurrency`, `receiveCurrency` (different), `sendAmount`, `rate`, `commission` (numbers; commission must be below the amount).
+- **Response:** the full order, status `pending`.
+- **Errors:** `staff-only`, `role-not-allowed`, `invalid-input`, `commission-too-high`.
+- **Then:** upload the photo to `proofs/<yourUid>/<orderId>/<file>` and call `submitProof`; the order becomes `validating`.
 
 ### runFact
 
