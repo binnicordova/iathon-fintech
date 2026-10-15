@@ -14,6 +14,8 @@ export type SelectFieldProps<T extends string> = {
     enabled?: boolean;
     /** Fixed width, to sit beside a growing field. Full width when omitted. */
     width?: number;
+    /** The taller control that sits beside a large amount field. */
+    large?: boolean;
     testID?: string;
 };
 

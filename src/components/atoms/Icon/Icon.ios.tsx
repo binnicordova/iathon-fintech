@@ -32,6 +32,7 @@ const SYMBOL: Record<IconName, SFSymbol> = {
     bank: "building.columns",
     upload: "square.and.arrow.up",
     mail: "envelope",
+    expand: "chevron.down",
 };
 
 export const Icon = ({name, size, color, testID}: IconProps) => {

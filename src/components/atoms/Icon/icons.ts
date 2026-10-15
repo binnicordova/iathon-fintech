@@ -25,6 +25,7 @@ export const ICON_NAMES = [
     "bank",
     "upload",
     "mail",
+    "expand",
 ] as const;
 
 export type IconName = (typeof ICON_NAMES)[number];

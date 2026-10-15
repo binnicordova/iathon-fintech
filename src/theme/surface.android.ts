@@ -5,11 +5,11 @@ import {
     background,
     border,
     clip,
+    dropShadow,
     fillMaxSize,
     fillMaxWidth,
     padding,
     Shapes,
-    shadow,
     size,
     spring,
     weight,
@@ -41,7 +41,21 @@ export const surfaceModifiers = (spec: SurfaceSpec): ModifierConfig[] => {
     }
 
     if (spec.elevation) {
-        modifiers.push(shadow(spec.elevation));
+        // `shadow` is always a rectangle; this one follows the corner radius.
+        modifiers.push(
+            dropShadow(
+                Shapes.RoundedCorner(
+                    spec.radius === "capsule"
+                        ? CAPSULE_RADIUS
+                        : (spec.radius ?? 0)
+                ),
+                {
+                    radius: spec.elevation,
+                    offsetY: spec.elevation / 3,
+                    alpha: 0.14,
+                }
+            )
+        );
     }
 
     if (spec.radius != null) {

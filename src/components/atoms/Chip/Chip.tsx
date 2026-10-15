@@ -1,18 +1,11 @@
-import {Button as UIButton, type UniversalStyle} from "@expo/ui";
-import {Platform} from "react-native";
 import {Icon} from "@/components/atoms/Icon/Icon";
 import type {IconName} from "@/components/atoms/Icon/icons";
+import {Pressable} from "@/components/atoms/Pressable/Pressable";
 import {Surface} from "@/components/atoms/Surface/Surface";
 import {Text} from "@/components/atoms/Text/Text";
 import {SPACING} from "@/theme/spacing";
 import {ICON_SIZE} from "@/theme/typography";
 import {useTheme} from "@/theme/useTheme";
-
-/** The web button fallback pads and fixes its height; the chip draws its own box. */
-const WEB_RESET: UniversalStyle | undefined =
-    Platform.OS === "web"
-        ? ({padding: 0, paddingHorizontal: 0, height: "auto"} as UniversalStyle)
-        : undefined;
 
 export type ChipTone = "neutral" | "accent" | "ai" | "success" | "warning";
 
@@ -47,12 +40,11 @@ export const Chip = ({
     const filled = selected === true;
 
     return (
-        <UIButton
+        <Pressable
             testID={testID}
-            variant="text"
-            style={WEB_RESET}
+            radius="capsule"
             disabled={disabled}
-            onPress={disabled ? undefined : onPress}
+            onPress={onPress}
         >
             <Surface
                 direction="row"
@@ -78,6 +70,6 @@ export const Chip = ({
                     {label}
                 </Text>
             </Surface>
-        </UIButton>
+        </Pressable>
     );
 };
