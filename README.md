@@ -2,6 +2,32 @@
 
 > A mobile app and an AI assistant for **BRASPER**, a Brazil ⇄ Peru money-exchange and transfer business (PIX ⇄ PEN). Built for **IATHON Perú 2026** as a working MVP on web, iOS and Android.
 
+<table align="center">
+  <tr>
+    <td align="center">
+      <h2>📲 TRY THE APP NOW! (Android)</h2>
+      <b>Scan this QR with the phone camera.</b> The APK downloads, tap it to install.
+      <br><br>
+      <img src="docs/assets/apk-qr.svg" width="260" alt="Scan to download the BRASPER Android app">
+      <br>
+      <sub>Or open <a href="https://github.com/binnicordova/iathon-fintech/releases/latest/download/brasper.apk">this link</a> on your phone. It always points to the latest release.</sub>
+    </td>
+  </tr>
+</table>
+
+<details>
+<summary><b>The phone says it can't install the app?</b></summary>
+
+Android blocks apps that do not come from Google Play until you allow it once:
+
+1. Open the downloaded `brasper.apk` (Chrome shows it at the bottom, or in *Downloads*).
+2. When Android says *"For your security, your phone is not allowed to install unknown apps from this source"*, tap **Settings** and switch on **Allow from this source** for your browser.
+3. Go back and tap **Install**. If Play Protect asks to scan the app, tap **Install anyway** (the app is not in the Play Store, which is why it asks).
+
+iPhone: there is no installable build for iOS yet.
+
+</details>
+
 **Author:** [BinniCordova.com](https://binnicordova.com) · **Team 5.5**, [IATHON 2026](https://lnkd.in/p/d5fZDx7k)
 
 **Product plan and analysis:** https://binnicordova.github.io/iathon-fintech/ · **Back-end API guide:** [functions/docs/README.md](functions/docs/README.md) · **Order lifecycle:** [functions/docs/order-lifecycle.md](functions/docs/order-lifecycle.md)
@@ -241,7 +267,9 @@ bun run start          # Expo dev server; press w (web), i (iOS simulator) or sc
 
 The app already points at the deployed `aibrasper` backend (the Firebase *web* config in `src/constants/firebase.ts` is not a secret; access is enforced by rules and Functions). It needs **no `.env.local` values to run**.
 
-**Test it on a phone.** Every pull request runs the *PR Preview* workflow, which publishes an EAS Update and comments a QR on the PR. Scan it with **Expo Go (SDK 57)** while logged in to an Expo account.
+**Install the Android app.** The QR at the top of this page downloads `brasper.apk` from the latest [GitHub release](https://github.com/binnicordova/iathon-fintech/releases/latest). The APK is built by EAS (profile `production:local`, channel `production`), so an installed copy is set up to receive every merge to `main` over the air (the *Release · OTA update* workflow) while the version in `app.config.ts` stays the same. A new version needs a new release: build the APK again (`bunx eas-cli build --platform android --profile production:local`) and upload it to a new GitHub release with the same file name `brasper.apk`, and the QR keeps working. Do not name that release tag `v*` (use `apk-<version>`): `v*` tags start the *Release · Store build* workflow, which builds and submits to the stores.
+
+**Test a pull request.** Every pull request also runs the *PR Preview* workflow, which publishes an EAS Update on its own branch (`pr-<number>`) and comments a QR on the PR. Scan it with **Expo Go (SDK 57)** while logged in to an Expo account.
 
 **Expo Go notes**
 
@@ -260,9 +288,9 @@ bun run mock:gemma                                      # a fake Gemma, to try t
 
 | Variable | Purpose |
 |---|---|
-| `EXPO_PUBLIC_WHATSAPP_NUMBER` | BRASPER's WhatsApp line (digits with country code) for "Talk to a person"; empty opens WhatsApp's chat picker |
+| `EXPO_PUBLIC_WHATSAPP_NUMBER` | BRASPER's WhatsApp line (digits with country code) for "Talk to a person"; empty opens WhatsApp's chat picker. It is inlined into the bundle, so the Android APK and the OTA updates take it from the EAS *production* environment: change it there (`eas env:set`) and publish an update |
 | `EXPO_PUBLIC_SENTRY_DSN` | Turns Sentry on (errors, traces, the LangGraph `gen_ai.*` spans). Empty = every Sentry call is a no-op |
-| `EAS_OWNER`, `EAS_PROJECT_ID` | Only to build or publish updates with EAS |
+| `EAS_OWNER`, `EAS_PROJECT_ID` | Only to build or publish updates with EAS. Stored as sensitive variables in the EAS project's *production* environment (and as GitHub secrets for the workflows), never in the repo |
 | `EXPO_PUBLIC_FIREBASE_EMULATOR_HOST` | Development only: use the local emulators |
 
 ### Making LangGraph run on a phone (what was needed)
