@@ -58,5 +58,10 @@ jobs:
 
       # The message is the commit SHA, not the commit message: a message is
       # free text and would be pasted straight into a shell command.
+      #
+      # --environment production loads the variables stored in the EAS project
+      # (EXPO_PUBLIC_WHATSAPP_NUMBER and friends). EXPO_PUBLIC_* values are inlined
+      # into the bundle, so without this the update would ship with them empty and
+      # replace the number the installed apps have.
       - name: 🚀 Publish update
-        run: eas update --branch production --non-interactive --message "main at ${{ github.sha }}"
+        run: eas update --branch production --environment production --non-interactive --message "main at ${{ github.sha }}"
