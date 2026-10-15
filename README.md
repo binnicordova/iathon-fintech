@@ -5,22 +5,22 @@
 <table align="center">
   <tr>
     <td align="center">
-      <h2>📲 TRY THE APP NOW! (Android)</h2>
-      <b>Scan this QR with the phone camera.</b> The APK downloads, tap it to install.
+      <h2>📲 TRY THE APP NOW!</h2>
+      <b>Scan this QR with your phone camera.</b> It opens the download page.
       <br><br>
-      <img src="docs/assets/apk-qr.svg" width="260" alt="Scan to download the BRASPER Android app">
+      <img src="docs/assets/app-qr.svg" width="260" alt="Scan to open the BrasPer download page">
       <br>
-      <sub>No camera handy? <a href="https://github.com/binnicordova/iathon-fintech/releases/latest/download/brasper.apk"><b>Download the APK</b></a> straight from your Android phone.</sub>
+      <sub>No camera handy? <a href="https://binnicordova.github.io/iathon-fintech/app/"><b>Open the download page</b></a>.</sub>
     </td>
   </tr>
 </table>
 
-**Share it.** Copy and send either link (WhatsApp, e-mail, a slide). Both always point to the latest release, so they never need updating:
+**Share it.** Send this link (WhatsApp, e-mail, a slide). It never changes: the page always offers the newest build, in Spanish, Portuguese or English.
 
 | | Link |
 |---|---|
-| **Download page** (best to share, opens on any device and shows the install notes) | `https://github.com/binnicordova/iathon-fintech/releases/latest` |
-| **Direct APK download** (what the QR opens, use it on an Android phone) | `https://github.com/binnicordova/iathon-fintech/releases/latest/download/brasper.apk` |
+| **Download page** (share this one: it works on any device and the QR opens it) | `https://binnicordova.github.io/iathon-fintech/app/` |
+| Direct APK download (Android only, always the latest release) | `https://github.com/binnicordova/iathon-fintech/releases/latest/download/brasper.apk` |
 
 <details>
 <summary><b>The phone says it can't install the app?</b></summary>
@@ -274,7 +274,11 @@ bun run start          # Expo dev server; press w (web), i (iOS simulator) or sc
 
 The app already points at the deployed `aibrasper` backend (the Firebase *web* config in `src/constants/firebase.ts` is not a secret; access is enforced by rules and Functions). It needs **no `.env.local` values to run**.
 
-**Install the Android app.** The QR at the top of this page downloads `brasper.apk` from the latest [GitHub release](https://github.com/binnicordova/iathon-fintech/releases/latest). The APK is built by EAS (profile `production:local`, channel `production`), so an installed copy is set up to receive every merge to `main` over the air (the *Release · OTA update* workflow) while the version in `app.config.ts` stays the same. A new version needs a new release: build the APK again (`bunx eas-cli build --platform android --profile production:local`) and upload it to a new GitHub release with the same file name `brasper.apk`, and the QR keeps working. Do not name that release tag `v*` (use `apk-<version>`): `v*` tags start the *Release · Store build* workflow, which builds and submits to the stores.
+**Install the Android app.** The QR at the top of this page opens a landing page ([reference/app/index.html](reference/app/index.html), published to GitHub Pages by the *Deploy plan to GitHub Pages* workflow at `…/iathon-fintech/app/`). Its button downloads `brasper.apk` from the latest [GitHub release](https://github.com/binnicordova/iathon-fintech/releases/latest); the version, size and SHA-256 shown on the page are read from that release, so they never go stale. The APK is built by EAS (profile `production:local`, channel `production`), so an installed copy is set up to receive every merge to `main` over the air (the *Release · OTA update* workflow) while the version in `app.config.ts` stays the same.
+
+A new version needs a new release: build the APK again (`bunx eas-cli build --platform android --profile production:local`) and upload it to a new GitHub release with the same file name `brasper.apk`; the QR and the page keep working. Do not name that release tag `v*` (use `apk-<version>`): `v*` tags start the *Release · Store build* workflow, which builds and submits to the stores.
+
+**Evolving the landing page.** At the top of the script in `reference/app/index.html`: set `STORES.ios.url` to a TestFlight or App Store link and the iPhone button becomes real (until then it says "coming soon"); set `PROMO.text` (and `PROMO.href`) to show a promo banner above the header. The QR never needs to change.
 
 **Test a pull request.** Every pull request also runs the *PR Preview* workflow, which publishes an EAS Update on its own branch (`pr-<number>`) and comments a QR on the PR. Scan it with **Expo Go (SDK 57)** while logged in to an Expo account.
 

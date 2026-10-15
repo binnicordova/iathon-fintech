@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BrasPer: prueba la app</title>
+<meta name="description" content="De un chat de WhatsApp a un envío con seguimiento. Prueba BrasPer, la app para enviar dinero entre Brasil y Perú, en tu celular Android.">
+<meta name="theme-color" content="#060C24">
+<link rel="canonical" href="https://binnicordova.github.io/iathon-fintech/app/">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="BrasPer: prueba la app">
+<meta property="og:description" content="Cotiza Brasil ⇄ Perú, conversa con el asistente y sigue cada paso de tu envío. Descárgala en tu Android.">
+<meta property="og:url" content="https://binnicordova.github.io/iathon-fintech/app/">
+<meta property="og:image" content="https://binnicordova.github.io/iathon-fintech/app/icon-512.png">
+<meta name="twitter:card" content="summary">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #060c24;
+    --bg-2: #0a1230;
+    --surface: #101936;
+    --surface-2: #16224b;
+    --line: #243059;
+    --text: #e9eeff;
+    --muted: #9aa7cc;
+    --accent: #5b8bff;
+    --accent-strong: #1a5cff;
+    --ai: #a58bff;
+    --ok: #7be6a8;
+    --radius: 20px;
+    --gutter: clamp(16px, 5vw, 32px);
+    --maxw: 1120px;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 400 17px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  img { max-width: 100%; display: block; }
+  a { color: var(--accent); }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 8px; }
+  .wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 var(--gutter); }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* ---------- promo slot (hidden until PROMO.text is set in the script) ---------- */
+  .promo { background: linear-gradient(90deg, var(--accent-strong), var(--ai)); color: #fff; text-align: center; font-weight: 600; font-size: 15px; padding: 10px var(--gutter); }
+  .promo a { color: #fff; }
+  .promo[hidden] { display: none; }
+
+  /* ---------- header ---------- */
+  header.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: max(18px, env(safe-area-inset-top)); padding-bottom: 8px; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); font-weight: 700; font-size: 21px; letter-spacing: -0.01em; }
+  .brand img { width: 34px; height: 34px; border-radius: 9px; }
+  .brand b { color: var(--accent); font-weight: 700; }
+  .lang { display: flex; gap: 4px; padding: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; }
+  .lang button { all: unset; cursor: pointer; font-size: 13px; font-weight: 700; letter-spacing: .04em; padding: 8px 11px; border-radius: 999px; color: var(--muted); min-width: 38px; text-align: center; }
+  .lang button[aria-pressed="true"] { background: var(--accent); color: #060c24; }
+
+  /* ---------- hero ---------- */
+  .hero { position: relative; overflow: hidden; }
+  .hero::before { content: ""; position: absolute; inset: -20% -30% auto auto; width: 90vw; max-width: 900px; aspect-ratio: 1; background: radial-gradient(closest-side, rgba(91,139,255,.28), rgba(91,139,255,0)); pointer-events: none; }
+  .hero::after { content: ""; position: absolute; inset: auto auto -30% -25%; width: 70vw; max-width: 700px; aspect-ratio: 1; background: radial-gradient(closest-side, rgba(165,139,255,.18), rgba(165,139,255,0)); pointer-events: none; }
+  .hero-grid { position: relative; z-index: 1; display: grid; gap: 28px; padding-block: 18px 40px; align-items: center; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; letter-spacing: .02em; color: var(--muted); background: var(--surface); border: 1px solid var(--line); padding: 7px 14px; border-radius: 999px; }
+  .eyebrow i { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 4px rgba(123,230,168,.18); }
+  h1 { margin: 16px 0 14px; font-size: clamp(2.15rem, 8.4vw, 3.9rem); line-height: 1.05; letter-spacing: -0.03em; font-weight: 800; text-wrap: balance; }
+  h1 em { font-style: normal; background: linear-gradient(100deg, #8fb0ff, var(--ai)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lead { margin: 0 0 24px; color: var(--muted); font-size: clamp(1.02rem, 3.6vw, 1.2rem); max-width: 34em; text-wrap: pretty; }
+
+  .cta { display: flex; flex-direction: column; gap: 12px; max-width: 440px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 58px; padding: 0 24px; border-radius: 16px; font: inherit; font-weight: 700; font-size: 18px; text-decoration: none; cursor: pointer; border: 0; transition: transform .15s ease, box-shadow .15s ease, background .15s ease; }
+  .btn svg { width: 22px; height: 22px; flex: none; }
+  .btn-primary { color: #fff; background: linear-gradient(180deg, #3a73ff, var(--accent-strong)); box-shadow: 0 10px 30px -8px rgba(26,92,255,.7), inset 0 1px 0 rgba(255,255,255,.25); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 36px -8px rgba(26,92,255,.8), inset 0 1px 0 rgba(255,255,255,.25); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--line); min-height: 50px; font-size: 16px; font-weight: 600; }
+  .btn-ghost:hover { background: var(--surface); }
+  .btn-disabled { background: var(--surface); color: var(--muted); border: 1px dashed var(--line); cursor: default; box-shadow: none; }
+  .meta { margin: 2px 0 0; font-size: 14px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; }
+  .meta span::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--ok); margin-right: 7px; vertical-align: 1px; }
+  .status { font-size: 15px; color: var(--ok); margin: 0; }
+  .status:empty { display: none; }
+  .ios-note { display: none; margin: 0; font-size: 15px; color: var(--muted); }
+
+  /* platform switches: set by the script on <html data-platform> */
+  .only-ios { display: none; }
+  html[data-platform="ios"] .only-ios { display: inline-flex; }
+  html[data-platform="ios"] .only-ios.ios-note { display: block; }
+  html[data-platform="ios"] .only-android { display: none; }
+
+  /* desktop QR card */
+  .qr-card { display: none; align-items: center; gap: 16px; margin-top: 8px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); max-width: 440px; }
+  .qr-card img { width: 104px; height: 104px; border-radius: 10px; background: #fff; padding: 6px; }
+  .qr-card strong { display: block; font-size: 16px; }
+  .qr-card p { margin: 2px 0 0; font-size: 14px; color: var(--muted); }
+
+  /* phones */
+  .phone { position: relative; border-radius: 38px; padding: 9px; background: linear-gradient(155deg, #3a4a86, #131c40 55%, #0b1230); box-shadow: 0 30px 60px -20px rgba(0,0,0,.75), 0 0 0 1px rgba(255,255,255,.06) inset; }
+  .screen { border-radius: 30px; overflow: hidden; aspect-ratio: 322 / 640; background: #f3f6fd; }
+  /* the shots are iPhone simulator captures: crop the iOS status bar so the frame stays neutral */
+  .screen img { width: 100%; height: auto; margin-top: -17.4%; }
+  .stage { position: relative; display: flex; justify-content: center; min-height: 380px; }
+  .stage .phone { width: min(46%, 230px); }
+  .stage .phone:nth-child(1) { transform: translate(6%, 22px) rotate(-5deg); z-index: 1; }
+  .stage .phone:nth-child(2) { transform: translate(-6%, -8px) rotate(4deg); z-index: 2; }
+
+  /* ---------- sections ---------- */
+  section { padding: 52px 0; position: relative; }
+  section.alt { background: var(--bg-2); border-block: 1px solid var(--line); }
+  h2 { margin: 0 0 8px; font-size: clamp(1.6rem, 5.6vw, 2.3rem); line-height: 1.12; letter-spacing: -0.02em; font-weight: 800; text-wrap: balance; }
+  .sub { margin: 0 0 28px; color: var(--muted); max-width: 40em; }
+
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+  .steps li { counter-increment: s; position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 20px 20px 74px; }
+  .steps li::before { content: counter(s); position: absolute; left: 18px; top: 18px; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-weight: 800; font-size: 19px; color: #060c24; background: linear-gradient(160deg, #8fb0ff, var(--accent)); }
+  .steps h3 { margin: 0 0 4px; font-size: 18px; }
+  .steps p { margin: 0; color: var(--muted); font-size: 16px; }
+
+  .strip { display: flex; gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 6px var(--gutter) 22px; margin: 0 calc(var(--gutter) * -1); scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .strip::-webkit-scrollbar { display: none; }
+  .strip figure { margin: 0; flex: 0 0 min(66vw, 250px); scroll-snap-align: center; }
+  .strip figcaption { margin-top: 14px; text-align: center; font-weight: 600; font-size: 15px; color: var(--muted); }
+
+  .cards { display: grid; gap: 14px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; }
+  .card .ico { width: 44px; height: 44px; border-radius: 13px; display: grid; place-items: center; margin-bottom: 14px; background: rgba(91,139,255,.14); color: var(--accent); }
+  .card.ai .ico { background: rgba(165,139,255,.16); color: var(--ai); }
+  .card .ico svg { width: 22px; height: 22px; }
+  .card h3 { margin: 0 0 6px; font-size: 18px; }
+  .card p { margin: 0; color: var(--muted); font-size: 16px; }
+
+  details { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; margin-bottom: 10px; }
+  summary { list-style: none; cursor: pointer; padding: 18px 52px 18px 20px; font-weight: 700; position: relative; min-height: 56px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: ""; position: absolute; right: 22px; top: 50%; width: 9px; height: 9px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: translateY(-70%) rotate(45deg); transition: transform .2s ease; }
+  details[open] summary::after { transform: translateY(-30%) rotate(-135deg); }
+  details .body { padding: 0 20px 18px; color: var(--muted); font-size: 16px; }
+  .sha { margin-top: 12px; display: flex; gap: 8px; align-items: stretch; }
+  .sha code { flex: 1; min-width: 0; overflow-wrap: anywhere; font: 500 12.5px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; color: var(--text); }
+  .sha button { all: unset; cursor: pointer; flex: none; padding: 0 14px; border-radius: 10px; border: 1px solid var(--line); font-weight: 700; font-size: 14px; color: var(--text); display: grid; place-items: center; }
+  .sha button:hover { background: var(--surface-2); }
+  .sha[hidden] { display: none; }
+
+  footer { padding: 36px 0 48px; color: var(--muted); font-size: 14.5px; border-top: 1px solid var(--line); }
+  footer .row { display: flex; flex-wrap: wrap; gap: 8px 22px; justify-content: space-between; align-items: center; }
+  footer a { color: var(--muted); text-underline-offset: 3px; }
+  footer a:hover { color: var(--text); }
+
+  .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); transform: translate(-50%, 24px); background: var(--text); color: #060c24; font-weight: 700; padding: 12px 20px; border-radius: 999px; opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease; z-index: 10; }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  /* ---------- wider screens ---------- */
+  @media (min-width: 640px) {
+    .cards { grid-template-columns: repeat(3, 1fr); }
+    .steps { grid-template-columns: repeat(3, 1fr); }
+    .steps li { padding: 78px 20px 22px; }
+    .steps li::before { left: 20px; top: 20px; }
+  }
+  @media (min-width: 900px) {
+    .hero-grid { grid-template-columns: 1.1fr .9fr; gap: 48px; padding-block: 36px 72px; }
+    .stage { min-height: 560px; }
+    .stage .phone { width: min(46%, 250px); }
+    .cta { flex-direction: row; flex-wrap: wrap; max-width: none; }
+    .cta .meta, .cta .status, .cta .ios-note { flex-basis: 100%; }
+    .strip { display: grid; grid-template-columns: repeat(4, 1fr); overflow: visible; padding-bottom: 6px; }
+    .strip figure { flex: none; }
+    section { padding: 80px 0; }
+  }
+  @media (min-width: 900px) and (hover: hover) and (pointer: fine) {
+    .qr-card { display: flex; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .rise { animation: rise .7s cubic-bezier(.2,.7,.2,1) both; }
+    .rise.d1 { animation-delay: .08s; } .rise.d2 { animation-delay: .16s; } .rise.d3 { animation-delay: .24s; }
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .btn { transition: none; } }
+</style>
+</head>
+<body>
+
+<!-- PROMO SLOT: set PROMO.text (and optionally PROMO.href) in the script below to show a banner here. -->
+<div class="promo" id="promo" hidden></div>
+
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="./" aria-label="BrasPer"><img src="icon-512.png" alt="" width="34" height="34"><span>Bras<b>Per</b></span></a>
+    <div class="lang" role="group" aria-label="Idioma / Idioma / Language">
+      <button type="button" data-lang="es" aria-pressed="true">ES</button>
+      <button type="button" data-lang="pt" aria-pressed="false">PT</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </header>
+</div>
+
+<main>
+  <div class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow rise"><i></i><span data-i18n="eyebrow">Demo en vivo · IATHON Perú 2026</span></span>
+        <h1 class="rise d1" data-i18n-html="h1">De un chat de WhatsApp a un <em>envío con seguimiento</em></h1>
+        <p class="lead rise d2" data-i18n="lead">Cotiza Brasil ⇄ Perú, conversa con el asistente y sigue cada paso de tu operación. Pruébala ahora en tu celular.</p>
+
+        <div class="cta rise d3">
+          <!-- ANDROID (default). The href is a stable URL: it always serves the newest GitHub release. -->
+          <a class="btn btn-primary only-android" id="download" href="https://github.com/binnicordova/iathon-fintech/releases/latest/download/brasper.apk" download="brasper.apk">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M4 20h16"/></svg>
+            <span data-i18n="cta_android">Descargar para Android</span>
+          </a>
+          <!-- iOS: swap in a TestFlight / App Store link by setting STORES.ios.url in the script. -->
+          <a class="btn btn-primary only-ios" id="ios" href="#" aria-disabled="true">
+            <span data-i18n="cta_ios">iPhone: próximamente</span>
+          </a>
+          <button class="btn btn-ghost" id="share" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:20px;height:20px"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M16 6l-4-4-4 4M12 2v14"/></svg>
+            <span data-i18n="share">Compartir enlace</span>
+          </button>
+          <p class="meta only-android" id="meta" hidden></p>
+          <p class="status" id="status" role="status" aria-live="polite"></p>
+          <p class="ios-note only-ios" data-i18n="ios_note">Por ahora la demo es solo para Android. Comparte este enlace con alguien que tenga uno.</p>
+        </div>
+
+        <div class="qr-card">
+          <img src="qr.svg" alt="" width="104" height="104">
+          <div>
+            <strong data-i18n="qr_title">¿En una computadora?</strong>
+            <p data-i18n="qr_text">Escanea el código con la cámara de tu celular Android.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="stage rise d2" aria-hidden="true">
+        <div class="phone"><div class="screen"><img src="img/quote.png" alt="" width="322" height="700" loading="eager"></div></div>
+        <div class="phone"><div class="screen"><img src="img/assistant.png" alt="" width="322" height="700" loading="eager"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <section class="alt" id="install">
+    <div class="wrap">
+      <h2 data-i18n="steps_title">Instálala en 3 pasos</h2>
+      <p class="sub" data-i18n="steps_sub">Toma menos de un minuto. Solo la primera vez Android te pedirá un permiso.</p>
+      <ol class="steps">
+        <li><h3 data-i18n="s1_t">Descarga</h3><p data-i18n="s1_d">Toca el botón de arriba. Se descarga un archivo llamado brasper.apk.</p></li>
+        <li><h3 data-i18n="s2_t">Permite la instalación</h3><p data-i18n="s2_d">Android te pedirá permiso para instalar desde tu navegador. Toca Configuración y actívalo.</p></li>
+        <li><h3 data-i18n="s3_t">Abre BrasPer</h3><p data-i18n="s3_d">Toca Instalar. Si Play Protect avisa, elige Instalar de todos modos: la app aún no está en Google Play.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="look">
+    <div class="wrap">
+      <h2 data-i18n="shots_title">Así se ve</h2>
+      <p class="sub" data-i18n="shots_sub">Cuatro pantallas de la app real, en español, portugués o inglés.</p>
+      <div class="strip">
+        <figure><div class="phone"><div class="screen"><img src="img/quote.png" alt="" width="322" height="700" loading="lazy"></div></div><figcaption data-i18n="cap1">Cotiza tu envío</figcaption></figure>
+        <figure><div class="phone"><div class="screen"><img src="img/assistant.png" alt="" width="322" height="700" loading="lazy"></div></div><figcaption data-i18n="cap2">Habla con el asistente</figcaption></figure>
+        <figure><div class="phone"><div class="screen"><img src="img/orders.png" alt="" width="322" height="700" loading="lazy"></div></div><figcaption data-i18n="cap3">Sigue tus operaciones</figcaption></figure>
+        <figure><div class="phone"><div class="screen"><img src="img/receipt.png" alt="" width="322" height="700" loading="lazy"></div></div><figcaption data-i18n="cap4">Descarga tu comprobante</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="alt">
+    <div class="wrap">
+      <h2 data-i18n="feats_title">Qué puedes probar</h2>
+      <p class="sub" data-i18n="feats_sub">Lo que un chat no puede hacer solo.</p>
+      <div class="cards">
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg></div>
+          <h3 data-i18n="f1_t">Cotizador claro</h3>
+          <p data-i18n="f1_d">Cuánto envías, cuánto recibe tu destinatario, la comisión y el tipo de cambio, antes de continuar.</p>
+        </div>
+        <div class="card ai">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l1.9 5.6L19.5 9.5l-5.6 1.9L12 17l-1.9-5.6L4.5 9.5l5.6-1.9L12 2zM19 15l.9 2.6 2.6.9-2.6.9L19 22l-.9-2.6-2.6-.9 2.6-.9L19 15z"/></svg></div>
+          <h3 data-i18n="f2_t">Asistente con IA</h3>
+          <p data-i18n="f2_d">Escríbele “500 reales a soles” y arma la cotización contigo. Cuando quieras, sigue la conversación por WhatsApp.</p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3 8-8M20 12v7a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h9"/></svg></div>
+          <h3 data-i18n="f3_t">Seguimiento y comprobante</h3>
+          <p data-i18n="f3_d">Mira el estado de cada operación paso a paso y descarga el comprobante en PDF.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap">
+      <h2 data-i18n="faq_title">Preguntas frecuentes</h2>
+      <p class="sub" style="margin-bottom:20px"></p>
+      <details>
+        <summary data-i18n="q1">¿Es seguro instalar el APK?</summary>
+        <div class="body">
+          <span data-i18n="a1">El archivo se compila en EAS (Expo) y se publica en la página de releases del repositorio público del proyecto. Puedes comprobar que el tuyo es el mismo comparando su huella SHA-256:</span>
+          <div class="sha" id="sha" hidden><code id="shaValue"></code><button type="button" id="copySha" data-i18n="copy">Copiar</button></div>
+        </div>
+      </details>
+      <details>
+        <summary data-i18n="q2">¿Por qué Android muestra advertencias?</summary>
+        <div class="body" data-i18n="a2">Porque la app aún no está en Google Play. Android avisa con cualquier app que se instala desde fuera de la tienda. Tú decides si continuar.</div>
+      </details>
+      <details>
+        <summary data-i18n="q3">¿Es una app real?</summary>
+        <div class="body" data-i18n="a3">Es una versión de demostración del Equipo 5.5 para IATHON Perú 2026: funciona de punta a punta, pero los comprobantes son de prueba y no tienen validez fiscal.</div>
+      </details>
+      <details>
+        <summary data-i18n="q4">¿Y en iPhone?</summary>
+        <div class="body" data-i18n="a4">Todavía no hay una versión instalable para iOS. Cuando exista, aparecerá en esta misma página.</div>
+      </details>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap row">
+    <span data-i18n="foot">Proyecto del Equipo 5.5 · IATHON Perú 2026</span>
+    <span>
+      <a href="https://github.com/binnicordova/iathon-fintech" data-i18n="foot_repo">Repositorio</a> ·
+      <a href="../" data-i18n="foot_plan">Plan del producto</a> ·
+      <a href="https://binnicordova.com">BinniCordova.com</a>
+    </span>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  "use strict";
+
+  /* ----- Configuration: the only things to touch to evolve this page ----- */
+  const REPO = "binnicordova/iathon-fintech";
+  const APK_NAME = "brasper.apk";
+  const STORES = {
+    // Set `url` to show a real button for iPhone (TestFlight / App Store). Empty = "coming soon".
+    ios: { url: "" },
+  };
+  // Set `text` (and optionally `href`) to show a promo banner above the header. Empty = hidden.
+  const PROMO = { text: "", href: "" };
+
+  /* ----- Copy ----- */
+  const T = {
+    es: {
+      eyebrow: "Demo en vivo · IATHON Perú 2026",
+      h1: "De un chat de WhatsApp a un <em>envío con seguimiento</em>",
+      lead: "Cotiza Brasil ⇄ Perú, conversa con el asistente y sigue cada paso de tu operación. Pruébala ahora en tu celular.",
+      cta_android: "Descargar para Android", cta_ios: "iPhone: próximamente", cta_ios_live: "Descargar para iPhone",
+      share: "Compartir enlace", copied: "Enlace copiado", copy: "Copiar", copied_sha: "Huella copiada",
+      started: "Descarga iniciada. Cuando termine, ábrela desde las notificaciones o desde Descargas.",
+      ios_note: "Por ahora la demo es solo para Android. Comparte este enlace con alguien que tenga uno.",
+      qr_title: "¿En una computadora?", qr_text: "Escanea el código con la cámara de tu celular Android.",
+      official: "APK oficial",
+      steps_title: "Instálala en 3 pasos", steps_sub: "Toma menos de un minuto. Solo la primera vez Android te pedirá un permiso.",
+      s1_t: "Descarga", s1_d: "Toca el botón de arriba. Se descarga un archivo llamado brasper.apk.",
+      s2_t: "Permite la instalación", s2_d: "Android te pedirá permiso para instalar desde tu navegador. Toca Configuración y actívalo.",
+      s3_t: "Abre BrasPer", s3_d: "Toca Instalar. Si Play Protect avisa, elige Instalar de todos modos: la app aún no está en Google Play.",
+      shots_title: "Así se ve", shots_sub: "Cuatro pantallas de la app real, disponible en español, portugués e inglés.",
+      cap1: "Cotiza tu envío", cap2: "Habla con el asistente", cap3: "Sigue tus operaciones", cap4: "Descarga tu comprobante",
+      feats_title: "Qué puedes probar", feats_sub: "Lo que un chat no puede hacer solo.",
+      f1_t: "Cotizador claro", f1_d: "Cuánto envías, cuánto recibe tu destinatario, la comisión y el tipo de cambio, antes de continuar.",
+      f2_t: "Asistente con IA", f2_d: "Escríbele “500 reales a soles” y arma la cotización contigo. Cuando quieras, sigue la conversación por WhatsApp.",
+      f3_t: "Seguimiento y comprobante", f3_d: "Mira el estado de cada operación paso a paso y descarga el comprobante en PDF.",
+      faq_title: "Preguntas frecuentes",
+      q1: "¿Es seguro instalar el APK?", a1: "El archivo se compila en EAS (Expo) y se publica en la página de releases del repositorio público del proyecto. Puedes comprobar que el tuyo es el mismo comparando su huella SHA-256:",
+      q2: "¿Por qué Android muestra advertencias?", a2: "Porque la app aún no está en Google Play. Android avisa con cualquier app que se instala desde fuera de la tienda. Tú decides si continuar.",
+      q3: "¿Es una app real?", a3: "Es una versión de demostración del Equipo 5.5 para IATHON Perú 2026: funciona de punta a punta, pero los comprobantes son de prueba y no tienen validez fiscal.",
+      q4: "¿Y en iPhone?", a4: "Todavía no hay una versión instalable para iOS. Cuando exista, aparecerá en esta misma página.",
+      foot: "Proyecto del Equipo 5.5 · IATHON Perú 2026", foot_repo: "Repositorio", foot_plan: "Plan del producto",
+      title: "BrasPer: prueba la app",
+      desc: "De un chat de WhatsApp a un envío con seguimiento. Prueba BrasPer, la app para enviar dinero entre Brasil y Perú, en tu celular Android.",
+    },
+    pt: {
+      eyebrow: "Demo ao vivo · IATHON Peru 2026",
+      h1: "De um chat de WhatsApp a um <em>envio com acompanhamento</em>",
+      lead: "Cote Brasil ⇄ Peru, converse com o assistente e acompanhe cada passo da sua operação. Experimente agora no seu celular.",
+      cta_android: "Baixar para Android", cta_ios: "iPhone: em breve", cta_ios_live: "Baixar para iPhone",
+      share: "Compartilhar link", copied: "Link copiado", copy: "Copiar", copied_sha: "Hash copiado",
+      started: "Download iniciado. Quando terminar, abra pelas notificações ou pela pasta Downloads.",
+      ios_note: "Por enquanto a demo é só para Android. Compartilhe este link com alguém que tenha um.",
+      qr_title: "Está no computador?", qr_text: "Escaneie o código com a câmera do seu celular Android.",
+      official: "APK oficial",
+      steps_title: "Instale em 3 passos", steps_sub: "Leva menos de um minuto. Só na primeira vez o Android pede uma permissão.",
+      s1_t: "Baixe", s1_d: "Toque no botão acima. Um arquivo chamado brasper.apk será baixado.",
+      s2_t: "Permita a instalação", s2_d: "O Android vai pedir permissão para instalar pelo seu navegador. Toque em Configurações e ative.",
+      s3_t: "Abra o BrasPer", s3_d: "Toque em Instalar. Se o Play Protect avisar, escolha Instalar mesmo assim: o app ainda não está no Google Play.",
+      shots_title: "Veja como é", shots_sub: "Quatro telas do app real, disponível em espanhol, português e inglês.",
+      cap1: "Cote seu envio", cap2: "Fale com o assistente", cap3: "Acompanhe suas operações", cap4: "Baixe seu comprovante",
+      feats_title: "O que você pode testar", feats_sub: "O que um chat não consegue fazer sozinho.",
+      f1_t: "Cotação clara", f1_d: "Quanto você envia, quanto seu destinatário recebe, a comissão e a taxa de câmbio, antes de continuar.",
+      f2_t: "Assistente com IA", f2_d: "Escreva “500 reais para soles” e ele monta a cotação com você. Quando quiser, continue a conversa pelo WhatsApp.",
+      f3_t: "Acompanhamento e comprovante", f3_d: "Veja o status de cada operação passo a passo e baixe o comprovante em PDF.",
+      faq_title: "Perguntas frequentes",
+      q1: "É seguro instalar o APK?", a1: "O arquivo é compilado no EAS (Expo) e publicado na página de releases do repositório público do projeto. Você pode confirmar que o seu é o mesmo comparando o hash SHA-256:",
+      q2: "Por que o Android mostra avisos?", a2: "Porque o app ainda não está no Google Play. O Android avisa em qualquer app instalado fora da loja. Você decide se continua.",
+      q3: "É um app de verdade?", a3: "É uma versão de demonstração do Equipe 5.5 para o IATHON Peru 2026: funciona de ponta a ponta, mas os comprovantes são de teste e não têm validade fiscal.",
+      q4: "E no iPhone?", a4: "Ainda não há uma versão instalável para iOS. Quando existir, ela aparecerá nesta mesma página.",
+      foot: "Projeto da Equipe 5.5 · IATHON Peru 2026", foot_repo: "Repositório", foot_plan: "Plano do produto",
+      title: "BrasPer: experimente o app",
+      desc: "De um chat de WhatsApp a um envio com acompanhamento. Experimente o BrasPer, o app para enviar dinheiro entre Brasil e Peru, no seu celular Android.",
+    },
+    en: {
+      eyebrow: "Live demo · IATHON Peru 2026",
+      h1: "From a WhatsApp chat to a <em>tracked transfer</em>",
+      lead: "Quote Brazil ⇄ Peru, chat with the assistant and follow every step of your operation. Try it now on your phone.",
+      cta_android: "Download for Android", cta_ios: "iPhone: coming soon", cta_ios_live: "Get it for iPhone",
+      share: "Share link", copied: "Link copied", copy: "Copy", copied_sha: "Checksum copied",
+      started: "Download started. When it finishes, open it from your notifications or the Downloads folder.",
+      ios_note: "The demo is Android-only for now. Share this link with someone who has one.",
+      qr_title: "On a computer?", qr_text: "Scan the code with your Android phone's camera.",
+      official: "Official APK",
+      steps_title: "Install it in 3 steps", steps_sub: "It takes under a minute. Android asks for one permission, the first time only.",
+      s1_t: "Download", s1_d: "Tap the button above. A file called brasper.apk is downloaded.",
+      s2_t: "Allow the install", s2_d: "Android will ask to let your browser install apps. Tap Settings and switch it on.",
+      s3_t: "Open BrasPer", s3_d: "Tap Install. If Play Protect warns you, choose Install anyway: the app is not on Google Play yet.",
+      shots_title: "What it looks like", shots_sub: "Four screens of the real app, available in Spanish, Portuguese and English.",
+      cap1: "Quote your transfer", cap2: "Talk to the assistant", cap3: "Track your operations", cap4: "Download your receipt",
+      feats_title: "What you can try", feats_sub: "What a chat cannot do on its own.",
+      f1_t: "A clear quote", f1_d: "How much you send, how much your recipient gets, the fee and the exchange rate, before you continue.",
+      f2_t: "AI assistant", f2_d: "Type “500 reais to soles” and it builds the quote with you. Whenever you like, carry on over WhatsApp.",
+      f3_t: "Tracking and receipt", f3_d: "See the status of every operation step by step and download the receipt as a PDF.",
+      faq_title: "Frequently asked questions",
+      q1: "Is it safe to install the APK?", a1: "The file is built on EAS (Expo) and published on the releases page of the project's public repository. You can check yours is the same by comparing its SHA-256 checksum:",
+      q2: "Why does Android show warnings?", a2: "Because the app is not on Google Play yet. Android warns about any app installed from outside the store. You decide whether to continue.",
+      q3: "Is it a real app?", a3: "It is a demo version by Team 5.5 for IATHON Peru 2026: it works end to end, but the receipts are test ones and have no fiscal validity.",
+      q4: "What about iPhone?", a4: "There is no installable iOS version yet. When there is one, it will show up on this same page.",
+      foot: "Team 5.5 project · IATHON Peru 2026", foot_repo: "Repository", foot_plan: "Product plan",
+      title: "BrasPer: try the app",
+      desc: "From a WhatsApp chat to a tracked transfer. Try BrasPer, the app for sending money between Brazil and Peru, on your Android phone.",
+    },
+  };
+
+  /* ----- Helpers ----- */
+  const $ = (id) => document.getElementById(id);
+  const root = document.documentElement;
+  const safe = (fn) => { try { return fn(); } catch { return null; } };
+  const ua = navigator.userAgent || "";
+  const isAndroid = /Android/i.test(ua);
+  const isIOS = !isAndroid && (/iPhone|iPad|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
+  root.dataset.platform = isIOS ? "ios" : isAndroid ? "android" : "desktop";
+
+  let lang = "es";
+  let release = null; // { version, size, sha }
+
+  const t = (key) => (T[lang] && T[lang][key]) || T.es[key] || "";
+
+  const toast = (msg) => {
+    const el = $("toast");
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(toast.timer);
+    toast.timer = setTimeout(() => el.classList.remove("show"), 2200);
+  };
+
+  const renderMeta = () => {
+    const el = $("meta");
+    if (!release) return (el.hidden = true);
+    el.hidden = false;
+    el.innerHTML = "";
+    [t("official"), release.version && `v${release.version}`, release.size].filter(Boolean).forEach((txt) => {
+      const s = document.createElement("span");
+      s.textContent = txt;
+      el.appendChild(s);
+    });
+  };
+
+  const applyIOS = () => {
+    const a = $("ios");
+    const url = STORES.ios.url;
+    $("ios").querySelector("span").textContent = url ? t("cta_ios_live") : t("cta_ios");
+    if (url) {
+      a.href = url; a.removeAttribute("aria-disabled"); a.classList.remove("btn-disabled");
+      document.querySelector(".ios-note").hidden = true;
+    } else {
+      a.classList.add("btn-disabled");
+      a.addEventListener("click", (e) => e.preventDefault());
+    }
+  };
+
+  const setLang = (next) => {
+    lang = T[next] ? next : "es";
+    root.lang = lang;
+    document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t(el.dataset.i18n); });
+    document.querySelectorAll("[data-i18n-html]").forEach((el) => { el.innerHTML = t(el.dataset.i18nHtml); });
+    document.querySelectorAll("[data-lang]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+    document.title = t("title");
+    safe(() => document.querySelector('meta[name="description"]').setAttribute("content", t("desc")));
+    document.querySelectorAll(".strip figure").forEach((f) => {
+      f.querySelector("img").alt = f.querySelector("figcaption").textContent;
+    });
+    applyIOS();
+    renderMeta();
+    safe(() => localStorage.setItem("brasper-lang", lang));
+  };
+
+  /* ----- Language: saved choice, then the phone's language, then Spanish ----- */
+  const saved = safe(() => localStorage.getItem("brasper-lang"));
+  const guess = (navigator.language || "es").slice(0, 2).toLowerCase();
+  setLang(T[saved] ? saved : T[guess] ? guess : "es");
+  document.querySelectorAll("[data-lang]").forEach((b) => b.addEventListener("click", () => setLang(b.dataset.lang)));
+
+  /* ----- Promo banner ----- */
+  if (PROMO.text) {
+    const p = $("promo");
+    if (PROMO.href) {
+      const a = document.createElement("a");
+      a.href = PROMO.href; a.textContent = PROMO.text; p.appendChild(a);
+    } else {
+      p.textContent = PROMO.text;
+    }
+    p.hidden = false;
+  }
+
+  /* ----- Download feedback ----- */
+  $("download").addEventListener("click", () => { $("status").textContent = t("started"); });
+
+  /* ----- Share ----- */
+  $("share").addEventListener("click", async () => {
+    const url = location.href.split("#")[0];
+    if (navigator.share) {
+      try { await navigator.share({ title: t("title"), text: t("lead"), url }); return; } catch (e) { if (e && e.name === "AbortError") return; }
+    }
+    try { await navigator.clipboard.writeText(url); toast(t("copied")); } catch { prompt(t("share"), url); }
+  });
+
+  /* ----- Live release info: version, size and checksum come from GitHub, so nothing here goes stale ----- */
+  fetch(`https://api.github.com/repos/${REPO}/releases/latest`, { headers: { Accept: "application/vnd.github+json" } })
+    .then((r) => (r.ok ? r.json() : Promise.reject()))
+    .then((rel) => {
+      const asset = (rel.assets || []).find((a) => a.name === APK_NAME);
+      if (!asset) return;
+      release = {
+        version: String(rel.tag_name || "").replace(/^[^0-9]*/, ""),
+        size: asset.size ? `${Math.round(asset.size / 1e6)} MB` : "",
+        sha: asset.digest ? String(asset.digest).replace(/^sha256:/, "") : "",
+      };
+      renderMeta();
+      if (release.sha) { $("shaValue").textContent = release.sha; $("sha").hidden = false; }
+    })
+    .catch(() => {});
+
+  $("copySha").addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText($("shaValue").textContent); toast(t("copied_sha")); } catch {}
+  });
+})();
+</script>
+</body>
+</html>
