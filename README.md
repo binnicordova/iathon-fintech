@@ -10,10 +10,17 @@
       <br><br>
       <img src="docs/assets/apk-qr.svg" width="260" alt="Scan to download the BRASPER Android app">
       <br>
-      <sub>Or open <a href="https://github.com/binnicordova/iathon-fintech/releases/latest/download/brasper.apk">this link</a> on your phone. It always points to the latest release.</sub>
+      <sub>No camera handy? <a href="https://github.com/binnicordova/iathon-fintech/releases/latest/download/brasper.apk"><b>Download the APK</b></a> straight from your Android phone.</sub>
     </td>
   </tr>
 </table>
+
+**Share it.** Copy and send either link (WhatsApp, e-mail, a slide). Both always point to the latest release, so they never need updating:
+
+| | Link |
+|---|---|
+| **Download page** (best to share, opens on any device and shows the install notes) | `https://github.com/binnicordova/iathon-fintech/releases/latest` |
+| **Direct APK download** (what the QR opens, use it on an Android phone) | `https://github.com/binnicordova/iathon-fintech/releases/latest/download/brasper.apk` |
 
 <details>
 <summary><b>The phone says it can't install the app?</b></summary>
