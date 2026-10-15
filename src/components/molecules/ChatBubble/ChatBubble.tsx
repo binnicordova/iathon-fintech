@@ -1,6 +1,7 @@
 import {Row, Spacer} from "@expo/ui";
 import {Surface} from "@/components/atoms/Surface/Surface";
 import {Text} from "@/components/atoms/Text/Text";
+import {fullWidth} from "@/theme/fullWidth";
 import {SPACING} from "@/theme/spacing";
 import {useTheme} from "@/theme/useTheme";
 
@@ -18,11 +19,10 @@ export const ChatBubble = ({role, children, testID}: ChatBubbleProps) => {
     return (
         <Row
             alignment="center"
-            style={{
-                width: "100%",
+            {...fullWidth({
                 paddingLeft: isUser ? SPACING[8] : 0,
                 paddingRight: isUser ? 0 : SPACING[8],
-            }}
+            })}
         >
             {isUser && <Spacer flexible />}
             <Surface

@@ -2,6 +2,7 @@ import {Column, Host, ScrollView, Spacer} from "@expo/ui";
 import type {ReactNode} from "react";
 import {StyleSheet, View} from "react-native";
 import {Surface} from "@/components/atoms/Surface/Surface";
+import {fullWidth} from "@/theme/fullWidth";
 import {useBottomSpace} from "@/theme/safeArea";
 import {SPACING} from "@/theme/spacing";
 import {surfaceModifiers, surfaceStyle} from "@/theme/surface";
@@ -45,7 +46,6 @@ const styles = StyleSheet.create({
 });
 
 const CONTENT_PADDING = {
-    width: "100%",
     paddingTop: SPACING[3],
     paddingBottom: SPACING[4],
     paddingLeft: SPACING[4],
@@ -68,7 +68,7 @@ export const Screen = ({
         <Column
             spacing={SPACING[4]}
             alignment={centered ? "center" : "start"}
-            style={CONTENT_PADDING}
+            {...fullWidth(CONTENT_PADDING)}
         >
             {centered && <Spacer flexible />}
             {children}

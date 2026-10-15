@@ -7,6 +7,7 @@ import {formatMoney} from "@/domain/money";
 import {useLanguage, useT} from "@/hooks/useT";
 import type {Order, OrderStatus} from "@/models/order";
 import {RADIUS} from "@/theme/border";
+import {fullWidth} from "@/theme/fullWidth";
 import {SPACING} from "@/theme/spacing";
 import {useTheme} from "@/theme/useTheme";
 
@@ -55,7 +56,7 @@ export const OrderListItem = ({order, onPress}: OrderListItemProps) => {
                 borderWidth={1}
                 interactive
             >
-                <Row alignment="center" style={{width: "100%"}}>
+                <Row alignment="center" {...fullWidth()}>
                     <Text type="subtitle">{order.orderId}</Text>
                     <Spacer flexible />
                     <Pill

@@ -4,6 +4,7 @@ import {IconButton} from "@/components/atoms/IconButton/IconButton";
 import {Surface} from "@/components/atoms/Surface/Surface";
 import {TextField} from "@/components/atoms/TextField/TextField";
 import {useT} from "@/hooks/useT";
+import {fullWidth} from "@/theme/fullWidth";
 import {SPACING} from "@/theme/spacing";
 import {useTheme} from "@/theme/useTheme";
 
@@ -37,11 +38,7 @@ export const ChatComposer = ({onSend, disabled}: ChatComposerProps) => {
             paddingHorizontal={SPACING[4]}
             paddingVertical={SPACING[2]}
         >
-            <Row
-                alignment="center"
-                spacing={SPACING[2]}
-                style={{width: "100%"}}
-            >
+            <Row alignment="center" spacing={SPACING[2]} {...fullWidth()}>
                 <Surface grow>
                     <TextField
                         testID="chat-input"
