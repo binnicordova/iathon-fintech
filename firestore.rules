@@ -28,6 +28,18 @@ service cloud.firestore {
       allow read: if isOwner();
       allow write: if false;
     }
+    match /orders/{id}/events/{eventId} {
+      allow read: if signedIn() && get(/databases/$(database)/documents/orders/$(id)).data.uid == request.auth.uid;
+      allow write: if false;
+    }
+    match /recipients/{uid}/accounts/{id} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow write: if false;
+    }
+    // Role grants and reference locks are server-only, including for staff clients.
+    match /supabaseStaff/{id} { allow read, write: if false; }
+    match /operationReferences/{id} { allow read, write: if false; }
+
 
     match /invoices/{id} {
       allow read: if isOwner();

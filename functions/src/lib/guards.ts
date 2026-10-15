@@ -1,5 +1,6 @@
 import {type CallableRequest, HttpsError} from "firebase-functions/https";
 import type {ZodType} from "zod";
+import {db} from "./firebase";
 import {STAFF_ROLES, type StaffRole} from "../shared/models/staff";
 
 export const requireAuth = (request: CallableRequest): string => {
@@ -12,12 +13,17 @@ export const requireAuth = (request: CallableRequest): string => {
 export type StaffIdentity = {uid: string; email: string; role: StaffRole};
 
 /** Admin passes every check; otherwise the caller's role must be listed. */
-export const requireStaff = (
+export const requireStaff = async (
     request: CallableRequest,
     allowed: StaffRole[]
-): StaffIdentity => {
+): Promise<StaffIdentity> => {
     const uid = requireAuth(request);
-    const role = request.auth?.token.role as StaffRole | undefined;
+    // Grants for bridged identities are server-only, read on every staff action.
+    const role = (
+        uid.startsWith("supabase:")
+            ? (await db().doc(`supabaseStaff/${uid}`).get()).data()?.role
+            : request.auth?.token.role
+    ) as StaffRole | undefined;
     if (!role || !STAFF_ROLES.includes(role)) {
         throw new HttpsError("permission-denied", "staff-only");
     }

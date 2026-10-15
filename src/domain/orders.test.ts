@@ -56,18 +56,25 @@ describe("timelineFor", () => {
         ]);
     });
 
-    it("marks the money as sent once approved", () => {
-        expect(states("approved")).toEqual(["done", "done", "done", "todo"]);
+    it("does not mark approval as a payout", () => {
+        expect(states("approved")).toEqual(["done", "done", "todo", "todo"]);
     });
 
-    it("completes when the receipt is ready", () => {
+    it("does not infer a payout or receipt of funds from a document", () => {
         expect(states("exported", "accepted" as never)).toEqual([
             "done",
             "done",
-            "done",
-            "done",
+            "todo",
+            "todo",
         ]);
-        expect(states("exported")).toEqual(["done", "done", "done", "active"]);
+        expect(states("exported")).toEqual(["done", "done", "todo", "todo"]);
+        expect(
+            timelineFor({
+                status: "exported",
+                invoiceStatus: null,
+                payoutAt: "2026-10-14T00:00:00Z",
+            }).map((s) => s.state)
+        ).toEqual(["done", "done", "done", "active"]);
     });
 
     it("flags a rejection on the verification step", () => {

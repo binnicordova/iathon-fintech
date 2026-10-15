@@ -1,6 +1,10 @@
 import type {Currency} from "./currency";
 
-export type RateSource = "open.er-api.com" | "fawazahmed0" | "stale-cache";
+export type RateSource =
+    | "open.er-api.com"
+    | "fawazahmed0"
+    | "stale-cache"
+    | "manual";
 
 /**
  * Market reference rates, expressed as units of each currency per 1 USD.

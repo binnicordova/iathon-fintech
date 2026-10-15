@@ -1,22 +1,37 @@
 rules_version = '2';
-
-// Payment proofs are private: the client uploads to their own folder and only
-// that client can read them.
 service firebase.storage {
   match /b/{bucket}/o {
-
+    function staff() {
+      return request.auth != null && (
+        (!request.auth.uid.matches('supabase:.*') && request.auth.token.get('role', '') in ['admin','validator','operator','billing']) ||
+        (request.auth.uid.matches('supabase:.*') && firestore.get(/databases/(default)/documents/supabaseStaff/$(request.auth.uid)).data.role in ['admin','validator','operator','billing'])
+      );
+    }
+    function payoutOperator() {
+      return request.auth != null && (
+        (!request.auth.uid.matches('supabase:.*') && request.auth.token.get('role', '') in ['admin','operator']) ||
+        (request.auth.uid.matches('supabase:.*') && firestore.get(/databases/(default)/documents/supabaseStaff/$(request.auth.uid)).data.role in ['admin','operator'])
+      );
+    }
+    function validProof() {
+      return request.resource.size > 0 && request.resource.size <= 8 * 1024 * 1024
+        && request.resource.contentType in ['image/jpeg','image/png','application/pdf'];
+    }
     match /proofs/{uid}/{orderId}/{file} {
-      allow read: if request.auth != null && request.auth.uid == uid;
-      allow create: if request.auth != null
-        && request.auth.uid == uid
-        && request.resource.size < 8 * 1024 * 1024
-        && (request.resource.contentType.matches('image/.*')
-            || request.resource.contentType == 'application/pdf');
+      allow read: if request.auth != null && (request.auth.uid == uid || staff());
+      allow create: if resource == null && request.auth != null && request.auth.uid == uid && validProof()
+        && firestore.get(/databases/(default)/documents/orders/$(orderId)).data.uid == uid
+        && firestore.get(/databases/(default)/documents/orders/$(orderId)).data.status == 'pending';
       allow update, delete: if false;
     }
-
-    match /{allPaths=**} {
-      allow read, write: if false;
+    match /payouts/{orderId}/{file} {
+      allow read: if staff() || (request.auth != null && firestore.get(/databases/(default)/documents/orders/$(orderId)).data.uid == request.auth.uid);
+      allow create: if resource == null && payoutOperator() && validProof()
+        && firestore.get(/databases/(default)/documents/orders/$(orderId)).data.status in ['approved','exported']
+        && (!('payoutAt' in firestore.get(/databases/(default)/documents/orders/$(orderId)).data)
+          || firestore.get(/databases/(default)/documents/orders/$(orderId)).data.payoutAt == null);
+      allow update, delete: if false;
     }
+    match /{allPaths=**} { allow read, write: if false; }
   }
 }
