@@ -32,6 +32,7 @@ const SYMBOL: Record<IconName, ImageSourcePropType> = {
     bank: require("@expo/material-symbols/account_balance.xml"),
     upload: require("@expo/material-symbols/upload_file.xml"),
     mail: require("@expo/material-symbols/mail.xml"),
+    expand: require("@expo/material-symbols/keyboard_arrow_down.xml"),
 };
 
 export const Icon = ({name, size, color, testID}: IconProps) => {

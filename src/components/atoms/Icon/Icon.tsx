@@ -34,6 +34,7 @@ const SYMBOL: Record<IconName, IonIconName> = {
     bank: "business-outline",
     upload: "cloud-upload-outline",
     mail: "mail-outline",
+    expand: "chevron-down",
 };
 
 export const Icon = ({name, size, color, testID}: IconProps) => {

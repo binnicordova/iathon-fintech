@@ -1,5 +1,6 @@
-import {Row, Spacer, Button as UIButton} from "@expo/ui";
+import {Row, Spacer} from "@expo/ui";
 import {Pill} from "@/components/atoms/Pill/Pill";
+import {Pressable} from "@/components/atoms/Pressable/Pressable";
 import {Surface} from "@/components/atoms/Surface/Surface";
 import {Text} from "@/components/atoms/Text/Text";
 import {formatLimaDateTime} from "@/domain/hours";
@@ -41,9 +42,9 @@ export const OrderListItem = ({order, onPress}: OrderListItemProps) => {
     const tone = useStatusTone()(order.status);
 
     return (
-        <UIButton
+        <Pressable
             testID={`order-${order.orderId}`}
-            variant="text"
+            radius={RADIUS[5] * 2}
             onPress={onPress}
         >
             <Surface
@@ -72,6 +73,6 @@ export const OrderListItem = ({order, onPress}: OrderListItemProps) => {
                     {formatLimaDateTime(new Date(order.createdAt))}
                 </Text>
             </Surface>
-        </UIButton>
+        </Pressable>
     );
 };

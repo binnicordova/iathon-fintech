@@ -116,6 +116,7 @@ export const QuoteCalculator = ({
                         />
                     </Surface>
                     <SelectField
+                        large
                         width={CURRENCY_WIDTH}
                         testID="send-currency"
                         value={draft.sendCurrency}
@@ -155,6 +156,7 @@ export const QuoteCalculator = ({
                         />
                     </Surface>
                     <SelectField
+                        large
                         width={CURRENCY_WIDTH}
                         testID="receive-currency"
                         value={draft.receiveCurrency}

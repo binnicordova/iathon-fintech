@@ -1,4 +1,5 @@
 import {createContext, useContext} from "react";
+import {Platform} from "react-native";
 import {SafeAreaInsetsContext} from "react-native-safe-area-context";
 import {useKeyboard} from "@/hooks/useKeyboard";
 
@@ -18,7 +19,8 @@ export const useBottomSpace = (): number => {
     const bottom = useContext(SafeAreaInsetsContext)?.bottom ?? 0;
     const {inset, visible} = useKeyboard();
     if (visible && inset > 0) {
-        return inset;
+        // Android reports the keyboard without the navigation bar it replaces.
+        return Platform.OS === "android" ? inset + bottom : inset;
     }
     return ownsBottomInset ? bottom : 0;
 };
