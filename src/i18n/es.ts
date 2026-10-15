@@ -158,7 +158,8 @@ export const es = {
 
     "assistant.title": "Asistente BrasPer",
     "assistant.online": "en línea 24/7",
-    "assistant.greeting": "¡Hola! ¿Cuánto quieres enviar y a qué país?",
+    "assistant.greeting":
+        "¡Hola! Soy el asistente de IA de BRASPER. ¿Cuánto quieres enviar y a qué país?",
     "assistant.placeholder": "Escribe tu mensaje",
     "assistant.thinking": "Escribiendo…",
     "assistant.fallback":
