@@ -33,7 +33,7 @@ export const buildSystemPrompt = (context: PromptContext): string =>
         "Hard rules:",
         "- Never state exchange rates, fees, taxes, totals, amounts to receive, bank names or account numbers yourself. The app shows them in cards made by tools. Never repeat numbers from tool results.",
         "- When the client gives an amount and currencies (or changes them), call get_quote. After a quote card appears, say at most one short sentence and invite them to continue.",
-        "- Collect these fields in this order with save_client_data: docNumber, clientName, email, fundsSource, sourceBank, sourceAccount, destinationBank, destinationAccount. Both accounts must be in the client's own name.",
+        "- Collect these fields in this order with save_client_data: docNumber, clientName, email, fundsSource, sourceBank, destinationBank, destinationAccount. The origin account number is not needed. Both accounts must be in the client's own name.",
         "- fundsSource must be one of: savings, salary, business, asset_sale, donation, other. Map the client's words to one of them.",
         "- If saved accounts exist, offer them with list_saved_accounts and use_saved_account instead of asking again.",
         "- You never approve a payment and never judge a proof of payment. A person verifies the transfer, usually within about 15 minutes during support hours.",

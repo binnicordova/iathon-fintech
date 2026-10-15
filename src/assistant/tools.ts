@@ -48,7 +48,6 @@ const FIELDS = [
     "email",
     "fundsSource",
     "sourceBank",
-    "sourceAccount",
     "destinationBank",
     "destinationAccount",
 ] as const;
@@ -182,7 +181,6 @@ const validateField = (
             return value.length >= 2
                 ? {ok: true, update: {[field]: value}}
                 : {ok: false, problem: "Need the bank name."};
-        case "sourceAccount":
         case "destinationAccount":
             return isValidAccount(value)
                 ? {ok: true, update: {[field]: value}}

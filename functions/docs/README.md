@@ -203,14 +203,15 @@ Creates the order (the "IV") from an open quote. Rate, fees and the payment acco
 | `docNumber` | string | valid for the type: DNI 8 digits, CE 9-12 alphanumerics, RUC 11 digits starting 10/15/17/20 (checksum), CPF 11 digits (checksum) |
 | `email` | string | valid email (lowercased) |
 | `fundsSource` | `savings` \| `salary` \| `business` \| `asset_sale` \| `donation` \| `other` | |
-| `sourceBank`, `sourceAccount` | string | account at least 4 characters |
+| `sourceBank` | string | the bank the client pays from |
+| `sourceAccount` | string, optional | default `""`. The app only asks for the bank, so this is usually empty; if sent it is stored and saved to the client's accounts |
 | `destinationBank`, `destinationAccount` | string | account at least 4 characters |
 
 - **Response:** the full order (`status: "pending"`), including `orderId`, the frozen `rate`, `commission`, `tax`, `total`, `rateLockedUntil` (now + `rateLockMinutes`) and `paymentAccount`: where the client must pay. Demo accounts are flagged `"demo": true`.
 - **Errors:** `invalid-input` (see `details`), `quote-not-found`, `quote-already-used`, `quote-expired`.
 
 ```bash
-call createOrder '{"quoteId":"<id>","language":"es","clientName":"Ana Paula Souza","docType":"CPF","docNumber":"52998224725","email":"ana@example.com","fundsSource":"salary","sourceBank":"Nubank","sourceAccount":"0001-12345678-9","destinationBank":"BCP","destinationAccount":"191-1234567890"}'
+call createOrder '{"quoteId":"<id>","language":"es","clientName":"Ana Paula Souza","docType":"CPF","docNumber":"52998224725","email":"ana@example.com","fundsSource":"salary","sourceBank":"Nubank","destinationBank":"BCP","destinationAccount":"191-1234567890"}'
 ```
 
 ### submitProof
@@ -362,7 +363,7 @@ The operator exports approved orders for the Dashboard. Everything exported is r
 A seller closed the deal by phone or chat and registers it, so it follows the same path as every other operation. Rate and commission are the **negotiated** ones; the server computes the tax (`taxBps` of the commission), `receiveAmount = sendAmount × rate` and `total = sendAmount + commission + tax`. The order is `pending`, `channel: "human"`, owned by the staff member who creates it (`createdBy` holds their email), so that same person attaches the proof with `submitProof`.
 
 - **Role:** `validator`, `operator` or `admin`.
-- **Request:** `clientName`, `docType`, `docNumber`, `email`, `fundsSource`, `sourceBank`, `sourceAccount`, `destinationBank`, `destinationAccount` (same rules as `createOrder`), plus `sendCurrency`, `receiveCurrency` (different), `sendAmount`, `rate`, `commission` (numbers; commission must be below the amount).
+- **Request:** `clientName`, `docType`, `docNumber`, `email`, `fundsSource`, `sourceBank`, `sourceAccount`, `destinationBank`, `destinationAccount` (same rules as `createOrder`, except that here `sourceAccount` is required: staff have the number at hand), plus `sendCurrency`, `receiveCurrency` (different), `sendAmount`, `rate`, `commission` (numbers; commission must be below the amount).
 - **Response:** the full order, status `pending`.
 - **Errors:** `staff-only`, `role-not-allowed`, `invalid-input`, `commission-too-high`.
 - **Then:** upload the photo to `proofs/<yourUid>/<orderId>/<file>` and call `submitProof`; the order becomes `validating`.

@@ -28,7 +28,6 @@ describe("validateClientDraft", () => {
             "docNumber",
             "email",
             "fundsSource",
-            "sourceAccount",
             "sourceBank",
         ]);
     });
@@ -45,6 +44,14 @@ describe("validateClientDraft", () => {
                 docNumber: "529.982.247-25",
             })
         ).toEqual({});
+    });
+});
+
+describe("origin account", () => {
+    it("is optional: only the bank you pay from is asked", () => {
+        expect(validateClientDraft({...complete, sourceAccount: ""})).toEqual(
+            {}
+        );
     });
 });
 

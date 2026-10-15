@@ -137,10 +137,7 @@ const ReviewCard = ({
                     draft.fundsSource ? t(`funds.${draft.fundsSource}`) : "—"
                 }
             />
-            <SummaryRow
-                label={t("data.sourceBank")}
-                value={`${draft.sourceBank} ${maskAccount(draft.sourceAccount)}`}
-            />
+            <SummaryRow label={t("data.sourceBank")} value={draft.sourceBank} />
             <SummaryRow
                 label={t("data.destBank")}
                 value={`${draft.destinationBank} ${maskAccount(draft.destinationAccount)}`}

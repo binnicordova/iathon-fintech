@@ -25,7 +25,6 @@ const FIELDS = [
     "email",
     "fundsSource",
     "sourceBank",
-    "sourceAccount",
     "destinationBank",
     "destinationAccount",
 ] as const;

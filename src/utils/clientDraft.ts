@@ -29,9 +29,6 @@ export const validateClientDraft = (draft: ClientDraft): DraftErrors => {
     if (draft.sourceBank.trim().length < 2) {
         errors.sourceBank = "data.err.bank";
     }
-    if (!isValidAccount(draft.sourceAccount)) {
-        errors.sourceAccount = "data.err.account";
-    }
     if (draft.destinationBank.trim().length < 2) {
         errors.destinationBank = "data.err.bank";
     }
@@ -49,7 +46,6 @@ export const nextMissingField = (draft: ClientDraft): DraftField | null => {
         "email",
         "fundsSource",
         "sourceBank",
-        "sourceAccount",
         "destinationBank",
         "destinationAccount",
     ];
