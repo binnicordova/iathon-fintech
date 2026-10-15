@@ -160,7 +160,7 @@ export const pt: Dictionary = {
     "assistant.title": "Assistente BrasPer",
     "assistant.online": "online 24/7",
     "assistant.greeting":
-        "Olá! Sou o assistente de IA da BRASPER e posso errar: uma pessoa revisa cada operação. Quanto você quer enviar e para qual país?",
+        "Olá! Sou o assistente de IA da BRASPER. Quanto você quer enviar e para qual país?",
     "assistant.placeholder": "Escreva sua mensagem",
     "assistant.thinking": "Escrevendo…",
     "assistant.fallback":
