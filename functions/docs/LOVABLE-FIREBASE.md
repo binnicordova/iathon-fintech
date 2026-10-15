@@ -53,7 +53,7 @@ Los archivos son JPEG/PNG/PDF hasta 8 MiB, privados e inmutables desde el client
    Estos parámetros deben quedar en el entorno privado de despliegue, no en Git.
 3. La identidad de ejecución de `exchangeSupabaseSession` debe poder firmar custom tokens (`iam.serviceAccounts.signBlob` en la cuenta adecuada). Ver [Firebase custom tokens](https://firebase.google.com/docs/auth/admin/create-custom-tokens). No descargar ni publicar claves de cuenta de servicio.
 4. Desplegar `firestore:rules,firestore:indexes,storage`. Las reglas Storage nuevas consultan Firestore: habilitar la integración de permisos de reglas cuando Firebase lo solicite. Esperar que los índices estén listos.
-5. Desplegar selectivamente las funciones nuevas y las modificadas: `createOrder,submitProof,cancelOrder,reviewOrder,exportOrders,createQuote,getRates,runFact,getReceipt` más las funciones de la tabla anterior. **No usar despliegue con borrado/force**: `createManualOrder` existe en la nube revisada y no en este main; debe preservarse y contrastarse con su autor.
+5. Desplegar selectivamente las funciones nuevas y las modificadas: `createOrder,submitProof,cancelOrder,reviewOrder,exportOrders,createQuote,getRates,runFact,getReceipt,createManualOrder` más las funciones de la tabla anterior. **No usar despliegue con borrado/force**. El PR #5 de Binni ya incorporó `createManualOrder`: esta rama lo conserva y añade revisión inicial, auditoría y el guard de permisos asíncrono.
 6. Para personal que entra por Supabase, un administrador configura en Firestore `supabaseStaff/supabase:<uuid>` con `{role: "validator"}` o `operator`/`admin`/`billing`. Es server-only y se consulta en cada acción; no se otorga rol por correo ni por metadatos editables. Las cuentas nativas Firebase conservan sus claims. Sin asignación, el dashboard deniega acceso.
 7. Mantener la web actual en Supabase hasta completar el piloto de integración de abajo. El PR por sí solo no cambia Lovable.
 
@@ -99,4 +99,8 @@ La suite de integración se niega a arrancar si no hay emuladores loopback y un 
 
 ## Resultado local de esta rama
 
-105 pruebas de la app (15 suites) y 17 escenarios de integración en emuladores aprobados; compilación de Functions, TypeScript de la app/adaptadores y lint del repositorio aprobados. No se hizo deploy ni prueba de extremo a extremo contra aibrasper/Lovable/Meta.
+105 pruebas de la app (15 suites) y 19 escenarios de integración en emuladores aprobados; compilación de Functions, TypeScript de la app/adaptadores y lint del repositorio aprobados. No se hizo deploy ni prueba de extremo a extremo contra aibrasper/Lovable/Meta.
+
+## Actualización respecto a main 912428d
+
+Incorporado el PR #5 de Binni (createManualOrder, createdBy y lectura staff en Firestore/Storage). Se conserva su contrato de registro manual, se inicializan los estados del dashboard y la auditoría, y se adapta requireStaff a async. Las reglas permiten lectura al backoffice nativo y a los operadores Supabase con asignación explícita en Firebase, sin permitir autoasignarse roles o escribir operaciones desde el navegador.

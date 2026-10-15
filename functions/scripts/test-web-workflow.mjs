@@ -22,7 +22,7 @@ const {
 const {submitProof, createOrderFor, CreateOrderRequest} = require("../lib/orders.js");
 const {reviewOperation, getOperationProof} = require("../lib/web-workflow.js");
 const {listOperations, getOperationsSummary} = require("../lib/dashboard.js");
-const {exportOrders} = require("../lib/staff.js");
+const {exportOrders, createManualOrder} = require("../lib/staff.js");
 const {
     getOperationsConfig,
     updateOperationsConfig,
@@ -397,6 +397,55 @@ await test("Request correction permits new evidence but retains audit and refere
     assert.equal(saved.paymentProofPath, second);
     assert.equal((await db().collection(`orders/${row.orderId}/events`).get()).size, 4);
 });
+await test("Upstream manual orders preserve the seller, permissions and our audited worklists", async () => {
+    const data = {
+        ...input("unused"),
+        sendCurrency: "PEN",
+        receiveCurrency: "BRL",
+        sendAmount: 100,
+        rate: 1.4,
+        commission: 2,
+    };
+    await assert.rejects(() => call(createManualOrder, customer, data));
+    await assert.rejects(() =>
+        call(createManualOrder, "supabase:unassigned", data, "admin")
+    );
+    const row = await call(createManualOrder, "seller", data, "operator");
+    assert.equal(row.uid, "seller");
+    assert.equal(row.createdBy, "seller");
+    assert.equal(row.channel, "human");
+    assert.equal(row.workflowStatus, "awaiting_payment");
+    assert.equal(row.revision, 0);
+    const audit = await db().collection(`orders/${row.orderId}/events`).get();
+    assert.equal(audit.docs[0].data().action, "created_manual");
+    const path = `proofs/seller/${row.orderId}/manual.pdf`;
+    await bucket().file(path).save("%PDF-1.7\nmanual", {contentType: "application/pdf"});
+    await call(submitProof, "seller", {
+        orderId: row.orderId,
+        operationNo: "33333333",
+        proofPath: path,
+    });
+    const detail = (await db().doc(`orders/${row.orderId}`).get()).data();
+    await call(
+        reviewOperation,
+        "validator",
+        {
+            orderId: row.orderId,
+            action: "verify",
+            expectedRevision: detail.revision,
+            requestId: randomUUID(),
+            note: "Bank checked",
+        },
+        "validator"
+    );
+    assert.equal(
+        (await db().doc(`orders/${row.orderId}`).get()).data().workflowStatus,
+        "verified"
+    );
+    await assert.rejects(() =>
+        call(createManualOrder, "seller", {...data, rate: 0.000001}, "operator")
+    );
+});
 // Client SDK + Auth emulator exercise deployed Rules, not Admin's bypass.
 const {initializeApp} = await import("firebase/app");
 const {getAuth, connectAuthEmulator, signInAnonymously} = await import("firebase/auth");
@@ -450,6 +499,43 @@ await test("Storage rules bind uploads to an owned pending order and deny update
         })
     );
     await assert.rejects(() => getBytes(ref(storage, proof)));
+});
+await test("VIEW staff reads and bridged-role revocation are enforced by Firestore Rules", async () => {
+    const {getAuth: adminAuth} = require("firebase-admin/auth");
+    const {signInWithCustomToken} = await import("firebase/auth");
+    const {getDocFromServer} = await import("firebase/firestore");
+    await signInWithCustomToken(
+        auth,
+        await adminAuth().createCustomToken("view-staff", {role: "validator"})
+    );
+    assert.equal(
+        (await getDocFromServer(doc(fs, "orders/" + order.orderId))).exists(),
+        true
+    );
+    const events = await db().collection(`orders/${order.orderId}/events`).get();
+    assert.equal(
+        (
+            await getDocFromServer(
+                doc(fs, `orders/${order.orderId}/events/${events.docs[0].id}`)
+            )
+        ).exists(),
+        true
+    );
+    await assert.rejects(() =>
+        setDoc(doc(fs, "orders/BR-9999"), {uid, status: "approved"})
+    );
+    await signInWithCustomToken(
+        auth,
+        await adminAuth().createCustomToken("supabase:view-staff", {role: "admin"})
+    );
+    await assert.rejects(() => getDocFromServer(doc(fs, "orders/" + order.orderId)));
+    await db().doc("supabaseStaff/supabase:view-staff").set({role: "validator"});
+    assert.equal(
+        (await getDocFromServer(doc(fs, "orders/" + order.orderId))).exists(),
+        true
+    );
+    await db().doc("supabaseStaff/supabase:view-staff").delete();
+    await assert.rejects(() => getDocFromServer(doc(fs, "orders/" + order.orderId)));
 });
 console.log(`${passed} integration scenarios passed against real local emulators.`);
 process.exit(0);
