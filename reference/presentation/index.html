@@ -1,0 +1,687 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BRASPER · Presentación de 7 minutos</title>
+<meta name="description" content="Una remesa. Un registro. Todo el sistema. Presentación de BRASPER para IATHON Perú 2026, equipo 5.5.">
+<meta name="theme-color" content="#0B0C10">
+<link rel="canonical" href="https://binnicordova.github.io/iathon-fintech/presentation/">
+<link rel="icon" type="image/png" href="../app/favicon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="BRASPER · Una remesa. Un registro. Todo el sistema.">
+<meta property="og:description" content="Presentación de 7 minutos del equipo 5.5 en IATHON Perú 2026.">
+<meta property="og:url" content="https://binnicordova.github.io/iathon-fintech/presentation/">
+<meta property="og:image" content="https://binnicordova.github.io/iathon-fintech/app/icon-512.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap">
+<style>
+  :root {
+    color-scheme: dark;
+    --dark: #0B0C10;
+    --light: #F4F4F1;
+    --ink: #14161C;
+    --dim: #A9AEBA;
+    --dim-light: #5A606B;
+    --blue: #5B93FF;
+    --blue-deep: #1F5FE0;
+    --blue-tint: #E4ECFF;
+    --orange: #FF9F43;
+    --amber: #A64B00;
+    --card: #151821;
+    --line: #2A2F3D;
+    --paper: #FBFBF9;
+    --line-light: #D9D9D3;
+    --font: 'DM Sans', Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: #000; overflow: hidden; font-family: var(--font); }
+  body { color: var(--light); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+
+  /* The 1920x1080 stage is scaled to fit any screen. */
+  #stage { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; transform-origin: center center; overflow: hidden; background: var(--dark); }
+  .slide { position: absolute; inset: 0; padding: 128px; display: flex; flex-direction: column; opacity: 0; visibility: hidden; transition: opacity .35s ease, visibility 0s linear .35s; }
+  .slide.active { opacity: 1; visibility: visible; transition: opacity .35s ease; }
+  .slide.dark { background: var(--dark); color: var(--light); }
+  .slide.light { background: var(--light); color: var(--ink); }
+  .slide.blue { background: var(--blue-deep); color: var(--light); }
+  .slide.footer { padding-bottom: 160px; }
+  .slide .foot { position: absolute; left: 128px; right: 128px; bottom: 64px; font-size: 24px; color: var(--dim); }
+  .slide.light .foot { color: var(--dim-light); }
+
+  /* Reveal animation, restarted every time a slide becomes active. */
+  .slide.active .rise { animation: rise .7s cubic-bezier(.2,.7,.2,1) both; animation-delay: var(--d, 0s); }
+  @keyframes rise { from { opacity: 0; transform: translateY(36px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .slide.active .rise { animation: none; } .slide { transition: none; } }
+
+  .eyebrow { font-size: 28px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--blue); }
+  .eyebrow.big { font-size: 32px; }
+  .center { justify-content: center; }
+  h1, h2, h3 { font-weight: 700; }
+  h2.title { font-size: 80px; line-height: 1.1; letter-spacing: -2px; }
+
+  /* 1 cover */
+  #s1 { background: radial-gradient(circle at 85% 15%, #1B2C5C 0%, #0B0C10 60%); gap: 40px; justify-content: center; }
+  #s1 h1 { font-size: 240px; line-height: 1; letter-spacing: -8px; }
+  #s1 .sub { font-size: 56px; line-height: 1.2; color: var(--dim); }
+
+  /* 2 problem */
+  #s2 { justify-content: center; gap: 24px; }
+  #s2 .eyebrow { color: var(--orange); }
+  #s2 h1 { font-size: 440px; line-height: 1; letter-spacing: -14px; color: var(--orange); }
+  #s2 .big { font-size: 56px; font-weight: 500; }
+  #s2 .small { font-size: 36px; color: var(--dim); }
+
+  /* 3 reveal */
+  /* Three builds: Cotiza (web), Conversa (WhatsApp), Recibe tu boleta (app). */
+  #s3 { flex-direction: row; align-items: center; gap: 64px; }
+  #s3 .copy { width: 600px; flex: none; display: flex; flex-direction: column; gap: 36px; }
+  #s3 .eyebrow { color: var(--blue-tint); font-size: 32px; }
+  #s3 .steps { display: flex; flex-direction: column; gap: 28px; }
+  #s3 .step { opacity: .0; transform: translateX(-40px); transition: opacity .5s ease, transform .6s cubic-bezier(.2,.7,.2,1); border-left: 8px solid transparent; padding-left: 28px; }
+  #s3 .step.seen { opacity: .38; transform: none; }
+  #s3 .step.on { opacity: 1; transform: translateX(12px); border-left-color: var(--light); }
+  #s3 .step h2 { font-size: 80px; line-height: 1.05; }
+  #s3 .step p { font-size: 28px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--blue-tint); margin-top: 6px; }
+  #s3 .lead { font-size: 32px; line-height: 1.35; color: var(--blue-tint); }
+  #s3 .showcase { position: relative; flex: 1; height: 824px; }
+  #s3 .pane { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; transform: translateX(120px) scale(.9); pointer-events: none; transition: opacity .5s ease, transform .7s cubic-bezier(.2,.7,.2,1); }
+  #s3 .pane.on { opacity: 1; transform: none; }
+  #s3 .pane.past { opacity: 0; transform: translateX(-120px) scale(.9); }
+  #s3 .pane .tag { position: absolute; top: 4px; left: 50%; transform: translateX(-50%); font-size: 26px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; background: var(--light); color: var(--blue-deep); border-radius: 999px; padding: 8px 24px; white-space: nowrap; }
+  #s3 .browser { width: 1000px; background: var(--paper); border-radius: 20px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.4); margin-top: 40px; }
+  #s3 .browser .top { height: 52px; background: #E7E8EC; display: flex; align-items: center; gap: 10px; padding: 0 20px; }
+  #s3 .browser .top i { width: 14px; height: 14px; border-radius: 50%; background: #C3C6CF; display: block; }
+  #s3 .browser .top span { margin-left: 16px; flex: 1; background: var(--paper); border-radius: 999px; padding: 6px 20px; font-size: 22px; color: var(--dim-light); }
+  #s3 .browser img { display: block; width: 100%; height: auto; }
+  #s3 .phone { background: #1B1D24; border-radius: 60px; padding: 12px; box-shadow: 0 30px 80px rgba(0,0,0,.45); margin-top: 40px; }
+  #s3 .phone img { display: block; height: 700px; width: auto; border-radius: 48px; }
+  #s3 .pane.on .browser, #s3 .pane.on .phone { animation: float 5s ease-in-out .8s infinite; }
+  @keyframes float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -10px; } }
+  @media (prefers-reduced-motion: reduce) { #s3 .pane.on .browser, #s3 .pane.on .phone { animation: none; } }
+
+  /* 4 demo */
+  #s4 { padding: 48px 128px; align-items: center; gap: 24px; }
+  #s4 .bar { width: 1440px; display: flex; flex-direction: row; justify-content: space-between; align-items: baseline; }
+  #s4 h2 { font-size: 72px; line-height: 1; letter-spacing: -2px; }
+  #s4 .bar p { font-size: 28px; color: var(--dim); }
+  #s4 .bar a { color: var(--blue); font-weight: 700; }
+  #videoBox { width: 1440px; height: 810px; border-radius: 24px; overflow: hidden; background: #000; border: 1px solid var(--line); }
+  #videoBox iframe { width: 100%; height: 100%; border: 0; display: block; }
+  #s4 .tip { font-size: 24px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  #s4 .tip.warn { color: var(--orange); }
+
+  /* 5 architecture */
+  #s5 { justify-content: space-between; gap: 48px; }
+  #s5 h2 { font-size: 72px; }
+  #s5 .flow { display: flex; flex-direction: row; align-items: center; gap: 24px; }
+  #s5 .col { display: flex; flex-direction: column; gap: 20px; }
+  #s5 .col.l { width: 380px; } #s5 .col.r { width: 440px; }
+  #s5 .node { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 6px; }
+  #s5 .node h3 { font-size: 40px; } #s5 .col.r .node h3 { font-size: 36px; }
+  #s5 .node p { font-size: 26px; color: var(--dim); }
+  #s5 .core { width: 560px; background: var(--blue-deep); border-radius: 28px; padding: 40px; display: flex; flex-direction: column; gap: 20px; }
+  #s5 .core h3 { font-size: 44px; line-height: 1.15; }
+  #s5 .core p { font-size: 28px; line-height: 1.4; color: var(--blue-tint); }
+  #s5 .arrow { width: 72px; height: 36px; background: var(--blue); clip-path: polygon(0 28%, 60% 28%, 60% 0, 100% 50%, 60% 100%, 60% 72%, 0 72%); flex: none; }
+  #s5 .cap { font-size: 32px; color: var(--dim); }
+
+  /* 6 KPI 1 */
+  #s6 { justify-content: center; gap: 40px; }
+  #s6 .row { display: flex; flex-direction: row; align-items: center; gap: 48px; }
+  #s6 h1 { font-size: 180px; line-height: 1; letter-spacing: -6px; }
+  #s6 h1.old { color: var(--orange); }
+  #s6 .arrow { width: 140px; height: 70px; background: var(--blue); clip-path: polygon(0 28%, 60% 28%, 60% 0, 100% 50%, 60% 100%, 60% 72%, 0 72%); }
+  #s6 .claim { font-size: 56px; font-weight: 700; }
+  #s6 .note { font-size: 30px; color: var(--dim); }
+
+  /* 7 KPI table */
+  #s7 { justify-content: space-between; gap: 48px; }
+  #s7 table { width: 100%; border-collapse: collapse; font-size: 36px; }
+  #s7 th { text-align: left; font-weight: 700; padding: 18px 22px; border-bottom: 3px solid var(--ink); }
+  #s7 td { padding: 18px 22px; border-bottom: 1px solid var(--line-light); }
+  #s7 td.new { font-weight: 700; color: var(--blue-deep); }
+  #s7 th:nth-child(1) { width: 34%; } #s7 th:nth-child(2) { width: 22%; }
+
+  /* 8 impact */
+  #s8 { justify-content: space-between; gap: 48px; }
+  #s8 .cards { display: flex; flex-direction: row; gap: 32px; }
+  #s8 .card { flex: 1; background: var(--card); border: 1px solid var(--line); border-radius: 28px; padding: 48px; display: flex; flex-direction: column; gap: 16px; }
+  #s8 .card h1 { font-size: 140px; line-height: 1; color: var(--blue); }
+  #s8 .card h1.o { color: var(--orange); }
+  #s8 .card p { font-size: 34px; line-height: 1.3; }
+  #s8 .close { font-size: 44px; font-weight: 700; }
+
+  /* 9 try it */
+  #s9 { justify-content: space-between; gap: 32px; }
+  #s9 .qrs { display: flex; flex-direction: row; gap: 48px; }
+  #s9 .qr { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 16px; text-decoration: none; }
+  #s9 .qr .box { background: var(--paper); border-radius: 28px; padding: 24px; }
+  #s9 .qr img { display: block; width: 377px; height: 377px; image-rendering: pixelated; }
+  #s9 .qr h3 { font-size: 44px; }
+  #s9 .qr p { font-size: 26px; color: var(--dim); }
+  #s9 .team { font-size: 30px; color: var(--dim); }
+
+  /* HUD, outside the stage */
+  #hud { position: fixed; right: 16px; bottom: 16px; display: flex; gap: 8px; align-items: center; opacity: 0; transition: opacity .3s; z-index: 10; }
+  body.show-hud #hud { opacity: 1; }
+  #hud button { font: 600 14px var(--font); color: #F4F4F1; background: rgba(21,24,33,.85); border: 1px solid #2A2F3D; border-radius: 10px; padding: 8px 12px; cursor: pointer; }
+  #hud button:hover { background: #1F5FE0; }
+  #hud span { font: 600 14px var(--font); color: #A9AEBA; padding: 0 6px; }
+  #bar { position: fixed; left: 0; top: 0; height: 4px; background: var(--blue); z-index: 10; transition: width .3s; }
+  #timer { position: fixed; left: 16px; top: 16px; font: 700 18px var(--font); font-variant-numeric: tabular-nums; color: #F4F4F1; background: rgba(21,24,33,.85); border: 1px solid #2A2F3D; border-radius: 10px; padding: 8px 12px; z-index: 10; display: none; }
+  #timer.on { display: block; }
+  #timer.late { color: var(--orange); }
+  #help { position: fixed; inset: 0; background: rgba(11,12,16,.92); display: none; z-index: 20; align-items: center; justify-content: center; }
+  #help.on { display: flex; }
+  #help div { background: #151821; border: 1px solid #2A2F3D; border-radius: 20px; padding: 32px 40px; max-width: 560px; line-height: 1.9; font-size: 18px; }
+  #help b { display: inline-block; min-width: 110px; color: #5B93FF; }
+  #help h2 { font-size: 24px; margin-bottom: 12px; }
+
+  /* Presenter view (?presenter) */
+  body.presenter { overflow: auto; background: var(--dark); }
+  body.presenter #stage, body.presenter #hud, body.presenter #bar, body.presenter #timer { display: none; }
+  #pv { display: none; max-width: 1100px; margin: 0 auto; padding: 32px 24px 64px; }
+  body.presenter #pv { display: block; }
+  #pv .top { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+  #pv .clock { font: 700 64px var(--font); font-variant-numeric: tabular-nums; }
+  #pv .clock small { font-size: 22px; color: var(--dim); font-weight: 500; margin-left: 12px; }
+  #pv .clock.late { color: var(--orange); }
+  #pv .now { margin-top: 24px; font-size: 20px; color: var(--blue); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+  #pv h1 { font-size: 44px; margin: 8px 0 16px; }
+  #pv .notes { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 28px 32px; font-size: 28px; line-height: 1.5; white-space: pre-wrap; }
+  #pv .next { margin-top: 20px; font-size: 22px; color: var(--dim); }
+  #pv .btns { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+  #pv button { font: 700 18px var(--font); color: var(--light); background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 22px; cursor: pointer; }
+  #pv button.primary { background: var(--blue-deep); border-color: var(--blue-deep); }
+  #pv .plan { margin-top: 28px; width: 100%; border-collapse: collapse; font-size: 18px; }
+  #pv .plan td { padding: 8px 10px; border-bottom: 1px solid var(--line); color: var(--dim); }
+  #pv .plan tr.cur td { color: var(--light); font-weight: 700; background: #1b2236; }
+</style>
+</head>
+<body>
+
+<div id="bar"></div>
+<div id="timer" aria-live="off">00:00</div>
+
+<div id="stage">
+
+  <!-- 1 -->
+  <section class="slide dark" id="s1" data-title="BRASPER">
+    <p class="eyebrow rise">IATHON Perú 2026 · Equipo 5.5</p>
+    <h1 class="rise" style="--d:.1s">BRASPER</h1>
+    <p class="sub rise" style="--d:.25s">Una remesa. Un registro.<br>Todo el sistema.</p>
+  </section>
+
+  <!-- 2 -->
+  <section class="slide dark" id="s2" data-title="51 %">
+    <p class="eyebrow big rise">Chats de WhatsApp que llegan a transferencia</p>
+    <h1 class="rise" style="--d:.1s">51 %</h1>
+    <p class="big rise" style="--d:.3s">De 131 chats al día, 64 se quedan en cotización.</p>
+    <p class="small rise" style="--d:.45s">Cada venta es manual: 4 pasos y unas 24 horas.</p>
+  </section>
+
+  <!-- 3 -->
+  <section class="slide blue" id="s3" data-title="Presentamos BRASPER">
+    <div class="copy">
+      <p class="eyebrow rise">Presentamos BRASPER</p>
+      <div class="steps">
+        <div class="step" data-n="1"><h2>Cotiza.</h2><p>En la web</p></div>
+        <div class="step" data-n="2"><h2>Conversa.</h2><p>En WhatsApp</p></div>
+        <div class="step" data-n="3"><h2>Recibe tu boleta.</h2><p>En la app</p></div>
+      </div>
+      <p class="lead rise" style="--d:.3s">La IA conversa y registra. La asesora solo aprueba el pago.</p>
+    </div>
+    <div class="showcase">
+      <div class="pane" data-n="1">
+        <span class="tag">Web · cotiza</span>
+        <div class="browser">
+          <div class="top"><i></i><i></i><i></i><span>brasper.jordybryan.com</span></div>
+          <img src="img/web-home.jpg" alt="Calculadora de la web de BRASPER: 1000 PEN se convierten en 1,441.90 BRL">
+        </div>
+      </div>
+      <div class="pane" data-n="2">
+        <span class="tag">WhatsApp · conversa</span>
+        <div class="phone"><img src="img/whatsapp-chat.png" alt="Agente de IA de BRASPER en WhatsApp con el resumen de la operación"></div>
+      </div>
+      <div class="pane" data-n="3">
+        <span class="tag">App · recibe tu boleta</span>
+        <div class="phone"><img src="img/05-status-receipt.png" alt="App BRASPER con la operación completada y la boleta en PDF"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="slide dark" id="s4" data-title="Veámoslo">
+    <div class="bar">
+      <h2>Veámoslo.</h2>
+      <p>Demo con ritmo automático · <a href="https://youtu.be/X9bkr5w8O80" target="_blank" rel="noopener">abrir en YouTube</a></p>
+    </div>
+    <div id="videoBox"><div id="yt"></div></div>
+    <p class="tip" id="pace">V: reproducir o pausar · L: saltar 30 s · J: retroceder 15 s · haz clic fuera del video para volver a las flechas</p>
+  </section>
+
+  <!-- 5 -->
+  <section class="slide dark" id="s5" data-title="Tu proceso, intacto">
+    <h2 class="title rise">Tu proceso, intacto. Un solo registro.</h2>
+    <div class="flow">
+      <div class="col l rise" style="--d:.1s">
+        <div class="node"><h3>WhatsApp</h3><p>Agente de IA</p></div>
+        <div class="node"><h3>App</h3><p>Asistente de IA</p></div>
+        <div class="node"><h3>Web</h3><p>Formulario y portal</p></div>
+      </div>
+      <div class="arrow rise" style="--d:.2s"></div>
+      <div class="core rise" style="--d:.3s">
+        <h3>Un registro por operación</h3>
+        <p>Cloud Functions y Firestore<br>El código calcula tasa y totales<br>Estado, canal y sello de tiempo</p>
+      </div>
+      <div class="arrow rise" style="--d:.4s"></div>
+      <div class="col r rise" style="--d:.5s">
+        <div class="node"><h3>THE VIEW</h3><p>la asesora aprueba el pago</p></div>
+        <div class="node"><h3>Dashboard actual</h3><p>exportación sin cambios</p></div>
+        <div class="node"><h3>Facturación</h3><p>comprobante PDF (modo prueba)</p></div>
+      </div>
+    </div>
+    <p class="cap rise" style="--d:.6s">La IA conversa. El código calcula. Una persona aprueba.</p>
+  </section>
+
+  <!-- 6 -->
+  <section class="slide dark" id="s6" data-title="≈24 h → ≈10 min">
+    <p class="eyebrow big rise">KPI 1 · tiempo de una venta</p>
+    <div class="row rise" style="--d:.1s">
+      <h1 class="old">≈24 h</h1>
+      <div class="arrow"></div>
+      <h1>≈10 min</h1>
+    </div>
+    <p class="claim rise" style="--d:.3s">99 % menos tiempo por venta.</p>
+    <p class="note rise" style="--d:.4s">Estimación del equipo, por validar con BrasPer.</p>
+  </section>
+
+  <!-- 7 -->
+  <section class="slide light footer" id="s7" data-title="Cuatro pasos a uno">
+    <h2 class="title rise">De cuatro pasos manuales a uno.</h2>
+    <table class="rise" style="--d:.15s">
+      <thead><tr><th>Indicador</th><th>Hoy</th><th>Con BRASPER</th></tr></thead>
+      <tbody>
+        <tr><td>Negociación</td><td>≈3 h</td><td class="new">0 (cotiza la IA)</td></tr>
+        <tr><td>Digitar en el Dashboard</td><td>≈15 min</td><td class="new">0 (el registro nace digital)</td></tr>
+        <tr><td>Pasos manuales por venta</td><td>4</td><td class="new">1 (aprobar el pago)</td></tr>
+        <tr><td>Costo mensual</td><td>≈S/ 6,800</td><td class="new">≈S/ 300</td></tr>
+        <tr><td>¿Se puede medir?</td><td>No</td><td class="new">Sí: estado, canal y sello de tiempo</td></tr>
+      </tbody>
+    </table>
+    <p class="foot">Estimaciones del equipo, por validar con BrasPer. Datos y montos del MVP son de demostración.</p>
+  </section>
+
+  <!-- 8 -->
+  <section class="slide dark" id="s8" data-title="Más remesas, mismo equipo">
+    <h2 class="title rise">Más remesas con el mismo equipo.</h2>
+    <div class="cards">
+      <div class="card rise" style="--d:.1s"><h1>3,776</h1><p>envíos en el 2T 2026, 24,7 % más.</p></div>
+      <div class="card rise" style="--d:.25s"><h1 class="o">64</h1><p>chats al día que hoy se quedan en cotización.</p></div>
+      <div class="card rise" style="--d:.4s"><h1>1</h1><p>paso manual por venta: aprobar el pago.</p></div>
+    </div>
+    <p class="close rise" style="--d:.55s">La IA atiende todos los chats a la vez. La asesora aprueba.</p>
+  </section>
+
+  <!-- 9 -->
+  <section class="slide dark footer" id="s9" data-title="Pruébalo ahora">
+    <h2 class="title rise">Pruébalo ahora.</h2>
+    <div class="qrs">
+      <a class="qr rise" style="--d:.1s" href="https://brasper.jordybryan.com" target="_blank" rel="noopener">
+        <div class="box"><img src="img/qr-web.svg" alt="Código QR de la web de BRASPER"></div>
+        <h3>Web</h3><p>brasper.jordybryan.com</p>
+      </a>
+      <a class="qr rise" style="--d:.25s" href="https://wa.me/51955227776" target="_blank" rel="noopener">
+        <div class="box"><img src="img/qr-whatsapp.svg" alt="Código QR del WhatsApp de BRASPER"></div>
+        <h3>WhatsApp</h3><p>+51 955 227 776</p>
+      </a>
+      <a class="qr rise" style="--d:.4s" href="https://binnicordova.github.io/iathon-fintech/app/" target="_blank" rel="noopener">
+        <div class="box"><img src="img/qr-app.svg" alt="Código QR de la página de descarga de la app BRASPER"></div>
+        <h3>App</h3><p>Android · iPhone, pronto</p>
+      </a>
+    </div>
+    <p class="team rise" style="--d:.55s">Equipo 5.5 · David, agente de WhatsApp · Binni, app · Jordy, web · Melani, backoffice</p>
+    <p class="foot"><a href="https://github.com/binnicordova/BRASPER-IATHON" target="_blank" rel="noopener" style="text-decoration:none">github.com/binnicordova/BRASPER-IATHON</a></p>
+  </section>
+
+</div>
+
+<div id="hud">
+  <button id="bPrev" title="Anterior (←)" aria-label="Diapositiva anterior">←</button>
+  <span id="count">1 / 9</span>
+  <button id="bNext" title="Siguiente (→)" aria-label="Diapositiva siguiente">→</button>
+  <button id="bFull" title="Pantalla completa (F)">Pantalla completa</button>
+  <button id="bPres" title="Vista del presentador (P)">Presentador</button>
+  <button id="bHelp" title="Atajos (?)">?</button>
+</div>
+
+<div id="help"><div>
+  <h2>Atajos de teclado</h2>
+  <b>→ Espacio Enter</b> siguiente<br>
+  <b>← Retroceso</b> anterior<br>
+  <b>1 – 9</b> ir a la diapositiva<br>
+  <b>F</b> pantalla completa<br>
+  <b>P</b> vista del presentador (otra ventana, con notas y reloj)<br>
+  <b>T</b> mostrar el reloj · <b>R</b> reiniciarlo<br>
+  <b>V</b> reproducir o pausar el video · <b>L</b> saltar 30 s · <b>J</b> retroceder 15 s<br>
+  <b>?</b> esta ayuda · <b>Esc</b> cerrar
+</div></div>
+
+<!-- Presenter view -->
+<main id="pv">
+  <div class="top">
+    <div class="clock" id="pClock">00:00<small id="pTarget">objetivo 07:00</small></div>
+    <div class="btns" style="margin:0">
+      <button id="pTimer" class="primary">Iniciar reloj</button>
+      <button id="pReset">Reiniciar</button>
+    </div>
+  </div>
+  <p class="now" id="pNow">Diapositiva 1 de 9</p>
+  <h1 id="pTitle"></h1>
+  <div class="notes" id="pNotes"></div>
+  <p class="next" id="pNext"></p>
+  <div class="btns">
+    <button id="pPrev">← Anterior</button>
+    <button id="pForward" class="primary">Siguiente →</button>
+    <button id="pVideo">Video: reproducir o pausar</button>
+  </div>
+  <table class="plan" id="pPlan"></table>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  // Speaker notes and time budget per slide (seconds). Total = 420 s = 7 min.
+  var PLAN = [
+    { secs: 5,   notes: 'Camina al centro. Pausa de dos segundos antes de hablar.\n\n“Buenas tardes. Soy [Nombre]. En siete minutos les muestro cómo BrasPer puede vender más remesas con el mismo equipo.”' },
+    { secs: 15,  notes: '“BrasPer ya crece: 3.776 envíos en el segundo trimestre, 24,7 % más. Pero hay un cuello de botella. De unos 131 chats diarios por WhatsApp, solo 67 terminan en transferencia.”\n\n[Pausa.] “Los otros 64 se quedan en cotización. Cada venta pasa por cuatro pasos manuales y unas 24 horas.”\n\nFuente: diagnóstico del equipo (repositorio BRASPER-IATHON). Son cifras del negocio, no mediciones nuestras.' },
+    { secs: 20,  notes: 'MOMENTO DE VENDER. Tres pulsaciones de → (la primera sale sola): cada producto entra con su paso.\n\n“Hoy les presento BRASPER. [Pausa.]”\n→ COTIZA, en la web: “Cotizas en la web y la tasa queda fija.”\n→ CONVERSA, en WhatsApp: “Conversas con un agente de IA que toma tus datos.”\n→ RECIBE TU BOLETA, en la app: “Y sigues tu operación hasta recibir tu boleta.”\n\n“La IA conversa y registra; la asesora solo aprueba el pago. No les voy a explicar cómo funciona. Les voy a mostrar.”' },
+    { secs: 220, notes: 'DEMO. El video dura 10 min y YouTube sube como máximo a 2×, así que en tu bloque de 3:40 caben unos 7:20 del original. La página elige sola el ritmo más alto posible y bajo el video muestra cuánto video y cuánto tiempo de demo quedan; si sale en naranja vas atrasado: pulsa L para saltar 30 s del original (J retrocede 15 s) y salta las esperas.\n\nTambién puedes abrir la página con ?from=SEGUNDOS para empezar en el minuto que prefieras.\n\nHabla encima y baja el volumen del video.\n1. El cliente cotiza y la tasa queda fija; la calcula el código, no la IA.\n2. Mismo registro en WhatsApp, app y web.\n3. Paga, sube el comprobante y ve su estado en vivo.\n4. La asesora aprueba en el backoffice: único paso humano.\n5. Recibe su comprobante en PDF.\n\nRespaldo: ten el video abierto en otra pestaña y una copia descargada por si falla el wifi.' },
+    { secs: 30,  notes: '“No les pedimos cambiar su proceso. Los tres canales escriben en el mismo registro. El código calcula tasa y totales; la IA solo conversa. La asesora aprueba cada pago en THE VIEW, y de ahí sale al Dashboard y a facturación que ya usan. Lo que desaparece es el tecleo.”\n\nSi preguntan: Facturación (Fact) está en MODO PRUEBA; datos, tasas y cuentas son de demostración. El agente de WhatsApp usa Claude Haiku; la app llama a Gemma 4 vía Gemini API.' },
+    { secs: 25,  notes: '“Hablemos de números. Hoy una venta tarda unas veinticuatro horas. Con BRASPER, unos diez minutos.”\n\n24 h = 1.440 min; 10 min es el 0,7 %, o sea 99,3 % menos. Dilo como estimación del equipo, por validar con BrasPer.' },
+    { secs: 45,  notes: '“La negociación de tres horas baja a cero, porque cotiza la IA. Digitar en el Dashboard, quince minutos, baja a cero, porque el registro nace digital. Los pasos manuales pasan de cuatro a uno: aprobar el pago. El costo mensual baja de unos 6.800 soles con cuatro vendedores a unos 300 de operar la solución. Y por primera vez cada venta se puede medir.”\n\nNo reemplaza a las asesoras: ellas aprueban cada operación.' },
+    { secs: 35,  notes: '“BrasPer crece 24,7 % y su cuello de botella son las personas. Hoy cada chat necesita a una asesora de principio a fin, por eso 64 chats al día se quedan en cotización. Con BRASPER, la IA atiende todos a la vez y la asesora solo aprueba. Atender más chats ya no exige sumar vendedores.”\n\nNo afirmamos cuánto subirá la conversión: es lo primero que mediremos con BrasPer.' },
+    { secs: 25,  notes: '“Esto no es una maqueta: está funcionando ahora mismo. Saquen su teléfono y escaneen el que quieran: la web, el WhatsApp de BRASPER o la app. Los tres crean la misma operación. Lo construimos cuatro personas, el Equipo 5.5: David, el agente de WhatsApp; Binni, la app; Jordy, la web; Melani, el backoffice. Gracias.”\n\nDeja esta diapositiva en pantalla durante las preguntas.' }
+  ];
+  var TOTAL = PLAN.reduce(function (a, p) { return a + p.secs; }, 0);
+
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var N = slides.length;
+  var stage = document.getElementById('stage');
+  var isPresenter = /[?&]presenter\b/.test(location.search);
+  var channel = ('BroadcastChannel' in window) ? new BroadcastChannel('brasper-presentation') : null;
+  var cur = -1;
+  var TIMER_KEY = 'brasper-presentation-start';
+
+  function clamp(i) { return Math.max(0, Math.min(N - 1, i)); }
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function mmss(s) { s = Math.max(0, Math.round(s)); return pad(Math.floor(s / 60)) + ':' + pad(s % 60); }
+  function readStart() { try { return parseInt(localStorage.getItem(TIMER_KEY), 10) || 0; } catch (e) { return 0; } }
+  function writeStart(v) { try { if (v) localStorage.setItem(TIMER_KEY, String(v)); else localStorage.removeItem(TIMER_KEY); } catch (e) {} }
+
+  /* ---------- scaling ---------- */
+  function fit() {
+    var s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    stage.style.transform = 'translate(-50%, -50%) scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  fit();
+
+  /* ---------- YouTube (2× speed) ---------- */
+  var player = null, playerReady = false;
+  var demoEnter = 0;                      // when the demo slide was last shown
+  var FROM = parseInt(new URLSearchParams(location.search).get('from'), 10) || 0;
+
+  // The fastest rate YouTube allows is 2×. Pick the slowest rate that still fits
+  // the rest of the video into the rest of the demo slot, capped at that maximum.
+  function idealRate() {
+    try {
+      var dur = player.getDuration(), t = player.getCurrentTime();
+      if (!(dur > 1)) return 2;
+      var left = PLAN[3].secs - (demoEnter ? (Date.now() - demoEnter) / 1000 : 0);
+      var need = (dur - t) / Math.max(30, left);
+      var rates = player.getAvailablePlaybackRates() || [1, 1.25, 1.5, 1.75, 2];
+      for (var k = 0; k < rates.length; k++) if (rates[k] >= need) return rates[k];
+      return rates[rates.length - 1];
+    } catch (e) { return 2; }
+  }
+  function applyRate() {
+    try { var r = idealRate(); if (player.getPlaybackRate() !== r) player.setPlaybackRate(r); } catch (e) {}
+  }
+  window.onYouTubeIframeAPIReady = function () {
+    player = new YT.Player('yt', {
+      videoId: 'X9bkr5w8O80',
+      width: 1440, height: 810,
+      playerVars: { rel: 0, modestbranding: 1, playsinline: 1, iv_load_policy: 3, start: FROM },
+      events: {
+        onReady: function () { playerReady = true; applyRate(); },
+        onStateChange: function (e) { if (e.data === 1 /* playing */) applyRate(); }
+      }
+    });
+  };
+  function skip(secs) {
+    if (!playerReady) return;
+    try { player.seekTo(Math.max(0, player.getCurrentTime() + secs), true); applyRate(); } catch (e) {}
+  }
+  function updatePace() {
+    var el = document.getElementById('pace');
+    if (!playerReady || cur !== 3) return;
+    try {
+      var dur = player.getDuration(), t = player.getCurrentTime(), r = player.getPlaybackRate();
+      if (!(dur > 1)) return;
+      var videoLeft = (dur - t) / r;
+      var budgetLeft = Math.max(0, PLAN[3].secs - (Date.now() - demoEnter) / 1000);
+      var behind = videoLeft > budgetLeft + 5;
+      el.textContent = 'Video ' + mmss(t) + ' / ' + mmss(dur) + ' a ' + r + '× · quedan ' + mmss(videoLeft) + ' de video y ' + mmss(budgetLeft) + ' de demo' + (behind ? ' · vas atrasado: pulsa L para saltar 30 s' : '');
+      el.classList.toggle('warn', behind);
+    } catch (e) {}
+  }
+  if (!isPresenter) {
+    var tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    tag.async = true;
+    document.head.appendChild(tag);
+  }
+  function toggleVideo() {
+    if (!playerReady) { window.open('https://youtu.be/X9bkr5w8O80', '_blank', 'noopener'); return; }
+    try {
+      var st = player.getPlayerState();
+      if (st === 1) player.pauseVideo(); else { applyRate(); player.playVideo(); }
+    } catch (e) {}
+  }
+
+  /* ---------- navigation ---------- */
+  // Slides with builds: slide index -> number of builds (slide 3 reveals web, WhatsApp, app).
+  var STEPS = { 2: 3 };
+  var step = 0, autoTimer = null;
+
+  function applyStep() {
+    var host = slides[2];
+    Array.prototype.forEach.call(host.querySelectorAll('.step'), function (el) {
+      var n = parseInt(el.getAttribute('data-n'), 10);
+      el.classList.toggle('seen', n <= step);
+      el.classList.toggle('on', n === step);
+    });
+    Array.prototype.forEach.call(host.querySelectorAll('.pane'), function (el) {
+      var n = parseInt(el.getAttribute('data-n'), 10);
+      el.classList.toggle('on', n === step);
+      el.classList.toggle('past', n < step);
+    });
+  }
+  // The main window owns the state and tells the presenter window about it.
+  function sync() { if (!isPresenter && channel) channel.postMessage({ type: 'state', i: cur, step: step }); }
+
+  function show(i, startStep) {
+    i = clamp(i);
+    if (i === cur) return;
+    var leaving = cur;
+    cur = i;
+    step = startStep || 0;
+    clearTimeout(autoTimer);
+    slides.forEach(function (el, k) { el.classList.toggle('active', k === i); });
+    applyStep();
+    if (leaving === 3 && playerReady) { try { player.pauseVideo(); } catch (e) {} }
+    if (i === 3) demoEnter = Date.now();
+    document.getElementById('count').textContent = (i + 1) + ' / ' + N;
+    document.getElementById('bar').style.width = ((i + 1) / N * 100) + '%';
+    if (history.replaceState) history.replaceState(null, '', '#' + (i + 1));
+    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+    // The first build of slide 3 starts by itself, so "Cotiza." lands right after the title.
+    if (i === 2 && step === 0 && !isPresenter) {
+      autoTimer = setTimeout(function () { if (cur === 2 && step === 0) { step = 1; applyStep(); sync(); } }, 900);
+    }
+    renderPresenter();
+    sync();
+  }
+  function advance() {
+    if (STEPS[cur] && step < STEPS[cur]) { step++; applyStep(); renderPresenter(); sync(); }
+    else show(cur + 1);
+  }
+  function retreat() {
+    if (STEPS[cur] && step > 0) { step--; applyStep(); renderPresenter(); sync(); }
+    else if (cur > 0) show(cur - 1, STEPS[cur - 1] || 0);
+  }
+  var next = advance, prev = retreat;
+
+  if (channel) {
+    channel.onmessage = function (ev) {
+      var m = ev.data || {};
+      if (isPresenter) {
+        if (m.type === 'state') { show(m.i); step = m.step || 0; renderPresenter(); }
+      } else if (m.type === 'goto') show(m.i);
+      else if (m.type === 'advance') advance();
+      else if (m.type === 'retreat') retreat();
+      else if (m.type === 'video') toggleVideo();
+      else if (m.type === 'skip') skip(m.secs);
+      else if (m.type === 'hello') sync();
+    };
+  }
+
+  /* ---------- timer ---------- */
+  var timerEl = document.getElementById('timer');
+  function targetAt(i) { var t = 0; for (var k = 0; k < i; k++) t += PLAN[k].secs; return t; }
+  function tick() {
+    var start = readStart();
+    var elapsed = start ? (Date.now() - start) / 1000 : 0;
+    var late = start && elapsed > targetAt(cur) + PLAN[cur].secs;
+    timerEl.textContent = mmss(elapsed) + ' / ' + mmss(TOTAL);
+    timerEl.classList.toggle('late', !!late);
+    var pc = document.getElementById('pClock');
+    if (pc) {
+      pc.firstChild.nodeValue = mmss(elapsed);
+      pc.classList.toggle('late', !!late);
+      document.getElementById('pTarget').textContent = 'objetivo ' + mmss(TOTAL) + (start ? ' · ahora deberías estar en ' + mmss(targetAt(cur)) + '–' + mmss(targetAt(cur) + PLAN[cur].secs) : '');
+      document.getElementById('pTimer').textContent = start ? 'Reloj en marcha' : 'Iniciar reloj';
+    }
+  }
+  setInterval(function () { tick(); updatePace(); }, 500);
+  function startTimer() { if (!readStart()) writeStart(Date.now()); tick(); }
+  function resetTimer() { writeStart(0); tick(); }
+
+  /* ---------- presenter view ---------- */
+  function renderPresenter() {
+    if (!isPresenter || cur < 0) return;
+    document.getElementById('pNow').textContent = 'Diapositiva ' + (cur + 1) + ' de ' + N + ' · ' + PLAN[cur].secs + ' s' + (STEPS[cur] ? ' · paso ' + step + ' de ' + STEPS[cur] : '');
+    document.getElementById('pTitle').textContent = slides[cur].getAttribute('data-title');
+    document.getElementById('pNotes').textContent = PLAN[cur].notes;
+    document.getElementById('pNext').textContent = cur + 1 < N ? 'Sigue: ' + slides[cur + 1].getAttribute('data-title') : 'Última diapositiva';
+    var rows = PLAN.map(function (p, k) {
+      return '<tr' + (k === cur ? ' class="cur"' : '') + '><td>' + (k + 1) + '</td><td>' + slides[k].getAttribute('data-title') + '</td><td>' + mmss(targetAt(k)) + '</td><td>' + p.secs + ' s</td></tr>';
+    }).join('');
+    document.getElementById('pPlan').innerHTML = rows;
+  }
+
+  /* ---------- fullscreen ---------- */
+  function toggleFull() {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+  }
+  function openPresenter() {
+    window.open(location.pathname + '?presenter=1#' + (cur + 1), 'brasper-presenter', 'width=1100,height=900');
+  }
+
+  /* ---------- input ---------- */
+  var helpEl = document.getElementById('help');
+  // In the presenter window every navigation key is forwarded to the main window.
+  function command(type, extra) {
+    if (isPresenter) { if (channel) channel.postMessage(Object.assign({ type: type }, extra || {})); return; }
+    if (type === 'advance') advance();
+    else if (type === 'retreat') retreat();
+    else if (type === 'goto') show(extra.i);
+    else if (type === 'video') toggleVideo();
+    else if (type === 'skip') skip(extra.secs);
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    var k = e.key;
+    if (k === 'ArrowRight' || k === 'PageDown' || k === ' ' || k === 'Enter') { e.preventDefault(); command('advance'); }
+    else if (k === 'ArrowLeft' || k === 'PageUp' || k === 'Backspace') { e.preventDefault(); command('retreat'); }
+    else if (k === 'Home') command('goto', { i: 0 });
+    else if (k === 'End') command('goto', { i: N - 1 });
+    else if (/^[1-9]$/.test(k)) command('goto', { i: parseInt(k, 10) - 1 });
+    else if (k === 'l' || k === 'L') command('skip', { secs: 30 });
+    else if (k === 'j' || k === 'J') command('skip', { secs: -15 });
+    else if (k === 'f' || k === 'F') toggleFull();
+    else if (k === 'p' || k === 'P') openPresenter();
+    else if (k === 't' || k === 'T') { timerEl.classList.toggle('on'); startTimer(); }
+    else if (k === 'r' || k === 'R') resetTimer();
+    else if (k === 'v' || k === 'V') command('video');
+    else if (k === '?' || k === 'h' || k === 'H') helpEl.classList.toggle('on');
+    else if (k === 'Escape') helpEl.classList.remove('on');
+  });
+  helpEl.addEventListener('click', function () { helpEl.classList.remove('on'); });
+
+  // Click advances (right side) or goes back (left quarter); links and the video are left alone.
+  document.addEventListener('click', function (e) {
+    if (isPresenter) return;
+    if (e.target.closest('a, button, iframe, #help, #videoBox')) return;
+    if (e.clientX < window.innerWidth * 0.25) prev(); else next();
+  });
+
+  // Touch swipe.
+  var tx = null;
+  document.addEventListener('touchstart', function (e) { tx = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', function (e) {
+    if (tx === null) return;
+    var dx = e.changedTouches[0].clientX - tx; tx = null;
+    if (Math.abs(dx) > 60) { if (dx < 0) next(); else prev(); }
+  });
+
+  // HUD buttons, shown while the pointer moves.
+  var hudTimer = null;
+  document.addEventListener('mousemove', function () {
+    document.body.classList.add('show-hud');
+    clearTimeout(hudTimer);
+    hudTimer = setTimeout(function () { document.body.classList.remove('show-hud'); }, 2200);
+  });
+  document.getElementById('bPrev').onclick = function (e) { e.stopPropagation(); prev(); };
+  document.getElementById('bNext').onclick = function (e) { e.stopPropagation(); next(); };
+  document.getElementById('bFull').onclick = function (e) { e.stopPropagation(); toggleFull(); };
+  document.getElementById('bPres').onclick = function (e) { e.stopPropagation(); openPresenter(); };
+  document.getElementById('bHelp').onclick = function (e) { e.stopPropagation(); helpEl.classList.add('on'); };
+
+  // Presenter buttons.
+  document.getElementById('pPrev').onclick = function () { command('retreat'); };
+  document.getElementById('pForward').onclick = function () { command('advance'); };
+  document.getElementById('pVideo').onclick = function () { command('video'); };
+  document.getElementById('pTimer').onclick = startTimer;
+  document.getElementById('pReset').onclick = resetTimer;
+
+  /* ---------- start ---------- */
+  if (isPresenter) document.body.classList.add('presenter');
+  var first = parseInt((location.hash || '').replace('#', ''), 10);
+  show(isNaN(first) ? 0 : first - 1);
+  window.addEventListener('hashchange', function () {
+    var h = parseInt((location.hash || '').replace('#', ''), 10);
+    if (!isNaN(h)) show(h - 1);
+  });
+  if (isPresenter && channel) channel.postMessage({ type: 'hello' });
+  tick();
+})();
+</script>
+</body>
+</html>
