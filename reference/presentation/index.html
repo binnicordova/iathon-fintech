@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>BRASPER · Presentación de 7 minutos</title>
-<meta name="description" content="Una remesa. Un registro. Todo el sistema. Presentación de BRASPER para IATHON Perú 2026, equipo 5.5.">
+<meta name="description" content="Transferencias de dinero con IA que automatiza la operación. Presentación de BRASPER para IATHON Perú 2026, equipo 5.5.">
 <meta name="theme-color" content="#0B0C10">
 <link rel="canonical" href="https://binnicordova.github.io/iathon-fintech/presentation/">
 <link rel="icon" type="image/png" href="../app/favicon.png">
 <meta property="og:type" content="website">
-<meta property="og:title" content="BRASPER · Una remesa. Un registro. Todo el sistema.">
+<meta property="og:title" content="BRASPER · Fintech de transferencias de dinero con IA">
 <meta property="og:description" content="Presentación de 7 minutos del equipo 5.5 en IATHON Perú 2026.">
 <meta property="og:url" content="https://binnicordova.github.io/iathon-fintech/presentation/">
 <meta property="og:image" content="https://binnicordova.github.io/iathon-fintech/app/icon-512.png">
@@ -62,65 +62,91 @@
   h1, h2, h3 { font-weight: 700; }
   h2.title { font-size: 80px; line-height: 1.1; letter-spacing: -2px; }
 
-  /* 1 cover */
-  #s1 { background: radial-gradient(circle at 85% 15%, #1B2C5C 0%, #0B0C10 60%); gap: 40px; justify-content: center; }
-  #s1 h1 { font-size: 240px; line-height: 1; letter-spacing: -8px; }
-  #s1 .sub { font-size: 56px; line-height: 1.2; color: var(--dim); }
+  /* Visual punches shared by all slides */
+  .hl { background-image: linear-gradient(transparent 58%, var(--hlc, rgba(91,147,255,.6)) 58%); background-repeat: no-repeat; background-size: 0% 100%; padding: 0 .1em; margin: 0 -.1em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+  .slide.active .hl { animation: hlgrow .8s cubic-bezier(.2,.7,.2,1) var(--hd, .6s) forwards; }
+  @keyframes hlgrow { to { background-size: 100% 100%; } }
+  .slide.light .hl { --hlc: rgba(31,95,224,.28); }
+  .slide.blue .hl { --hlc: rgba(255,159,67,.8); }
+  .hl.o { --hlc: rgba(255,159,67,.7); }
+  .strike { position: relative; display: inline-block; }
+  .strike::after { content: ''; position: absolute; left: -4%; top: 52%; height: 6px; width: 0; background: var(--orange); border-radius: 4px; }
+  .slide.active .strike::after { animation: strike .6s ease-out 1s forwards; }
+  @keyframes strike { to { width: 108%; } }
+  @media (prefers-reduced-motion: reduce) { .hl { background-size: 100% 100%; animation: none !important; } .strike::after { width: 108%; animation: none !important; } }
 
-  /* 2 company, in simple terms */
-  #s2 { justify-content: space-between; gap: 32px; }
+  /* 1 cover */
+  #s1 { background: radial-gradient(circle at 85% 15%, #1B2C5C 0%, #0B0C10 60%); gap: 36px; justify-content: center; }
+  #s1 .badge { align-self: flex-start; font-size: 40px; font-weight: 700; letter-spacing: 8px; background: var(--blue-deep); color: var(--light); border-radius: 999px; padding: 14px 44px; box-shadow: 0 0 0 0 rgba(91,147,255,.7); }
+  .slide.active #s1 .badge, #s1.active .badge { animation: glow 2.4s ease-out infinite; }
+  @keyframes glow { 0% { box-shadow: 0 0 0 0 rgba(91,147,255,.7); } 100% { box-shadow: 0 0 0 40px rgba(91,147,255,0); } }
+  #s1 h1 { font-size: 260px; line-height: 1; letter-spacing: -9px; background: linear-gradient(90deg, #F4F4F1 0%, #5B93FF 50%, #F4F4F1 100%); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; animation: shine 7s linear infinite; }
+  @keyframes shine { to { background-position: -200% 0; } }
+  #s1 .sub { font-size: 60px; line-height: 1.2; color: var(--dim); }
+  #s1 .sub .hl { color: var(--light); }
+  #s1 .tiny { font-size: 28px; color: var(--dim); letter-spacing: 3px; text-transform: uppercase; }
+
+  /* 2 company */
+  #s2 { justify-content: space-between; gap: 28px; }
   #s2 .eyebrow { color: var(--blue-deep); }
-  #s2 h2 { font-size: 72px; line-height: 1.1; letter-spacing: -2px; }
-  #s2 .plain { font-size: 48px; line-height: 1.25; color: var(--dim-light); }
-  #s2 .plain b { color: var(--ink); }
+  #s2 h2 { font-size: 76px; line-height: 1.08; letter-spacing: -2px; margin-top: 12px; }
+  #s2 .plain { font-size: 44px; color: var(--dim-light); }
   #s2 .route { display: flex; flex-direction: row; align-items: center; gap: 24px; }
-  #s2 .pill { background: var(--paper); border: 2px solid var(--line-light); border-radius: 999px; padding: 18px 36px; font-size: 36px; font-weight: 700; }
+  #s2 .pill { background: var(--paper); border: 2px solid var(--line-light); border-radius: 999px; padding: 16px 36px; font-size: 36px; font-weight: 700; }
   #s2 .pill small { font-size: 26px; font-weight: 500; color: var(--dim-light); margin-left: 12px; }
   #s2 .arrow { width: 96px; height: 48px; background: var(--blue-deep); clip-path: polygon(0 28%, 60% 28%, 60% 0, 100% 50%, 60% 100%, 60% 72%, 0 72%); flex: none; }
   #s2 .stats { display: flex; flex-direction: row; gap: 24px; }
-  #s2 .stat { flex: 1; background: var(--paper); border: 2px solid var(--line-light); border-radius: 24px; padding: 28px 32px; }
-  #s2 .stat h3 { font-size: 72px; line-height: 1; color: var(--blue-deep); }
+  #s2 .stat { flex: 1; background: var(--paper); border: 2px solid var(--line-light); border-radius: 24px; padding: 26px 32px; }
+  #s2 .stat h3 { font-size: 84px; line-height: 1; color: var(--blue-deep); font-variant-numeric: tabular-nums; }
   #s2 .stat p { font-size: 28px; margin-top: 8px; }
-  #s2 .for { font-size: 48px; font-weight: 700; color: var(--blue-deep); }
+  #s2 .for { font-size: 52px; font-weight: 700; color: var(--blue-deep); }
 
-  /* 3 problem: people tied to WhatsApp, and the north (manual -> automated) */
-  #s3 { justify-content: space-between; gap: 32px; }
-  #s3 h2 { font-size: 72px; line-height: 1.1; letter-spacing: -2px; }
+  /* 3 problem: operating, not selling */
+  #s3 { justify-content: space-between; gap: 24px; }
+  #s3 h2 { font-size: 76px; line-height: 1.1; letter-spacing: -2px; }
   #s3 .team-row { display: flex; flex-direction: row; justify-content: space-between; align-items: flex-end; }
-  #s3 .person { width: 340px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
-  #s3 .bubble { background: #1F8F55; color: #F4F4F1; border-radius: 24px 24px 24px 6px; padding: 14px 24px; font-size: 28px; font-weight: 500; white-space: nowrap; }
+  #s3 .person { width: 340px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  #s3 .bubble { background: #1F8F55; color: #F4F4F1; border-radius: 24px 24px 24px 6px; padding: 12px 24px; font-size: 28px; font-weight: 500; white-space: nowrap; }
   #s3 .bubble.typing { display: flex; gap: 8px; align-items: center; padding: 22px 28px; background: var(--card); border: 1px solid var(--line); }
   #s3 .bubble.typing i { width: 14px; height: 14px; border-radius: 50%; background: var(--dim); display: block; animation: blink 1.2s infinite; }
   #s3 .bubble.typing i:nth-child(2) { animation-delay: .2s; } #s3 .bubble.typing i:nth-child(3) { animation-delay: .4s; }
   @keyframes blink { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
-  #s3 .head { width: 96px; height: 96px; border-radius: 50%; background: var(--orange); }
-  #s3 .torso { width: 190px; height: 90px; border-radius: 95px 95px 0 0; background: var(--orange); opacity: .85; }
-  #s3 .stat { font-size: 34px; color: var(--dim); }
+  #s3 .head { width: 84px; height: 84px; border-radius: 50%; background: var(--orange); }
+  #s3 .torso { width: 170px; height: 76px; border-radius: 85px 85px 0 0; background: var(--orange); opacity: .85; }
+  #s3 .stat { font-size: 32px; color: var(--dim); }
   #s3 .stat b { color: var(--light); }
   #s3 .north { display: flex; flex-direction: row; align-items: center; gap: 28px; }
-  #s3 .north .tag { font-size: 40px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; border-radius: 999px; padding: 14px 36px; }
-  #s3 .north .tag.old { background: transparent; border: 3px solid var(--orange); color: var(--orange); }
+  #s3 .north .tag { font-size: 48px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; border-radius: 999px; padding: 12px 40px; }
+  #s3 .north .tag.old { border: 3px solid var(--orange); color: var(--orange); }
   #s3 .north .tag.new { background: var(--blue-deep); color: var(--light); border: 3px solid var(--blue-deep); }
   #s3 .north .arrow { width: 120px; height: 60px; background: var(--blue); clip-path: polygon(0 28%, 60% 28%, 60% 0, 100% 50%, 60% 100%, 60% 72%, 0 72%); flex: none; }
-  #s3 .north p { font-size: 34px; font-weight: 500; flex: 1; }
+  #s3 .keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  #s3 .k { border-radius: 20px; padding: 18px 24px; font-size: 32px; font-weight: 700; line-height: 1.15; display: flex; align-items: center; gap: 14px; }
+  #s3 .k::before { content: ''; width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; flex: none; }
+  #s3 .k.down { background: rgba(255,159,67,.14); color: var(--orange); border: 2px solid var(--orange); }
+  #s3 .k.down::before { border-top: 20px solid var(--orange); }
+  #s3 .k.up { background: rgba(91,147,255,.16); color: #9DBEFF; border: 2px solid var(--blue); }
+  #s3 .k.up::before { border-bottom: 20px solid var(--blue); }
   @media (prefers-reduced-motion: reduce) { #s3 .bubble.typing i { animation: none; opacity: 1; } }
 
-  /* 4 reveal: three builds, Cotiza (web), Conversa (WhatsApp), Recibe tu boleta (app) */
+  /* 4 reveal: four builds, web, WhatsApp, the asesora approves, app */
   #s4 { flex-direction: row; align-items: center; gap: 64px; }
-  #s4 .copy { width: 600px; flex: none; display: flex; flex-direction: column; gap: 36px; }
-  #s4 .eyebrow { color: var(--blue-tint); font-size: 32px; }
-  #s4 .steps { display: flex; flex-direction: column; gap: 28px; }
-  #s4 .step { opacity: .0; transform: translateX(-40px); transition: opacity .5s ease, transform .6s cubic-bezier(.2,.7,.2,1); border-left: 8px solid transparent; padding-left: 28px; }
+  #s4 .copy { width: 620px; flex: none; display: flex; flex-direction: column; gap: 28px; }
+  #s4 .eyebrow { color: var(--blue-tint); font-size: 30px; }
+  #s4 .steps { display: flex; flex-direction: column; gap: 20px; }
+  #s4 .step { opacity: 0; transform: translateX(-40px); transition: opacity .5s ease, transform .6s cubic-bezier(.2,.7,.2,1); border-left: 8px solid transparent; padding-left: 28px; }
   #s4 .step.seen { opacity: .38; transform: none; }
   #s4 .step.on { opacity: 1; transform: translateX(12px); border-left-color: var(--light); }
-  #s4 .step h2 { font-size: 80px; line-height: 1.05; }
-  #s4 .step p { font-size: 28px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--blue-tint); margin-top: 6px; line-height: 1.3; }
-  #s4 .lead { font-size: 32px; line-height: 1.35; color: var(--blue-tint); }
+  #s4 .step h2 { font-size: 68px; line-height: 1.05; }
+  #s4 .step p { font-size: 26px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--blue-tint); margin-top: 4px; line-height: 1.3; }
+  #s4 .step.key.on h2 { color: #FFD9A8; }
+  #s4 .lead { font-size: 40px; font-weight: 700; line-height: 1.2; }
   #s4 .showcase { position: relative; flex: 1; height: 824px; }
   #s4 .pane { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; transform: translateX(120px) scale(.9); pointer-events: none; transition: opacity .5s ease, transform .7s cubic-bezier(.2,.7,.2,1); }
   #s4 .pane.on { opacity: 1; transform: none; }
   #s4 .pane.past { opacity: 0; transform: translateX(-120px) scale(.9); }
   #s4 .pane .tag { position: absolute; top: 4px; left: 50%; transform: translateX(-50%); font-size: 26px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; background: var(--light); color: var(--blue-deep); border-radius: 999px; padding: 8px 24px; white-space: nowrap; }
+  #s4 .pane .tag.hot { background: var(--orange); color: var(--ink); }
   #s4 .browser { width: 1000px; background: var(--paper); border-radius: 20px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.4); margin-top: 40px; }
   #s4 .browser .top { height: 52px; background: #E7E8EC; display: flex; align-items: center; gap: 10px; padding: 0 20px; }
   #s4 .browser .top i { width: 14px; height: 14px; border-radius: 50%; background: #C3C6CF; display: block; }
@@ -128,72 +154,101 @@
   #s4 .browser img { display: block; width: 100%; height: auto; }
   #s4 .phone { background: #1B1D24; border-radius: 60px; padding: 12px; box-shadow: 0 30px 80px rgba(0,0,0,.45); margin-top: 40px; }
   #s4 .phone img { display: block; height: 700px; width: auto; border-radius: 48px; }
+  #s4 .approve { width: 700px; background: var(--paper); color: var(--ink); border-radius: 32px; padding: 44px 48px; box-shadow: 0 30px 80px rgba(0,0,0,.4); margin-top: 40px; display: flex; flex-direction: column; gap: 22px; }
+  #s4 .approve .ord { font-size: 28px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--dim-light); }
+  #s4 .approve .row { display: flex; flex-direction: row; justify-content: space-between; font-size: 36px; border-bottom: 1px solid var(--line-light); padding-bottom: 14px; }
+  #s4 .approve .row b { color: var(--ink); }
+  #s4 .approve .btn { background: #1F8F55; color: #F4F4F1; border-radius: 24px; text-align: center; font-size: 56px; font-weight: 700; padding: 28px; margin-top: 8px; }
+  #s4 .pane.on .btn { animation: pulse 1.8s ease-out infinite; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(31,143,85,.6); } 100% { box-shadow: 0 0 0 40px rgba(31,143,85,0); } }
+  #s4 .approve .only { text-align: center; font-size: 28px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--amber); }
+  #s4 .approve small { text-align: center; font-size: 22px; color: var(--dim-light); }
   #s4 .pane.on .browser, #s4 .pane.on .phone { animation: float 5s ease-in-out .8s infinite; }
   @keyframes float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -10px; } }
-  @media (prefers-reduced-motion: reduce) { #s4 .pane.on .browser, #s4 .pane.on .phone { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { #s4 .pane.on .browser, #s4 .pane.on .phone, #s4 .pane.on .btn { animation: none; } }
 
-  /* 5 demo: only short segments, the speech carries the story */
-  #s5 { padding: 48px 128px; align-items: center; gap: 24px; }
-  #s5 .bar { width: 1440px; display: flex; flex-direction: row; justify-content: space-between; align-items: baseline; }
-  #s5 h2 { font-size: 72px; line-height: 1; letter-spacing: -2px; }
-  #s5 .bar p { font-size: 28px; color: var(--dim); }
-  #s5 .bar a { color: var(--blue); font-weight: 700; }
-  #videoBox { width: 1440px; height: 810px; border-radius: 24px; overflow: hidden; background: #000; border: 1px solid var(--line); }
-  #videoBox iframe { width: 100%; height: 100%; border: 0; display: block; }
-  #s5 .tip { font-size: 24px; color: var(--dim); font-variant-numeric: tabular-nums; }
-  #s5 .tip.warn { color: var(--orange); }
+  /* 5 demo: the real user flow, screen by screen (web, WhatsApp, app, approval, receipt) */
+  #s5 { padding: 40px 96px; gap: 20px; }
+  #s5 .head h2 { font-size: 64px; line-height: 1.1; letter-spacing: -2px; }
+  #s5 .head p { font-size: 32px; color: var(--dim); margin-top: 8px; }
+  #s5 .head p b { color: var(--light); }
+  #s5 .showcase { position: relative; height: 650px; }
+  #s5 .pane { position: absolute; inset: 0; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 44px; opacity: 0; transform: translateX(120px) scale(.92); pointer-events: none; transition: opacity .5s ease, transform .7s cubic-bezier(.2,.7,.2,1); }
+  #s5 .pane.on { opacity: 1; transform: none; }
+  #s5 .pane.past { opacity: 0; transform: translateX(-120px) scale(.92); }
+  #s5 .pane .tag { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-size: 26px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; background: var(--blue); color: var(--dark); border-radius: 999px; padding: 8px 28px; white-space: nowrap; z-index: 2; }
+  #s5 .pane .tag.hot { background: var(--orange); }
+  #s5 .shot { position: relative; margin-top: 52px; box-shadow: 0 0 0 3px var(--blue), 0 24px 70px rgba(91,147,255,.28); border-radius: 22px; overflow: hidden; background: var(--paper); }
+  #s5 .shot.hot { box-shadow: 0 0 0 3px var(--orange), 0 24px 70px rgba(255,159,67,.28); }
+  #s5 .shot .top { height: 40px; background: #E7E8EC; display: flex; align-items: center; gap: 8px; padding: 0 16px; }
+  #s5 .shot .top i { width: 12px; height: 12px; border-radius: 50%; background: #C3C6CF; display: block; }
+  #s5 .shot .top span { margin-left: 12px; flex: 1; background: var(--paper); border-radius: 999px; padding: 3px 16px; font-size: 20px; color: var(--dim-light); }
+  #s5 .shot img { display: block; }
+  #s5 .shot.web img { width: 640px; height: auto; }
+  #s5 .shot.back img { width: 800px; height: auto; }
+  #s5 .shot.wide img { width: 600px; height: auto; }
+  #s5 .phone { margin-top: 52px; border-radius: 40px; overflow: hidden; box-shadow: 0 0 0 3px var(--blue), 0 24px 70px rgba(91,147,255,.28); background: #1B1D24; }
+  #s5 .phone img { display: block; height: 560px; width: auto; }
+  #s5 .phone.app { padding: 8px; border-radius: 44px; }
+  #s5 .phone.app img { height: 544px; border-radius: 36px; }
+  #s5 .shot .ring { position: absolute; left: 35.2%; top: 78.2%; width: 6%; height: 5.4%; border: 4px solid var(--orange); border-radius: 10px; animation: ringpulse 1.6s ease-out infinite; }
+  @keyframes ringpulse { 0% { box-shadow: 0 0 0 0 rgba(255,159,67,.8); } 100% { box-shadow: 0 0 0 30px rgba(255,159,67,0); } }
+  #s5 .track { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+  #s5 .track .step { display: flex; flex-direction: row; align-items: center; gap: 16px; border-top: 6px solid rgba(244,244,241,.18); padding-top: 14px; opacity: .45; transition: opacity .4s ease, border-color .4s ease; }
+  #s5 .track .step.seen { opacity: .8; border-top-color: var(--blue); }
+  #s5 .track .step.on { opacity: 1; border-top-color: var(--light); }
+  #s5 .track .step.hotstep.on { border-top-color: var(--orange); }
+  #s5 .track .num { width: 52px; height: 52px; border-radius: 50%; background: var(--card); border: 2px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; flex: none; }
+  #s5 .track .step.on .num { background: var(--light); color: var(--dark); border-color: var(--light); }
+  #s5 .track .step.hotstep.on .num { background: var(--orange); border-color: var(--orange); }
+  #s5 .track h3 { font-size: 30px; line-height: 1.1; }
+  #s5 .track p { font-size: 22px; color: var(--dim); margin-top: 2px; line-height: 1.2; }
+  @media (prefers-reduced-motion: reduce) { #s5 .shot .ring { animation: none; } }
 
-  /* 6 process, kept very short */
-  #s6 { justify-content: center; gap: 72px; }
-  #s6 h2 { font-size: 96px; line-height: 1.05; letter-spacing: -3px; }
-  #s6 .flow { display: flex; flex-direction: row; align-items: center; gap: 24px; }
-  #s6 .chip { flex: 1; background: var(--card); border: 1px solid var(--line); border-radius: 24px; padding: 32px; font-size: 36px; font-weight: 700; line-height: 1.2; text-align: center; min-height: 170px; display: flex; align-items: center; justify-content: center; }
-  #s6 .chip.core { background: var(--blue-deep); border-color: var(--blue-deep); }
-  #s6 .chip small { display: block; font-size: 26px; font-weight: 500; color: var(--dim); margin-top: 8px; }
-  #s6 .chip.core small { color: var(--blue-tint); }
-  #s6 .arrow { width: 56px; height: 28px; background: var(--blue); clip-path: polygon(0 28%, 60% 28%, 60% 0, 100% 50%, 60% 100%, 60% 72%, 0 72%); flex: none; }
+  /* 6 comparators */
+  #s6 { justify-content: space-between; gap: 28px; }
+  #s6 h2 { font-size: 76px; line-height: 1.1; letter-spacing: -2px; }
+  #s6 .rows { display: flex; flex-direction: column; gap: 22px; }
+  #s6 .cmp { display: grid; grid-template-columns: 330px 1fr 90px 1fr; align-items: center; gap: 24px; background: var(--paper); border: 2px solid var(--line-light); border-radius: 28px; padding: 24px 40px; }
+  #s6 .cmp .name { font-size: 44px; font-weight: 700; color: var(--blue-deep); line-height: 1.05; }
+  #s6 .cmp .v { font-size: 60px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+  #s6 .cmp .v small { display: block; font-size: 26px; font-weight: 500; color: var(--dim-light); margin-top: 8px; line-height: 1.2; }
+  #s6 .cmp .v.old { color: var(--amber); }
+  #s6 .cmp .v.new { color: var(--blue-deep); }
+  #s6 .cmp .arrow { width: 90px; height: 45px; background: var(--blue-deep); clip-path: polygon(0 28%, 60% 28%, 60% 0, 100% 50%, 60% 100%, 60% 72%, 0 72%); }
+  #s6 .cols { display: grid; grid-template-columns: 330px 1fr 90px 1fr; gap: 24px; padding: 0 40px; font-size: 24px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--dim-light); }
 
-  /* 7 KPI 1: efficiency and productivity */
-  #s7 { justify-content: center; gap: 56px; }
-  #s7 .pair { display: flex; flex-direction: column; gap: 8px; }
-  #s7 .pair .nums { display: flex; flex-direction: row; align-items: center; gap: 40px; }
-  #s7 .pair h1 { line-height: 1; letter-spacing: -6px; }
-  #s7 .pair.a h1 { font-size: 240px; }
-  #s7 .pair.b h1 { font-size: 130px; letter-spacing: -4px; }
-  #s7 h1.old { color: var(--orange); }
-  #s7 .arrow { width: 120px; height: 60px; background: var(--blue); clip-path: polygon(0 28%, 60% 28%, 60% 0, 100% 50%, 60% 100%, 60% 72%, 0 72%); flex: none; }
-  #s7 .pair p { font-size: 40px; color: var(--dim); }
-  #s7 .pair p b { color: var(--light); }
+  /* 7 scale */
+  #s7 { justify-content: space-between; gap: 28px; }
+  #s7 .eyebrow { color: var(--blue-tint); }
+  #s7 .big { display: flex; flex-direction: row; align-items: baseline; gap: 32px; }
+  #s7 .big h1 { font-size: 300px; line-height: .95; letter-spacing: -10px; font-variant-numeric: tabular-nums; }
+  #s7 .big p { font-size: 76px; font-weight: 700; line-height: 1.05; }
+  #s7 .claim { font-size: 60px; font-weight: 700; }
+  #s7 .meter { position: relative; height: 130px; }
+  #s7 .meter .track { position: absolute; left: 0; right: 0; top: 50px; height: 36px; border-radius: 18px; background: rgba(244,244,241,.25); }
+  #s7 .meter .fill { position: absolute; left: 0; top: 50px; height: 36px; width: 6.7%; border-radius: 18px; background: var(--light); }
+  #s7 .meter .lab { position: absolute; top: 94px; font-size: 28px; font-weight: 700; }
+  #s7 .meter .lab.l { left: 0; } #s7 .meter .lab.r { right: 0; }
+  #s7 .keys { display: flex; flex-direction: row; gap: 20px; flex-wrap: wrap; }
+  #s7 .keys span { font-size: 38px; font-weight: 700; background: var(--light); color: var(--blue-deep); border-radius: 999px; padding: 12px 34px; }
+  #s7 .close { font-size: 44px; font-weight: 700; }
 
-  /* 8 KPI 2: scale */
-  #s8 { justify-content: space-between; gap: 40px; }
-  #s8 .eyebrow { color: var(--blue-tint); }
-  #s8 h2 { font-size: 88px; line-height: 1.05; letter-spacing: -3px; }
-  #s8 .meter { position: relative; height: 150px; }
-  #s8 .meter .track { position: absolute; left: 0; right: 0; top: 60px; height: 40px; border-radius: 20px; background: rgba(244,244,241,.25); }
-  #s8 .meter .fill { position: absolute; left: 0; top: 60px; height: 40px; width: 6.7%; border-radius: 20px; background: var(--light); }
-  #s8 .meter .lab { position: absolute; top: 112px; font-size: 30px; font-weight: 700; }
-  #s8 .meter .lab.l { left: 0; } #s8 .meter .lab.r { right: 0; }
-  #s8 .meter .goal { position: absolute; right: 0; top: 0; font-size: 44px; font-weight: 700; }
-  #s8 .keys { display: flex; flex-direction: row; gap: 20px; flex-wrap: wrap; }
-  #s8 .keys span { font-size: 40px; font-weight: 700; background: var(--light); color: var(--blue-deep); border-radius: 999px; padding: 14px 36px; }
-  #s8 .close { font-size: 44px; font-weight: 700; }
-
-  /* 9 team and QR codes */
-  #s9 { justify-content: space-between; gap: 28px; }
-  #s9 h2 { font-size: 80px; line-height: 1.1; letter-spacing: -2px; }
-  #s9 .qrs { display: flex; flex-direction: row; gap: 48px; }
-  #s9 .qr { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none; }
-  #s9 .qr .box { background: var(--paper); border-radius: 28px; padding: 20px; }
-  #s9 .qr img { display: block; width: 330px; height: 330px; image-rendering: pixelated; }
-  #s9 .qr h3 { font-size: 40px; }
-  #s9 .qr p { font-size: 26px; color: var(--dim); }
-  #s9 .team { display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 24px; border-top: 1px solid var(--line); padding-top: 24px; }
-  #s9 .team .lab { font-size: 28px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--blue); }
-  #s9 .member { display: flex; flex-direction: row; align-items: center; gap: 16px; }
-  #s9 .member i { width: 64px; height: 64px; border-radius: 50%; background: var(--blue); color: var(--dark); font-style: normal; font-weight: 700; font-size: 34px; display: flex; align-items: center; justify-content: center; flex: none; }
-  #s9 .member b { display: block; font-size: 30px; }
-  #s9 .member span { display: block; font-size: 24px; color: var(--dim); }
+  /* 8 team and QR codes */
+  #s8 { justify-content: space-between; gap: 28px; }
+  #s8 h2 { font-size: 80px; line-height: 1.1; letter-spacing: -2px; }
+  #s8 .qrs { display: flex; flex-direction: row; gap: 48px; }
+  #s8 .qr { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none; }
+  #s8 .qr .box { background: var(--paper); border-radius: 28px; padding: 20px; }
+  #s8 .qr img { display: block; width: 330px; height: 330px; image-rendering: pixelated; }
+  #s8 .qr h3 { font-size: 40px; }
+  #s8 .qr p { font-size: 26px; color: var(--dim); }
+  #s8 .team { display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 24px; border-top: 1px solid var(--line); padding-top: 24px; }
+  #s8 .team .lab { font-size: 28px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--blue); }
+  #s8 .member { display: flex; flex-direction: row; align-items: center; gap: 16px; }
+  #s8 .member i { width: 64px; height: 64px; border-radius: 50%; background: var(--blue); color: var(--dark); font-style: normal; font-weight: 700; font-size: 34px; display: flex; align-items: center; justify-content: center; flex: none; }
+  #s8 .member b { display: block; font-size: 30px; }
+  #s8 .member span { display: block; font-size: 24px; color: var(--dim); }
 
   /* HUD, outside the stage */
   #hud { position: fixed; right: 16px; bottom: 16px; display: flex; gap: 8px; align-items: center; opacity: 0; transition: opacity .3s; z-index: 10; }
@@ -240,35 +295,36 @@
 <div id="stage">
 
   <!-- 1 -->
-  <section class="slide dark" id="s1" data-title="BRASPER">
-    <p class="eyebrow rise">Fintech · IATHON Perú 2026 · Equipo 5.5</p>
+  <section class="slide dark" id="s1" data-title="BRASPER · Fintech">
+    <p class="badge rise">FINTECH</p>
     <h1 class="rise" style="--d:.1s">BRASPER</h1>
-    <p class="sub rise" style="--d:.25s">Una remesa. Un registro.<br>Todo el sistema.</p>
+    <p class="sub rise" style="--d:.25s">Transferencias de dinero<br>con <span class="hl">IA que automatiza</span> la operación.</p>
+    <p class="tiny rise" style="--d:.4s">IATHON Perú 2026 · Equipo 5.5</p>
   </section>
 
   <!-- 2 -->
-  <section class="slide light" id="s2" data-title="La empresa: BrasPer, fintech de remesas">
+  <section class="slide light" id="s2" data-title="La empresa: fintech de transferencias de dinero">
     <div class="rise">
-      <p class="eyebrow">La empresa · Fintech</p>
-      <h2 style="margin-top:12px">BrasPer es una fintech que mueve dinero entre Brasil y Perú.</h2>
+      <p class="eyebrow">La empresa</p>
+      <h2>BrasPer es una <span class="hl">FINTECH</span> de transferencias de dinero entre Brasil y Perú.</h2>
     </div>
-    <p class="plain rise" style="--d:.15s"><b>Una remesa</b> es dinero que alguien envía a su familia en otro país.</p>
+    <p class="plain rise" style="--d:.15s">Enviar dinero a tu familia en otro país.</p>
     <div class="route rise" style="--d:.3s">
       <div class="pill">Brasil<small>reales · PIX</small></div>
       <div class="arrow"></div>
       <div class="pill">Perú<small>soles · banco</small></div>
     </div>
     <div class="stats rise" style="--d:.45s">
-      <div class="stat"><h3>3,776</h3><p>envíos en el 2T 2026</p></div>
-      <div class="stat"><h3>+24.7 %</h3><p>de crecimiento</p></div>
-      <div class="stat"><h3>1,000</h3><p>ventas al día: la meta de BrasPer</p></div>
+      <div class="stat"><h3 data-count="3776">3776</h3><p>transferencias en el 2T 2026</p></div>
+      <div class="stat"><h3 data-count="24.7" data-dec="1" data-prefix="+" data-suffix=" %">+24,7 %</h3><p>de crecimiento</p></div>
+      <div class="stat"><h3 data-count="1000">1000</h3><p>ventas al día: la meta de BrasPer</p></div>
     </div>
     <p class="for rise" style="--d:.6s">Esta solución es para BrasPer.</p>
   </section>
 
   <!-- 3 -->
-  <section class="slide dark" id="s3" data-title="Hoy las asesoras operan">
-    <h2 class="rise">Hoy, las asesoras operan. No captan.</h2>
+  <section class="slide dark" id="s3" data-title="De manual a automatización con IA">
+    <h2 class="rise">Las asesoras <span class="hl o">operan</span>. Deberían <span class="hl" style="--hd:1.2s">vender</span>.</h2>
     <div class="team-row">
       <div class="person rise" style="--d:.1s"><div class="bubble">¿Me cotizas?</div><div class="head"></div><div class="torso"></div></div>
       <div class="person rise" style="--d:.2s"><div class="bubble">Te envío la captura</div><div class="head"></div><div class="torso"></div></div>
@@ -276,38 +332,56 @@
       <div class="person rise" style="--d:.4s"><div class="bubble">¿Ya llegó?</div><div class="head"></div><div class="torso"></div></div>
     </div>
     <p class="stat rise" style="--d:.5s"><b>131 chats al día</b> y solo el <b>51 %</b> llega a transferencia.</p>
-    <div class="north rise" style="--d:.65s">
-      <span class="tag old">Manual</span>
+    <div class="north rise" style="--d:.6s">
+      <span class="tag old strike">Manual</span>
       <div class="arrow"></div>
-      <span class="tag new">Automatizado</span>
-      <p>La IA opera. Las asesoras captan.</p>
+      <span class="tag new">Automatización con IA</span>
+    </div>
+    <div class="keys rise" style="--d:.8s">
+      <div class="k down">Menos operatividad</div>
+      <div class="k up">Más captación</div>
+      <div class="k up">Más comercial</div>
+      <div class="k up">Más cierres de negocio</div>
     </div>
   </section>
 
   <!-- 4 -->
-  <section class="slide blue" id="s4" data-title="Rediseñamos la experiencia con IA">
+  <section class="slide blue" id="s4" data-title="Transformamos la operatividad con IA">
     <div class="copy">
-      <p class="eyebrow rise">Rediseñamos la experiencia con IA</p>
+      <p class="eyebrow rise">Omnicanal · transformamos la operatividad</p>
       <div class="steps">
         <div class="step" data-n="1"><h2>Cotiza.</h2><p>En la web</p></div>
-        <div class="step" data-n="2"><h2>Conversa.</h2><p>En WhatsApp · human in the loop</p></div>
-        <div class="step" data-n="3"><h2>Recibe tu boleta.</h2><p>En la app</p></div>
+        <div class="step" data-n="2"><h2>Conversa.</h2><p>En WhatsApp · atiende la IA</p></div>
+        <div class="step key" data-n="3"><h2>Aprueba.</h2><p>La asesora · human in the loop</p></div>
+        <div class="step" data-n="4"><h2>Recibe tu boleta.</h2><p>En la app</p></div>
       </div>
-      <p class="lead rise" style="--d:.3s">Omnicanal, para el cliente y para el equipo de BrasPer.</p>
+      <p class="lead rise" style="--d:.3s">La IA opera. La asesora <span class="hl">aprueba el pago</span>.</p>
     </div>
     <div class="showcase">
       <div class="pane" data-n="1">
         <span class="tag">Web · cotiza</span>
         <div class="browser">
           <div class="top"><i></i><i></i><i></i><span>brasper.jordybryan.com</span></div>
-          <img src="img/web-home.jpg" alt="Calculadora de la web de BRASPER: 1000 PEN se convierten en 1,441.90 BRL">
+          <img src="img/web-home.jpg" alt="Calculadora de la web de BRASPER: 1000 PEN se convierten en 1441,90 BRL">
         </div>
       </div>
       <div class="pane" data-n="2">
-        <span class="tag">WhatsApp · human in the loop</span>
+        <span class="tag">WhatsApp · atiende la IA</span>
         <div class="phone"><img src="img/whatsapp-chat.png" alt="Agente de IA de BRASPER en WhatsApp con el resumen de la operación"></div>
       </div>
       <div class="pane" data-n="3">
+        <span class="tag hot">Asesora · única acción humana</span>
+        <div class="approve">
+          <p class="ord">Orden BR-0001 · en validación</p>
+          <div class="row"><span>Envía</span><b>514.16 PEN</b></div>
+          <div class="row"><span>Recibe</span><b>720.95 BRL</b></div>
+          <div class="row"><span>Tasa</span><b>1 PEN = 1.4419 BRL</b></div>
+          <div class="btn">Aprobar pago</div>
+          <p class="only">Lo único que hace la asesora</p>
+          <small>Ilustración con datos de demostración</small>
+        </div>
+      </div>
+      <div class="pane" data-n="4">
         <span class="tag">App · recibe tu boleta</span>
         <div class="phone"><img src="img/05-status-receipt.png" alt="App BRASPER con la operación completada y la boleta en PDF"></div>
       </div>
@@ -315,60 +389,85 @@
   </section>
 
   <!-- 5 -->
-  <section class="slide dark" id="s5" data-title="Demo en segmentos">
-    <div class="bar">
-      <h2>Veámoslo.</h2>
-      <p>Omnicanal · la IA acelera el WhatsApp manual de hoy · <a href="https://youtu.be/X9bkr5w8O80" target="_blank" rel="noopener">abrir en YouTube</a></p>
+  <section class="slide dark" id="s5" data-title="Demo: el flujo del cliente, pantalla por pantalla">
+    <div class="head">
+      <h2>Hemos <span class="hl">transformado el proceso</span> con IA.</h2>
+      <p>Inteligencia que genera <b>una mejor experiencia</b> en el proceso.</p>
     </div>
-    <div id="videoBox"><div id="yt"></div></div>
-    <p class="tip" id="pace">V: reproducir o pausar · L: saltar 30 s · J: atrás 15 s · [ inicio y ] fin de un segmento · \ borrar segmentos</p>
+    <div class="showcase">
+      <div class="pane" data-n="1">
+        <span class="tag">Web · el cliente cotiza</span>
+        <div class="shot web"><div class="top"><i></i><i></i><i></i><span>brasper.jordybryan.com</span></div><img src="img/flujo-web-cotizar.jpg" alt="Web de BRASPER: el cliente ingresa 500 PEN y ve cuántos reales recibirá"></div>
+        <div class="phone"><img src="img/flujo-web-movil.jpg" alt="La misma web en el celular"></div>
+      </div>
+      <div class="pane" data-n="2">
+        <span class="tag">WhatsApp y app · la IA cotiza</span>
+        <div class="phone"><img src="img/flujo-wa-cotizacion.png" alt="El agente de IA en WhatsApp responde con la cotización"></div>
+        <div class="phone app"><img src="img/flujo-app-agente.png" alt="El asistente de IA de la app muestra la tasa"></div>
+      </div>
+      <div class="pane" data-n="3">
+        <span class="tag">Se registra la orden · el cliente paga</span>
+        <div class="phone"><img src="img/flujo-wa-pagar.png" alt="WhatsApp: operación BR-0001 registrada con las instrucciones de pago"></div>
+        <div class="shot wide"><div class="top"><i></i><i></i><i></i><span>brasper.jordybryan.com</span></div><img src="img/flujo-web-seguimiento.jpg" alt="Web: seguimiento de la operación BR-0029, pago en revisión"></div>
+      </div>
+      <div class="pane" data-n="4">
+        <span class="tag hot">Asesora · única acción humana</span>
+        <div class="shot back hot"><img src="img/flujo-backoffice-aprobar.jpg" alt="Backoffice THE VIEW: la asesora revisa el comprobante y aprueba el pago"><div class="ring"></div></div>
+      </div>
+      <div class="pane" data-n="5">
+        <span class="tag">Pago verificado · boleta en PDF</span>
+        <div class="phone"><img src="img/flujo-wa-boleta.png" alt="WhatsApp: pago verificado y comprobante en PDF"></div>
+        <div class="phone app"><img src="img/flujo-app-boleta.png" alt="App: operación completada con el comprobante"></div>
+      </div>
+    </div>
+    <div class="track">
+      <div class="step" data-n="1"><span class="num">1</span><div><h3>Cotiza</h3><p>Web</p></div></div>
+      <div class="step" data-n="2"><span class="num">2</span><div><h3>Conversa</h3><p>WhatsApp y app</p></div></div>
+      <div class="step" data-n="3"><span class="num">3</span><div><h3>Registra y paga</h3><p>Orden creada</p></div></div>
+      <div class="step hotstep" data-n="4"><span class="num">4</span><div><h3>Aprueba</h3><p>La asesora</p></div></div>
+      <div class="step" data-n="5"><span class="num">5</span><div><h3>Recibe</h3><p>La boleta</p></div></div>
+    </div>
   </section>
 
   <!-- 6 -->
-  <section class="slide dark" id="s6" data-title="Tu proceso, intacto">
-    <h2 class="rise">Tu proceso, intacto.</h2>
-    <div class="flow rise" style="--d:.2s">
-      <div class="chip">WhatsApp, app y web</div>
-      <div class="arrow"></div>
-      <div class="chip core">Un registro</div>
-      <div class="arrow"></div>
-      <div class="chip"><div>La asesora aprueba<small>human in the loop</small></div></div>
-      <div class="arrow"></div>
-      <div class="chip">Dashboard y facturación</div>
-    </div>
-  </section>
-
-  <!-- 7 -->
-  <section class="slide dark footer" id="s7" data-title="KPI: eficiencia y productividad">
-    <p class="eyebrow big rise">Eficiencia y productividad</p>
-    <div class="pair a rise" style="--d:.1s">
-      <div class="nums"><h1 class="old">4</h1><div class="arrow"></div><h1>1</h1></div>
-      <p><b>pasos manuales por venta.</b> Solo queda aprobar el pago.</p>
-    </div>
-    <div class="pair b rise" style="--d:.3s">
-      <div class="nums"><h1 class="old">≈24 h</h1><div class="arrow"></div><h1>≈10 min</h1></div>
-      <p>de una venta, de la cotización a la boleta.</p>
+  <section class="slide light footer" id="s6" data-title="Comparadores: eficiencia, productividad, velocidad">
+    <h2 class="rise"><span class="hl">Operativa interna</span>: de horas a minutos.</h2>
+    <div class="rows">
+      <div class="cols rise" style="--d:.1s"><span></span><span>Hoy</span><span></span><span>Con IA</span></div>
+      <div class="cmp rise" style="--d:.2s">
+        <div class="name">Eficiencia</div>
+        <div class="v old">4 pasos<small>manuales por venta</small></div><div class="arrow"></div>
+        <div class="v new">1 paso<small>aprobar el pago</small></div>
+      </div>
+      <div class="cmp rise" style="--d:.4s">
+        <div class="name">Productividad</div>
+        <div class="v old">≈3 h 15 min<small>de operativa por venta</small></div><div class="arrow"></div>
+        <div class="v new">0<small>lo hace la IA</small></div>
+      </div>
+      <div class="cmp rise" style="--d:.6s">
+        <div class="name">Velocidad de impacto</div>
+        <div class="v old">≈24 h<small>para concretar una venta</small></div><div class="arrow"></div>
+        <div class="v new">≈10 min<small>para concretar una venta</small></div>
+      </div>
     </div>
     <p class="foot">Estimaciones del equipo, por validar con BrasPer.</p>
   </section>
 
-  <!-- 8 -->
-  <section class="slide blue" id="s8" data-title="KPI: escala">
-    <div class="rise">
-      <p class="eyebrow">Escala</p>
-      <h2 style="margin-top:12px">BrasPer quiere llegar a 1,000 ventas al día.</h2>
-    </div>
-    <div class="meter rise" style="--d:.2s">
-      <p class="goal">Meta: 1,000</p>
+  <!-- 7 -->
+  <section class="slide blue" id="s7" data-title="1000+ ventas por día es posible">
+    <p class="eyebrow rise">Escala</p>
+    <div class="big rise" style="--d:.1s"><h1 data-count="1000" data-prefix="+">+1000</h1><p>ventas<br>por día</p></div>
+    <p class="claim rise" style="--d:.3s">Con nuestra solución <span class="hl">es posible</span>.</p>
+    <div class="meter rise" style="--d:.45s">
       <div class="track"></div><div class="fill"></div>
-      <p class="lab l">Hoy ≈67 ventas al día</p>
+      <p class="lab l">Hoy ≈67 al día</p><p class="lab r">Meta 1000+</p>
     </div>
-    <div class="keys rise" style="--d:.4s"><span>Eficiencia</span><span>Productividad</span><span>Diferencial frente a la competencia</span></div>
-    <p class="close rise" style="--d:.55s">Con la IA, el mismo equipo escala.</p>
+    <div class="keys rise" style="--d:.6s"><span>Eficiencia</span><span>Productividad</span><span>Diferencial frente a la competencia</span></div>
+    <p class="close rise" style="--d:.75s">BrasPer capta y cierra. La IA opera.</p>
   </section>
 
-  <!-- 9 -->
-  <section class="slide dark footer" id="s9" data-title="Equipo y QR para probar">
+  <!-- 8 -->
+  <section class="slide dark footer" id="s8" data-title="Equipo y QR para probar">
     <h2 class="rise">Pruébalo ahora.</h2>
     <div class="qrs">
       <a class="qr rise" style="--d:.1s" href="https://brasper.jordybryan.com" target="_blank" rel="noopener">
@@ -413,8 +512,6 @@
   <b>F</b> pantalla completa<br>
   <b>P</b> vista del presentador (otra ventana, con notas y reloj)<br>
   <b>T</b> mostrar el reloj · <b>R</b> reiniciarlo<br>
-  <b>V</b> reproducir o pausar el video · <b>L</b> saltar 30 s · <b>J</b> retroceder 15 s<br>
-  <b>[ ]</b> marcar inicio y fin de un segmento del video · <b>\</b> borrar segmentos<br>
   <b>?</b> esta ayuda · <b>Esc</b> cerrar
 </div></div>
 
@@ -434,7 +531,6 @@
   <div class="btns">
     <button id="pPrev">← Anterior</button>
     <button id="pForward" class="primary">Siguiente →</button>
-    <button id="pVideo">Video: reproducir o pausar</button>
   </div>
   <table class="plan" id="pPlan"></table>
 </main>
@@ -443,17 +539,17 @@
 (function () {
   'use strict';
 
-  // Speaker notes and time budget per slide (seconds). Total = 403 s, under the 7 minutes, with slack.
+  // Speaker notes and time budget per slide (seconds). Total = 383 s (6:23), with slack for the 7 minutes.
+  // Story arc for investors: vision, market and traction, the enemy (manual operations), the product, proof, the opportunity, the call to action.
   var PLAN = [
-    { secs: 8,   notes: 'Camina al centro, pausa de 2 s.\n\n“Buenas tardes, soy [Nombre]. Esta solución es para BRASPER, una FINTECH de remesas.”\n\nRitmo: habla un 10–15 % más rápido que en el ensayo anterior; había partes con mucho texto.' },
-    { secs: 30,  notes: '“BrasPer es una FINTECH. Una remesa es simple: dinero que alguien envía a su familia en otro país; aquí, entre Brasil y Perú. Creció 24,7 % y cerró 3.776 envíos en el segundo trimestre. Y tiene una meta: 1.000 ventas al día.”\n\nNo la saltes: es la empresa y el sector. Explícala en términos simples y sigue.\nFuente: README de BRASPER-IATHON. La meta de 1.000 ventas diarias salió del feedback del jurado; confírmala con BrasPer.' },
-    { secs: 35,  notes: '“Pero hoy cada venta es MANUAL. Las asesoras viven pegadas al WhatsApp: cotizan, piden la captura del pago, digitan. De 131 chats al día, solo el 51 % llega a transferencia.”\n\n[Señala la flecha.] “Queremos pasar de MANUAL a AUTOMATIZADO: que la IA opere y las asesoras se enfoquen en CAPTAR, no en operar.”\n\nEl dibujo muestra 4 asesoras (el README habla de 4 vendedores). Si el equipo prefiere otro número, cámbialo en la diapositiva.' },
-    { secs: 50,  notes: 'Tres pulsaciones de → (la primera sale sola).\n\n“Encontramos el proceso ASÍ, y REDISEÑAMOS LA EXPERIENCIA con IA para dos personas: el cliente que envía su remesa y el equipo interno de BrasPer. Es OMNICANAL.”\n→ COTIZA: “En la web, cotiza.”\n→ CONVERSA: “Por WhatsApp. Hoy ya existe un WhatsApp MANUAL; nosotros proponemos IA que ACELERA el proceso, con HUMAN IN THE LOOP: la IA conversa, la asesora aprueba.”\n→ RECIBE TU BOLETA: “Y en la app sigue su operación hasta recibir su boleta.”' },
-    { secs: 140, notes: 'DEMO: 70 % speech, 30 % apoyo visual. Muestra solo SEGMENTOS RECORTADOS, no el video entero ni el backoffice (Vivian: no es tan importante):\n1. Cómo llega el usuario a la web.\n2. Escribe al WhatsApp pidiendo ayuda con una remesa.\n3. La COTIZACIÓN.\n\nCómo fijar los segmentos (ensayo de 2 minutos): reproduce con V y en cada tramo pulsa [ al empezar y ] al terminar; se guardan en este navegador. También sirve ?segs=10-35,90-120 en la URL (segundos o mm:ss). Sin segmentos, la página reproduce el video completo al ritmo que quepa; L salta 30 s.\n\nQué decir encima (OMNICANAL): “El cliente llega por la web, escribe por WhatsApp pidiendo ayuda con su remesa y recibe su cotización al instante. Hoy ya existe un WhatsApp manual; lo que proponemos es IA que ACELERA el proceso.”\n\nRespaldo: video abierto en otra pestaña y una copia descargada.' },
-    { secs: 15,  notes: '“Y no cambiamos su proceso: misma aprobación humana, mismo Dashboard, misma facturación. Solo desaparece el tecleo.”\n\nEsta diapositiva pasa en 15 s.' },
-    { secs: 45,  notes: '“EFICIENCIA y PRODUCTIVIDAD. Se reduce de 4 pasos a 1 paso manual: aprobar el pago. Y una venta pasa de unas 24 horas a unos 10 minutos.”\n\nDi “de 4 pasos a 1” solo aquí, una vez. Son estimaciones del equipo, por validar con BrasPer.\n24 h = 1.440 min; 10 min es el 0,7 %.' },
-    { secs: 50,  notes: '“BrasPer quiere llegar a 1.000 ventas diarias. Hoy hace unas 67. Con nuestra SOLUCIÓN se puede ESCALAR a esa ambición con el mismo equipo: más EFICIENCIA y PRODUCTIVIDAD. Y la experiencia que creamos es un DIFERENCIAL frente a la competencia.”\n\n67 ventas al día = 51,1 % de 131 chats. No prometemos llegar a 1.000: mostramos que la solución puede escalar.\nSi preguntan por costo: de ≈S/ 6.800 a ≈S/ 300 al mes (estimación).' },
-    { secs: 30,  notes: '“Pruébenlo ahora: escaneen la web, el WhatsApp o la app. Lo construimos cuatro personas, el Equipo 5.5: David, el agente de WhatsApp; Binni, la app; Jordy, la web; Melani, el backoffice. Gracias.”\n\nEquipo y QR en la misma diapositiva; déjala durante las preguntas.\nAntes de subir: prueba los tres QR con un teléfono físico.' }
+    { secs: 8,   notes: 'VISIÓN. Camina al centro, pausa de 2 s.\n\n“Buenas tardes, soy [Nombre]. Somos una FINTECH de transferencias de dinero, y hoy les muestro cómo la IA AUTOMATIZA su operación.”\n\nRitmo: apertura lenta y firme; el resto, más rápido.' },
+    { secs: 25,  notes: 'MERCADO Y TRACCIÓN. [RÁPIDO]\n\n“BrasPer es una FINTECH de transferencias de dinero entre Brasil y Perú: enviar dinero a tu familia en otro país. Cerró 3776 transferencias en el segundo trimestre, un 24,7 % más, y quiere llegar a 1000 ventas al día. Esta solución es para BrasPer.”\n\nLos números suben solos (cuenta animada): no los leas todos, señala el 1000.\nFuente: README de BRASPER-IATHON; la meta de 1000 ventas diarias salió del feedback del jurado, confírmala con BrasPer.' },
+    { secs: 40,  notes: 'EL ENEMIGO: LA OPERATIVIDAD.\n\n“Hoy las asesoras OPERAN: cotizan, piden la captura, digitan. De 131 chats al día, solo el 51 % llega a transferencia.”\n\n[Pausa: ve cómo “Manual” se tacha.] “Pasamos de MANUAL a AUTOMATIZACIÓN CON IA. Y eso significa MENOS OPERATIVIDAD, MÁS CAPTACIÓN, MÁS COMERCIAL, MÁS CIERRES DE NEGOCIO.”\n\nEl dibujo muestra 4 asesoras (el README habla de 4 vendedores); si el equipo prefiere otro número, cámbialo.' },
+    { secs: 55,  notes: 'EL PRODUCTO. Cuatro pulsaciones de → (la primera sale sola).\n\n“TRANSFORMAMOS LA OPERATIVIDAD con IA, en todos los canales.”\n→ COTIZA: “En la web.”\n→ CONVERSA: “En WhatsApp atiende la IA; hoy ya existe un WhatsApp manual, nosotros proponemos IA que ACELERA el proceso.”\n→ APRUEBA [pausa, señala el botón]: “Esta es la ÚNICA ACCIÓN de la asesora: APROBAR EL PAGO, la orden. Human in the loop.”\n→ RECIBE TU BOLETA: “Y en la app sigue su operación hasta recibir su boleta.”\n\nMomento “una cosa más”: baja la voz en “la única acción”.' },
+    { secs: 140, notes: 'DEMO: 70 % speech, 30 % apoyo visual. Son pantallas reales de los repositorios del equipo, en 5 pasos; pulsa → para pasar de uno a otro (el primero sale solo), unos 25 s por paso.\n\n1. COTIZA (web): “El cliente llega a la web, pone cuánto quiere enviar y ve al instante cuánto recibirá. También funciona en el celular.”\n2. CONVERSA (WhatsApp y app): “Si prefiere conversar, el agente de IA le da la misma cotización en WhatsApp o en la app. OMNICANAL: hoy ya existe un WhatsApp manual; nosotros proponemos IA que ACELERA el proceso.”\n3. REGISTRA Y PAGA: “Se crea la orden, ya con número, y recibe cómo pagar. En la web sigue su estado.”\n4. APRUEBA [señala el aro naranja]: “La asesora revisa el comprobante y aprueba: su ÚNICA ACCIÓN. Human in the loop.”\n5. RECIBE: “Pago verificado y su boleta en PDF, en WhatsApp o en la app.”\n\nCierra con: “Hemos TRANSFORMADO EL PROCESO con IA: una MEJOR EXPERIENCIA para el cliente y para el equipo de BrasPer.”\n\nFuentes de las capturas: repos web (jordyalania/brasper-global-connect), WhatsApp (davidrodriguez2712/iaton-proyecto), backoffice (Melani232000/the-view) y app (binnicordova/iathon-fintech). Datos de demostración.' },
+    { secs: 45,  notes: 'LA PRUEBA. [RÁPIDO en las leyendas pequeñas; fuerte en los tres números]\n\n“La OPERATIVA INTERNA pasa de horas a minutos. EFICIENCIA: de 4 pasos manuales a 1. PRODUCTIVIDAD: unas 3 horas 15 de operativa por venta pasan a cero. VELOCIDAD DE IMPACTO: de unas 24 horas a unos 10 minutos para concretar una venta.”\n\nDi “de 4 pasos a 1” solo aquí, una vez. Productividad = negociación (≈3 h) + digitación (≈15 min), del diagnóstico. Son estimaciones del equipo, por validar con BrasPer.' },
+    { secs: 40,  notes: 'LA OPORTUNIDAD (para el inversionista).\n\n“Más de 1000 ventas por día, con nuestra solución, es posible. Hoy hace unas 67. La IA opera; BrasPer capta y cierra. Más eficiencia, más productividad, y una experiencia que es nuestro DIFERENCIAL frente a la competencia: una fintech que escala sin sumar operativa.”\n\n67 ventas al día = 51,1 % de 131 chats. No prometemos llegar a 1000: decimos que es posible. Si preguntan por costo: de ≈S/ 6800 a ≈S/ 300 al mes (estimación).' },
+    { secs: 30,  notes: 'LLAMADA A LA ACCIÓN.\n\n“Pruébenlo ahora: escaneen la web, el WhatsApp o la app. Lo construimos cuatro personas, el Equipo 5.5: David, el agente de WhatsApp; Binni, la app; Jordy, la web; Melani, el backoffice. Gracias.”\n\nEquipo y QR en la misma diapositiva; déjala durante las preguntas.\nAntes de subir: prueba los tres QR con un teléfono físico.' }
   ];
   var TOTAL = PLAN.reduce(function (a, p) { return a + p.secs; }, 0);
 
@@ -479,148 +575,55 @@
   window.addEventListener('resize', fit);
   fit();
 
-  /* ---------- YouTube (2× speed) ---------- */
   var REVEAL = 3, DEMO = 4;               // slide indexes (0-based)
-  var player = null, playerReady = false;
-  var demoEnter = 0;                      // when the demo slide was last shown
-  var FROM = parseInt(new URLSearchParams(location.search).get('from'), 10) || 0;
-
-  // Segments of the video to show, in seconds: [[from, to], ...]. Empty = the whole video.
-  // Set them with ?segs=10-35,90-120 (seconds or mm:ss), or mark them live with [ and ] (kept in this browser).
-  var SEG_KEY = 'brasper-presentation-segments';
-  function toSecs(v) { var p = String(v).split(':').map(Number); return p.length === 2 ? p[0] * 60 + p[1] : p[0]; }
-  function parseSegs(str) {
-    return String(str || '').split(',').map(function (x) { var a = x.split('-'); return [toSecs(a[0]), toSecs(a[1])]; })
-      .filter(function (s) { return s[0] >= 0 && s[1] > s[0]; });
-  }
-  var segs = [], markStart = null, flash = '', flashUntil = 0;
-  (function () {
-    var q = new URLSearchParams(location.search).get('segs');
-    if (q) { segs = parseSegs(q); return; }
-    try { segs = JSON.parse(localStorage.getItem(SEG_KEY) || '[]'); } catch (e) { segs = []; }
-  })();
-  function saveSegs() { try { localStorage.setItem(SEG_KEY, JSON.stringify(segs)); } catch (e) {} }
-  function say(msg) { flash = msg; flashUntil = Date.now() + 3500; }
-  function segText() { return segs.map(function (s) { return mmss(s[0]) + '–' + mmss(s[1]); }).join(' · '); }
-  function segCommand(op) {
-    if (!playerReady) return;
-    try {
-      var t = player.getCurrentTime();
-      if (op === 'start') { markStart = Math.floor(t); say('Inicio de segmento en ' + mmss(markStart) + ': pulsa ] donde termina'); }
-      else if (op === 'end') {
-        if (markStart === null || t <= markStart) { say('Primero pulsa [ donde empieza el segmento'); return; }
-        segs.push([markStart, Math.ceil(t)]); segs.sort(function (a, b) { return a[0] - b[0]; }); markStart = null; saveSegs();
-        say('Segmentos guardados: ' + segText());
-      } else if (op === 'clear') { segs = []; markStart = null; saveSegs(); say('Segmentos borrados: se reproduce el video completo'); }
-    } catch (e) {}
-  }
-
-  // Seconds of video still to play from time t (only the segments, or the whole video).
-  function remainingVideo(t, dur) {
-    if (!segs.length) return Math.max(0, dur - t);
-    var total = 0;
-    segs.forEach(function (s) { if (t < s[0]) total += s[1] - s[0]; else if (t < s[1]) total += s[1] - t; });
-    return total;
-  }
-  // YouTube allows up to 2×. Pick the slowest rate (never below 1×) that fits what is left of the video into what is left of the slot.
-  function idealRate() {
-    try {
-      var dur = player.getDuration(), t = player.getCurrentTime();
-      if (!(dur > 1)) return segs.length ? 1 : 2;
-      var left = PLAN[DEMO].secs - (demoEnter ? (Date.now() - demoEnter) / 1000 : 0);
-      var need = Math.max(1, remainingVideo(t, dur) / Math.max(20, left));
-      var rates = player.getAvailablePlaybackRates() || [1, 1.25, 1.5, 1.75, 2];
-      for (var k = 0; k < rates.length; k++) if (rates[k] >= need) return rates[k];
-      return rates[rates.length - 1];
-    } catch (e) { return 2; }
-  }
-  function applyRate() {
-    try { var r = idealRate(); if (player.getPlaybackRate() !== r) player.setPlaybackRate(r); } catch (e) {}
-  }
-  window.onYouTubeIframeAPIReady = function () {
-    player = new YT.Player('yt', {
-      videoId: 'X9bkr5w8O80',
-      width: 1440, height: 810,
-      playerVars: { rel: 0, modestbranding: 1, playsinline: 1, iv_load_policy: 3, start: segs.length ? segs[0][0] : FROM },
-      events: {
-        onReady: function () { playerReady = true; applyRate(); },
-        onStateChange: function (e) { if (e.data === 1 /* playing */) applyRate(); }
-      }
-    });
-  };
-  function skip(secs) {
-    if (!playerReady) return;
-    try { player.seekTo(Math.max(0, player.getCurrentTime() + secs), true); applyRate(); } catch (e) {}
-  }
-  // While playing, jump over everything outside the segments and stop after the last one.
-  function watchSegments() {
-    if (!playerReady || !segs.length || cur !== DEMO) return;
-    try {
-      if (player.getPlayerState() !== 1) return;
-      var t = player.getCurrentTime();
-      for (var k = 0; k < segs.length; k++) {
-        if (t < segs[k][0] - 0.3) { player.seekTo(segs[k][0], true); return; }
-        if (t < segs[k][1]) return;
-      }
-      player.pauseVideo();
-      say('Fin de los segmentos');
-    } catch (e) {}
-  }
-  setInterval(watchSegments, 250);
-  function updatePace() {
-    var el = document.getElementById('pace');
-    if (!playerReady || cur !== DEMO) return;
-    try {
-      if (Date.now() < flashUntil) { el.textContent = flash; el.classList.remove('warn'); return; }
-      var dur = player.getDuration(), t = player.getCurrentTime(), r = player.getPlaybackRate();
-      if (!(dur > 1)) return;
-      var videoLeft = remainingVideo(t, dur) / r;
-      var budgetLeft = Math.max(0, PLAN[DEMO].secs - (Date.now() - demoEnter) / 1000);
-      var behind = videoLeft > budgetLeft + 5;
-      var where = 'Video ' + mmss(t) + ' / ' + mmss(dur) + ' a ' + r + '×';
-      if (segs.length) {
-        var idx = 0; while (idx < segs.length - 1 && t >= segs[idx][1]) idx++;
-        where = 'Segmento ' + (idx + 1) + ' de ' + segs.length + ' (' + segText() + ') a ' + r + '×';
-      }
-      el.textContent = where + ' · quedan ' + mmss(videoLeft) + ' de video y ' + mmss(budgetLeft) + ' de demo' + (behind ? ' · vas atrasado: pulsa L para saltar 30 s' : '');
-      el.classList.toggle('warn', behind);
-    } catch (e) {}
-  }
-
-  if (!isPresenter) {
-    var tag = document.createElement('script');
-    tag.src = 'https://www.youtube.com/iframe_api';
-    tag.async = true;
-    document.head.appendChild(tag);
-  }
-  function toggleVideo() {
-    if (!playerReady) { window.open('https://youtu.be/X9bkr5w8O80', '_blank', 'noopener'); return; }
-    try {
-      var st = player.getPlayerState();
-      if (st === 1) player.pauseVideo(); else { applyRate(); player.playVideo(); }
-    } catch (e) {}
-  }
 
   /* ---------- navigation ---------- */
-  // Slides with builds: slide index -> number of builds (slide 4 reveals web, WhatsApp, app).
-  var STEPS = { 3: 3 };
+  // Slides with builds: slide index -> number of builds.
+  // Slide 4 reveals web, WhatsApp, the approval and the app; slide 5 walks the real user flow screen by screen.
+  var STEPS = { 3: 4, 4: 5 };
   var step = 0, autoTimer = null;
 
   function applyStep() {
-    var host = slides[REVEAL];
-    Array.prototype.forEach.call(host.querySelectorAll('.step'), function (el) {
-      var n = parseInt(el.getAttribute('data-n'), 10);
-      el.classList.toggle('seen', n <= step);
-      el.classList.toggle('on', n === step);
-    });
-    Array.prototype.forEach.call(host.querySelectorAll('.pane'), function (el) {
-      var n = parseInt(el.getAttribute('data-n'), 10);
-      el.classList.toggle('on', n === step);
-      el.classList.toggle('past', n < step);
+    Object.keys(STEPS).forEach(function (k) {
+      var host = slides[k], cur_step = (parseInt(k, 10) === cur) ? step : 0;
+      Array.prototype.forEach.call(host.querySelectorAll('.step'), function (el) {
+        var n = parseInt(el.getAttribute('data-n'), 10);
+        el.classList.toggle('seen', n <= cur_step);
+        el.classList.toggle('on', n === cur_step);
+      });
+      Array.prototype.forEach.call(host.querySelectorAll('.pane'), function (el) {
+        var n = parseInt(el.getAttribute('data-n'), 10);
+        el.classList.toggle('on', n === cur_step);
+        el.classList.toggle('past', n < cur_step);
+      });
     });
   }
   // The main window owns the state and tells the presenter window about it.
   function sync() { if (!isPresenter && channel) channel.postMessage({ type: 'state', i: cur, step: step }); }
+
+  // Numbers count up when their slide appears.
+  function animateCounts(slide) {
+    var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    Array.prototype.forEach.call(slide.querySelectorAll('[data-count]'), function (el) {
+      var target = parseFloat(el.getAttribute('data-count'));
+      var dec = parseInt(el.getAttribute('data-dec') || '0', 10);
+      var pre = el.getAttribute('data-prefix') || '', suf = el.getAttribute('data-suffix') || '';
+      var fmt = function (v) {
+        var parts = v.toFixed(dec).split('.'), int = parts[0];
+        if (int.length > 4) int = int.replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0');
+        return pre + int + (parts[1] ? ',' + parts[1] : '') + suf;
+      };
+      clearInterval(el._t);
+      if (reduce) { el.textContent = fmt(target); return; }
+      el.textContent = fmt(0);
+      var start = Date.now() + 500, dur = 1400;
+      el._t = setInterval(function () {
+        var p = Math.min(1, Math.max(0, (Date.now() - start) / dur)), e = 1 - Math.pow(1 - p, 3);
+        el.textContent = fmt(target * e);
+        if (p >= 1) clearInterval(el._t);
+      }, 30);
+    });
+  }
 
   function show(i, startStep) {
     i = clamp(i);
@@ -631,15 +634,14 @@
     clearTimeout(autoTimer);
     slides.forEach(function (el, k) { el.classList.toggle('active', k === i); });
     applyStep();
-    if (leaving === DEMO && playerReady) { try { player.pauseVideo(); } catch (e) {} }
-    if (i === DEMO) demoEnter = Date.now();
+    animateCounts(slides[i]);
     document.getElementById('count').textContent = (i + 1) + ' / ' + N;
     document.getElementById('bar').style.width = ((i + 1) / N * 100) + '%';
     if (history.replaceState) history.replaceState(null, '', '#' + (i + 1));
     if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
-    // The first build of slide 3 starts by itself, so "Cotiza." lands right after the title.
-    if (i === REVEAL && step === 0 && !isPresenter) {
-      autoTimer = setTimeout(function () { if (cur === REVEAL && step === 0) { step = 1; applyStep(); sync(); } }, 900);
+    // The first build of a slide with builds starts by itself, so the story lands right after the title.
+    if (STEPS[i] && step === 0 && !isPresenter) {
+      autoTimer = setTimeout(function () { if (cur === i && step === 0) { step = 1; applyStep(); sync(); } }, 900);
     }
     renderPresenter();
     sync();
@@ -662,9 +664,6 @@
       } else if (m.type === 'goto') show(m.i);
       else if (m.type === 'advance') advance();
       else if (m.type === 'retreat') retreat();
-      else if (m.type === 'video') toggleVideo();
-      else if (m.type === 'skip') skip(m.secs);
-      else if (m.type === 'seg') segCommand(m.op);
       else if (m.type === 'hello') sync();
     };
   }
@@ -686,7 +685,7 @@
       document.getElementById('pTimer').textContent = start ? 'Reloj en marcha' : 'Iniciar reloj';
     }
   }
-  setInterval(function () { tick(); updatePace(); }, 500);
+  setInterval(tick, 500);
   function startTimer() { if (!readStart()) writeStart(Date.now()); tick(); }
   function resetTimer() { writeStart(0); tick(); }
 
@@ -720,9 +719,6 @@
     if (type === 'advance') advance();
     else if (type === 'retreat') retreat();
     else if (type === 'goto') show(extra.i);
-    else if (type === 'video') toggleVideo();
-    else if (type === 'skip') skip(extra.secs);
-    else if (type === 'seg') segCommand(extra.op);
   }
   document.addEventListener('keydown', function (e) {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
@@ -732,16 +728,10 @@
     else if (k === 'Home') command('goto', { i: 0 });
     else if (k === 'End') command('goto', { i: N - 1 });
     else if (/^[1-9]$/.test(k)) command('goto', { i: parseInt(k, 10) - 1 });
-    else if (k === 'l' || k === 'L') command('skip', { secs: 30 });
-    else if (k === 'j' || k === 'J') command('skip', { secs: -15 });
-    else if (k === '[') command('seg', { op: 'start' });
-    else if (k === ']') command('seg', { op: 'end' });
-    else if (k === '\\') command('seg', { op: 'clear' });
     else if (k === 'f' || k === 'F') toggleFull();
     else if (k === 'p' || k === 'P') openPresenter();
     else if (k === 't' || k === 'T') { timerEl.classList.toggle('on'); startTimer(); }
     else if (k === 'r' || k === 'R') resetTimer();
-    else if (k === 'v' || k === 'V') command('video');
     else if (k === '?' || k === 'h' || k === 'H') helpEl.classList.toggle('on');
     else if (k === 'Escape') helpEl.classList.remove('on');
   });
@@ -779,7 +769,6 @@
   // Presenter buttons.
   document.getElementById('pPrev').onclick = function () { command('retreat'); };
   document.getElementById('pForward').onclick = function () { command('advance'); };
-  document.getElementById('pVideo').onclick = function () { command('video'); };
   document.getElementById('pTimer').onclick = startTimer;
   document.getElementById('pReset').onclick = resetTimer;
 
