@@ -31,6 +31,7 @@ export type QuoteInput = {
 
 export type Quote = QuoteAmounts & {
     id: string;
+    orderId?: string;
     uid: string;
     channel: Channel;
     status: QuoteStatus;

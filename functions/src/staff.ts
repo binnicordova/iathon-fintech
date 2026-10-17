@@ -1,6 +1,8 @@
+import {randomUUID} from "node:crypto";
+import {reviewOperationFor} from "./web-workflow";
 import {HttpsError, onCall} from "firebase-functions/https";
 import {z} from "zod";
-import {canTransition, formatOrderId} from "./shared/domain/orders";
+import {formatOrderId} from "./shared/domain/orders";
 import {roundMoney, roundRate} from "./shared/domain/money";
 import {
     isValidAccount,
@@ -19,11 +21,6 @@ import {loadPaymentAccount, loadPricing} from "./lib/settings";
 
 const OrderIds = z.array(z.string().trim().min(1).max(32)).min(1).max(200);
 
-const loadOrders = async (ids: string[]): Promise<Order[]> => {
-    const snaps = await db().getAll(...ids.map((id) => db().doc(`orders/${id}`)));
-    return snaps.flatMap((snap) => (snap.exists ? [snap.data() as Order] : []));
-};
-
 const ReviewRequest = z.object({
     orderId: z.string().trim().min(1).max(32),
     decision: z.enum(["approve", "reject"]),
@@ -32,30 +29,20 @@ const ReviewRequest = z.object({
 
 /** The validator checked the bank and the proof photo: records who and when. */
 export const reviewOrder = onCall(async (request) => {
-    const staff = requireStaff(request, ["validator"]);
+    const staff = await requireStaff(request, ["validator"]);
     const input = parse(ReviewRequest, request.data);
     if (input.decision === "reject" && !input.reason) {
         throw new HttpsError("invalid-argument", "reason-required");
     }
 
-    const ref = db().doc(`orders/${input.orderId}`);
-    await db().runTransaction(async (tx) => {
-        const order = (await tx.get(ref)).data() as Order | undefined;
-        if (!order) {
-            throw new HttpsError("not-found", "order-not-found");
-        }
-        const next = input.decision === "approve" ? "approved" : "rejected";
-        if (!canTransition(order.status, next)) {
-            throw new HttpsError("failed-precondition", `cannot-${next}-from-${order.status}`);
-        }
-        const now = nowIso();
-        tx.update(ref, {
-            status: next,
-            validatedBy: staff.email,
-            validatedAt: now,
-            rejectionReason: input.decision === "reject" ? input.reason ?? null : null,
-            updatedAt: now,
-        });
+    const snap = await db().doc(`orders/${input.orderId}`).get();
+    if (!snap.exists) throw new HttpsError("not-found", "order-not-found");
+    await reviewOperationFor(staff.uid, {
+        orderId: input.orderId,
+        action: input.decision === "approve" ? "verify" : "reject",
+        expectedRevision: snap.data()?.revision ?? 0,
+        requestId: randomUUID(),
+        note: input.reason ?? "",
     });
     return {ok: true};
 });
@@ -66,37 +53,49 @@ export const reviewOrder = onCall(async (request) => {
  * "exported" in the same step.
  */
 export const exportOrders = onCall(async (request) => {
-    const staff = requireStaff(request, ["operator"]);
+    const staff = await requireStaff(request, ["operator"]);
     const {orderIds} = parse(z.object({orderIds: OrderIds}), request.data);
-
-    const orders = await loadOrders(orderIds);
-    const notApproved = orders.filter((order) => !canTransition(order.status, "exported"));
-    if (orders.length !== orderIds.length || notApproved.length > 0) {
-        throw new HttpsError("failed-precondition", "only-approved-orders", {
-            blocked: notApproved.map((order) => order.orderId),
-        });
-    }
 
     const now = nowIso();
     const batchRef = db().collection("batches").doc();
-    const batch = db().batch();
-    batch.set(batchRef, {
-        id: batchRef.id,
-        type: "export",
-        orderIds,
-        createdBy: staff.email,
-        createdAt: now,
-    });
-    for (const order of orders) {
-        batch.update(db().doc(`orders/${order.orderId}`), {
-            status: "exported",
-            exportBatchId: batchRef.id,
-            exportedAt: now,
-            updatedAt: now,
+    const orders = await db().runTransaction(async (tx) => {
+        const refs = orderIds.map((value) => db().doc(`orders/${value}`));
+        const snapshots = await tx.getAll(...refs);
+        const rows = snapshots.map((snap) => snap.data() as Order | undefined);
+        if (
+            new Set(orderIds).size !== orderIds.length ||
+            rows.some((order) => !order || order.status !== "approved")
+        )
+            throw new HttpsError("failed-precondition", "only-approved-orders");
+        tx.set(batchRef, {
+            id: batchRef.id,
+            type: "export",
+            orderIds,
+            createdBy: staff.email,
+            createdAt: now,
         });
-    }
-    await batch.commit();
-
+        for (const [index, row] of rows.entries()) {
+            const order = row!;
+            tx.update(refs[index]!, {
+                status: "exported",
+                exportBatchId: batchRef.id,
+                exportedAt: now,
+                updatedAt: now,
+                revision: (order.revision ?? 0) + 1,
+            });
+            tx.set(refs[index]!.collection("events").doc(`export-${batchRef.id}`), {
+                id: `export-${batchRef.id}`,
+                orderId: order.orderId,
+                actor: staff.uid,
+                action: "export",
+                note: "Export is not proof of payout",
+                createdAt: now,
+                from: "verified",
+                to: "verified",
+            });
+        }
+        return rows as Order[];
+    });
     const exported = orders.map((order) => ({
         ...order,
         status: "exported" as const,
@@ -156,7 +155,7 @@ const ManualOrderRequest = z
  * (so they can attach the proof with submitProof) and is marked channel "human".
  */
 export const createManualOrder = onCall(async (request) => {
-    const staff = requireStaff(request, ["validator", "operator"]);
+    const staff = await requireStaff(request, ["validator", "operator"]);
     const input = parse(ManualOrderRequest, request.data);
     const pricing = await loadPricing();
     const paymentAccount = await loadPaymentAccount(input.sendCurrency);
@@ -168,6 +167,8 @@ export const createManualOrder = onCall(async (request) => {
     }
     const tax = roundMoney((commission * pricing.taxBps) / 10000);
     const rate = roundRate(input.rate);
+    if (rate <= 0 || roundMoney(sendAmount * rate) <= 0)
+        throw new HttpsError("invalid-argument", "rate-too-small");
     const counterRef = db().doc("counters/orders");
 
     const order = await db().runTransaction(async (tx) => {
@@ -181,6 +182,9 @@ export const createManualOrder = onCall(async (request) => {
             seq,
             uid: staff.uid,
             channel: "human",
+            workflowStatus: "awaiting_payment",
+            revision: 0,
+            sourceSystem: staff.uid.startsWith("supabase:") ? "supabase" : "firebase",
             language: "es",
             status: "pending",
             createdAt: created,
@@ -221,6 +225,16 @@ export const createManualOrder = onCall(async (request) => {
         };
         tx.set(counterRef, {seq}, {merge: true});
         tx.set(db().doc(`orders/${orderId}`), next);
+        tx.set(db().doc(`orders/${orderId}/events/created`), {
+            id: "created",
+            orderId,
+            actor: staff.uid,
+            action: "created_manual",
+            note: "",
+            createdAt: created,
+            from: "awaiting_payment",
+            to: "awaiting_payment",
+        });
         return next;
     });
     return order;

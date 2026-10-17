@@ -32,20 +32,14 @@ export const isOpenOrder = (status: OrderStatus): boolean =>
 export const isTerminalOrder = (status: OrderStatus): boolean =>
     TRANSITIONS[status].length === 0;
 
-type TimelineInput = Pick<Order, "status" | "invoiceStatus">;
+type TimelineInput = Pick<Order, "status" | "invoiceStatus" | "payoutAt">;
 
-/**
- * Client-facing progress: registered → verifying → money sent → money received.
- * Derived from the order, so the form and the assistant always agree.
- */
+/** Approval/export are bookkeeping; only a recorded payout means sent. */
 export const timelineFor = ({
     status,
-    invoiceStatus,
+    payoutAt,
 }: TimelineInput): TimelineStep[] => {
-    const receiptReady =
-        invoiceStatus === "accepted" || invoiceStatus === "sent";
     const failed = status === "rejected" || status === "cancelled";
-
     const verifying: TimelineStepState = failed
         ? "failed"
         : status === "validating"
@@ -53,19 +47,12 @@ export const timelineFor = ({
           : status === "approved" || status === "exported"
             ? "done"
             : "todo";
-    const sent: TimelineStepState =
-        status === "approved" || status === "exported" ? "done" : "todo";
-    const received: TimelineStepState = receiptReady
-        ? "done"
-        : status === "exported"
-          ? "active"
-          : "todo";
-
     return [
         {key: "registered", state: "done"},
         {key: "verifying", state: verifying},
-        {key: "sent", state: sent},
-        {key: "received", state: received},
+        {key: "sent", state: payoutAt ? "done" : "todo"},
+        // No bank confirmation of beneficiary receipt exists yet.
+        {key: "received", state: payoutAt ? "active" : "todo"},
     ];
 };
 

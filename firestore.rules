@@ -12,8 +12,10 @@ service cloud.firestore {
     }
 
     function isStaff() {
-      return signedIn()
-        && request.auth.token.role in ['admin', 'validator', 'operator', 'billing'];
+      return signedIn() && (
+        (!request.auth.uid.matches('supabase:.*') && request.auth.token.get('role', '') in ['admin', 'validator', 'operator', 'billing']) ||
+        (request.auth.uid.matches('supabase:.*') && get(/databases/$(database)/documents/supabaseStaff/$(request.auth.uid)).data.role in ['admin', 'validator', 'operator', 'billing'])
+      );
     }
 
     function isOwner() {
@@ -35,6 +37,18 @@ service cloud.firestore {
       allow read: if isOwner() || isStaff();
       allow write: if false;
     }
+    match /orders/{id}/events/{eventId} {
+      allow read: if isStaff() || (signedIn() && get(/databases/$(database)/documents/orders/$(id)).data.uid == request.auth.uid);
+      allow write: if false;
+    }
+    match /recipients/{uid}/accounts/{id} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow write: if false;
+    }
+    // Role grants and reference locks are server-only, including for staff clients.
+    match /supabaseStaff/{id} { allow read, write: if false; }
+    match /operationReferences/{id} { allow read, write: if false; }
+
 
     match /invoices/{id} {
       allow read: if isOwner() || isStaff();

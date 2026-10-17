@@ -54,9 +54,7 @@ export const parseOpenErApi = (json: unknown): RawRates | null => {
     return {
         rates,
         providerUpdatedAt:
-            updated && !Number.isNaN(updated.getTime())
-                ? updated.toISOString()
-                : null,
+            updated && !Number.isNaN(updated.getTime()) ? updated.toISOString() : null,
     };
 };
 
@@ -107,9 +105,7 @@ const fetchJson = async (url: string): Promise<unknown> => {
     return response.json();
 };
 
-const fromProviders = async (): Promise<
-    (RawRates & {source: RateSource}) | null
-> => {
+const fromProviders = async (): Promise<(RawRates & {source: RateSource}) | null> => {
     try {
         const parsed = parseOpenErApi(await fetchJson(PRIMARY_URL));
         if (parsed) {
@@ -160,6 +156,24 @@ export const loadMarketRates = async (
     refreshMinutes: number,
     now: Date = new Date()
 ): Promise<MarketRates> => {
+    const manual = (await db().doc("config/manualRates").get()).data();
+    if (manual?.active) {
+        if (
+            !isPositive(manual.penPerUsd) ||
+            !isPositive(manual.brlPerUsd) ||
+            !Number.isFinite(Date.parse(manual.validUntil)) ||
+            Date.parse(manual.validUntil) <= now.getTime()
+        )
+            throw new RatesUnavailableError();
+        return {
+            base: "USD",
+            rates: {USD: 1, PEN: manual.penPerUsd, BRL: manual.brlPerUsd},
+            source: "manual",
+            fetchedAt: manual.updatedAt ?? now.toISOString(),
+            nextUpdateAt: manual.validUntil,
+            providerUpdatedAt: null,
+        };
+    }
     const ref = db().doc("config/rates");
     const cached = (await ref.get()).data() as MarketRates | undefined;
 

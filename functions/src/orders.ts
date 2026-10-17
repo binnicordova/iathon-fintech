@@ -6,20 +6,20 @@ import {
     isValidDocNumber,
     isValidEmail,
     isValidName,
-    isValidOperationNo,
     normalizeDocNumber,
 } from "./shared/domain/validators";
 import {LANGUAGES} from "./shared/models/currency";
 import {DOC_TYPES, FUNDS_SOURCES, type Order} from "./shared/models/order";
 import type {Quote} from "./shared/models/quote";
 import type {ClientProfile} from "./shared/models/client";
-import {bucket, db} from "./lib/firebase";
+import {db} from "./lib/firebase";
 import {nowIso, parse, requireAuth} from "./lib/guards";
+import {submitProofFor, cancelOwnOrder} from "./web-workflow";
 import {loadPaymentAccount, loadPricing} from "./lib/settings";
 
 const text = (max = 120) => z.string().trim().min(1).max(max);
 
-const CreateOrderRequest = z
+export const CreateOrderRequest = z
     .object({
         quoteId: text(64),
         language: z.enum(LANGUAGES).default("es"),
@@ -33,6 +33,19 @@ const CreateOrderRequest = z
         sourceAccount: z.string().trim().max(60).default(""),
         destinationBank: text(60),
         destinationAccount: text(60),
+        recipientName: text(120).optional(),
+        recipientDocument: text(32).optional(),
+        recipientDocumentType: z.enum(DOC_TYPES).optional(),
+        customerPhone: z
+            .string()
+            .regex(/^\+?[1-9]\d{7,14}$/)
+            .optional(),
+        billingPreference: z.enum(["boleta", "factura", "br_receipt"]).optional(),
+        billingEmail: z.string().email().max(160).optional(),
+        billingName: text(160).optional(),
+        billingDocument: text(32).optional(),
+        fundsReason: text(500).optional(),
+        saveAccounts: z.boolean().default(false),
     })
     .superRefine((value, ctx) => {
         const checks: Array<[boolean, string]> = [
@@ -53,9 +66,10 @@ const CreateOrderRequest = z
  * form or the assistant. Rate, fees and the payment account come from the
  * server and the frozen quote, never from the request.
  */
-export const createOrder = onCall(async (request) => {
-    const uid = requireAuth(request);
-    const input = parse(CreateOrderRequest, request.data);
+export async function createOrderFor(
+    uid: string,
+    input: z.infer<typeof CreateOrderRequest>
+) {
     const pricing = await loadPricing();
 
     const quoteRef = db().doc(`quotes/${input.quoteId}`);
@@ -76,9 +90,14 @@ export const createOrder = onCall(async (request) => {
         if (!quote || quote.uid !== uid) {
             throw new HttpsError("not-found", "quote-not-found");
         }
-        if (quote.status !== "open") {
-            throw new HttpsError("failed-precondition", "quote-already-used");
+        if (quote.status === "consumed" && quote.orderId) {
+            const previous = (await tx.get(db().doc(`orders/${quote.orderId}`))).data() as
+                | Order
+                | undefined;
+            if (previous?.uid === uid) return previous;
         }
+        if (quote.status !== "open")
+            throw new HttpsError("failed-precondition", "quote-already-used");
         const now = new Date();
         if (now.getTime() > new Date(quote.expiresAt).getTime()) {
             throw new HttpsError("deadline-exceeded", "quote-expired");
@@ -90,6 +109,14 @@ export const createOrder = onCall(async (request) => {
         const docNumber = normalizeDocNumber(input.docType, input.docNumber);
 
         const next: Order = {
+            ...Object.fromEntries(
+                Object.entries(input).filter(
+                    ([key]) => !["quoteId", "language"].includes(key)
+                )
+            ),
+            workflowStatus: "awaiting_payment",
+            sourceSystem: uid.startsWith("supabase:") ? "supabase" : "firebase",
+            revision: 0,
             orderId,
             seq,
             uid,
@@ -134,11 +161,22 @@ export const createOrder = onCall(async (request) => {
 
         tx.set(counterRef, {seq}, {merge: true});
         tx.set(db().doc(`orders/${orderId}`), next);
+        tx.set(db().doc(`orders/${orderId}/events/created`), {
+            id: "created",
+            orderId,
+            actor: uid,
+            action: "created",
+            note: "",
+            createdAt: created,
+            from: "awaiting_payment",
+            to: "awaiting_payment",
+        });
         tx.update(quoteRef, {status: "consumed", orderId});
         return next;
     });
 
-    // Saved for next time, so a returning client does not retype.
+    if (!input.saveAccounts) return order;
+    // Opt-in; do not save a guest's accounts merely because they created an order.
     const profile: ClientProfile = {
         clientName: input.clientName,
         email: input.email.toLowerCase(),
@@ -153,7 +191,11 @@ export const createOrder = onCall(async (request) => {
     const accounts = new Map(
         (existing?.accounts ?? []).map((a) => [`${a.bank}|${a.accountNumber}`, a])
     );
-    const addAccount = (bank: string, accountNumber: string, currency: Order["sendCurrency"]) => {
+    const addAccount = (
+        bank: string,
+        accountNumber: string,
+        currency: Order["sendCurrency"]
+    ) => {
         const key = `${bank}|${accountNumber}`;
         if (!accounts.has(key)) {
             accounts.set(key, {id: key, bank, accountNumber, currency});
@@ -166,6 +208,17 @@ export const createOrder = onCall(async (request) => {
     await profileRef.set({...profile, accounts: [...accounts.values()].slice(-12)});
 
     return order;
+}
+export const createOrder = onCall(async (request) => {
+    const uid = requireAuth(request),
+        input = parse(CreateOrderRequest, request.data);
+    if (
+        input.saveAccounts &&
+        (request.auth?.token.sourceAnonymous === true ||
+            request.auth?.token.firebase?.sign_in_provider === "anonymous")
+    )
+        throw new HttpsError("permission-denied", "registered-account-required-to-save");
+    return createOrderFor(uid, input);
 });
 
 const SubmitProofRequest = z.object({
@@ -173,86 +226,15 @@ const SubmitProofRequest = z.object({
     operationNo: text(24),
     proofPath: text(300),
 });
-
-const MAX_PROOF_BYTES = 8 * 1024 * 1024;
-
-/**
- * Saves the bank operation number and the proof photo and moves the order to
- * "validating". The assistant never judges the proof: a person does, in the
- * VIEW.
- */
 export const submitProof = onCall(async (request) => {
     const uid = requireAuth(request);
     const input = parse(SubmitProofRequest, request.data);
-
-    if (!isValidOperationNo(input.operationNo)) {
-        throw new HttpsError("invalid-argument", "invalid-operation-no");
-    }
-    const prefix = `proofs/${uid}/${input.orderId}/`;
-    if (!input.proofPath.startsWith(prefix) || input.proofPath.includes("..")) {
-        throw new HttpsError("invalid-argument", "invalid-proof-path");
-    }
-    const file = bucket().file(input.proofPath);
-    const [exists] = await file.exists();
-    if (!exists) {
-        throw new HttpsError("failed-precondition", "proof-not-uploaded");
-    }
-    const [metadata] = await file.getMetadata();
-    if (Number(metadata.size) > MAX_PROOF_BYTES) {
-        throw new HttpsError("invalid-argument", "proof-too-large");
-    }
-
-    const operationNo = input.operationNo.trim().toUpperCase();
-    // The same bank operation number on two orders is the classic reuse fraud.
-    const duplicate = await db()
-        .collection("orders")
-        .where("operationNo", "==", operationNo)
-        .limit(3)
-        .get();
-    const clash = duplicate.docs.find(
-        (doc) =>
-            doc.id !== input.orderId &&
-            !["cancelled", "rejected"].includes(doc.data().status)
-    );
-    if (clash) {
-        throw new HttpsError("already-exists", "operation-no-duplicate");
-    }
-
-    const ref = db().doc(`orders/${input.orderId}`);
-    await db().runTransaction(async (tx) => {
-        const order = (await tx.get(ref)).data() as Order | undefined;
-        if (!order || order.uid !== uid) {
-            throw new HttpsError("not-found", "order-not-found");
-        }
-        if (order.status !== "pending") {
-            throw new HttpsError("failed-precondition", "order-not-pending");
-        }
-        const now = nowIso();
-        tx.update(ref, {
-            status: "validating",
-            operationNo,
-            paymentProofPath: input.proofPath,
-            proofSubmittedAt: now,
-            updatedAt: now,
-        });
-    });
+    await submitProofFor(uid, input);
     return {ok: true, orderId: input.orderId};
 });
-
 export const cancelOrder = onCall(async (request) => {
     const uid = requireAuth(request);
     const {orderId} = parse(z.object({orderId: text(32)}), request.data);
-    const ref = db().doc(`orders/${orderId}`);
-    await db().runTransaction(async (tx) => {
-        const order = (await tx.get(ref)).data() as Order | undefined;
-        if (!order || order.uid !== uid) {
-            throw new HttpsError("not-found", "order-not-found");
-        }
-        if (order.status !== "pending") {
-            throw new HttpsError("failed-precondition", "order-not-pending");
-        }
-        tx.update(ref, {status: "cancelled", updatedAt: nowIso()});
-    });
+    await cancelOwnOrder(uid, orderId);
     return {ok: true, orderId};
 });
-

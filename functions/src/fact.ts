@@ -1,10 +1,6 @@
 import {HttpsError, onCall} from "firebase-functions/https";
 import {z} from "zod";
-import {
-    INVOICE_ISSUER,
-    invoiceNumber,
-    isReceiptReady,
-} from "./shared/domain/orders";
+import {INVOICE_ISSUER, invoiceNumber, isReceiptReady} from "./shared/domain/orders";
 import {isValidDocNumber, isValidEmail} from "./shared/domain/validators";
 import type {Invoice} from "./shared/models/invoice";
 import type {Order} from "./shared/models/order";
@@ -95,7 +91,11 @@ export const issueInvoice = async (order: Order): Promise<FactResult> => {
             providerMessage: "pdf-total-differs-from-xml",
             updatedAt: nowIso(),
         });
-        return {orderId: order.orderId, outcome: "rejected", detail: "pdf-total-differs-from-xml"};
+        return {
+            orderId: order.orderId,
+            outcome: "rejected",
+            detail: "pdf-total-differs-from-xml",
+        };
     }
 
     const pdf = await buildReceiptPdf(order, {...reserved, ...totals});
@@ -104,7 +104,8 @@ export const issueInvoice = async (order: Order): Promise<FactResult> => {
     });
 
     const now = nowIso();
-    await db().batch()
+    await db()
+        .batch()
         .update(invoiceRef, {
             status: "accepted",
             providerMessage: "TEST MODE: accepted without contacting SUNAT/Omni",
@@ -124,40 +125,58 @@ export const issueInvoice = async (order: Order): Promise<FactResult> => {
  * sale with a stand-in provider, keep the XML as received, build the PDF from
  * it and report the result back to the order. Safe to run twice.
  */
-export const runFact = onCall({memory: "512MiB", timeoutSeconds: 120}, async (request) => {
-    requireStaff(request, ["billing"]);
-    const {orderIds} = parse(
-        z.object({orderIds: z.array(z.string().trim().min(1).max(32)).min(1).max(100)}),
-        request.data
-    );
+export const runFact = onCall(
+    {memory: "512MiB", timeoutSeconds: 120},
+    async (request) => {
+        await requireStaff(request, ["billing"]);
+        const {orderIds} = parse(
+            z.object({
+                orderIds: z.array(z.string().trim().min(1).max(32)).min(1).max(100),
+            }),
+            request.data
+        );
 
-    const snaps = await db().getAll(...orderIds.map((id) => db().doc(`orders/${id}`)));
-    const results: FactResult[] = [];
-    for (const snap of snaps) {
-        const order = snap.data() as Order | undefined;
-        if (!order) {
-            results.push({orderId: snap.id, outcome: "set-aside", detail: "order-not-found"});
-        } else if (order.status !== "exported") {
-            results.push({orderId: order.orderId, outcome: "set-aside", detail: "not-exported"});
-        } else {
-            results.push(await issueInvoice(order));
+        const snaps = await db().getAll(
+            ...orderIds.map((id) => db().doc(`orders/${id}`))
+        );
+        const results: FactResult[] = [];
+        for (const snap of snaps) {
+            const order = snap.data() as Order | undefined;
+            if (!order) {
+                results.push({
+                    orderId: snap.id,
+                    outcome: "set-aside",
+                    detail: "order-not-found",
+                });
+            } else if (order.status !== "exported") {
+                results.push({
+                    orderId: order.orderId,
+                    outcome: "set-aside",
+                    detail: "not-exported",
+                });
+            } else {
+                results.push(await issueInvoice(order));
+            }
         }
+        return {results};
     }
-    return {results};
-});
+);
 
 /** The client's PDF receipt (or staff's), only once Fact accepted the sale. */
 export const getReceipt = onCall(async (request) => {
     const uid = requireAuth(request);
-    const {orderId} = parse(z.object({orderId: z.string().trim().min(1).max(32)}), request.data);
-    const invoice = (await db().doc(`invoices/${orderId}`).get()).data() as Invoice | undefined;
+    const {orderId} = parse(
+        z.object({orderId: z.string().trim().min(1).max(32)}),
+        request.data
+    );
+    const invoice = (await db().doc(`invoices/${orderId}`).get()).data() as
+        | Invoice
+        | undefined;
     if (!invoice) {
         throw new HttpsError("not-found", "receipt-not-ready");
     }
-    const isStaff = Boolean(request.auth?.token.role);
-    if (invoice.uid !== uid && !isStaff) {
-        throw new HttpsError("permission-denied", "not-your-order");
-    }
+    if (invoice.uid !== uid)
+        await requireStaff(request, ["validator", "operator", "billing"]);
     if (!isReceiptReady(invoice)) {
         throw new HttpsError("failed-precondition", "receipt-not-ready");
     }

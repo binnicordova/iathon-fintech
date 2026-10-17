@@ -1,10 +1,6 @@
 import {HttpsError, onCall} from "firebase-functions/https";
 import {z} from "zod";
-import {
-    QuoteError,
-    computeQuote,
-    minimumSend,
-} from "./shared/domain/pricing";
+import {QuoteError, computeQuote, minimumSend} from "./shared/domain/pricing";
 import {CURRENCIES} from "./shared/models/currency";
 import type {Quote} from "./shared/models/quote";
 import {db} from "./lib/firebase";
@@ -12,7 +8,7 @@ import {parse, requireAuth} from "./lib/guards";
 import {RatesUnavailableError, loadMarketRates} from "./lib/rates";
 import {loadPricing} from "./lib/settings";
 
-const QuoteRequest = z
+export const QuoteRequest = z
     .object({
         sendCurrency: z.enum(CURRENCIES),
         receiveCurrency: z.enum(CURRENCIES),
@@ -28,9 +24,7 @@ const QuoteRequest = z
  * "Continuar" on the calculator: prices the transfer on the server and freezes
  * the rate. The order is created later from this quote id.
  */
-export const createQuote = onCall(async (request) => {
-    const uid = requireAuth(request);
-    const input = parse(QuoteRequest, request.data);
+export async function createQuoteFor(uid: string, input: z.infer<typeof QuoteRequest>) {
     const pricing = await loadPricing();
 
     let market;
@@ -75,5 +69,7 @@ export const createQuote = onCall(async (request) => {
     };
     await ref.set(quote);
     return quote;
-});
-
+}
+export const createQuote = onCall(async (request) =>
+    createQuoteFor(requireAuth(request), parse(QuoteRequest, request.data))
+);
