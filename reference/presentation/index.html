@@ -277,7 +277,13 @@
   #pv .clock.late { color: var(--orange); }
   #pv .now { margin-top: 24px; font-size: 20px; color: var(--blue); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
   #pv h1 { font-size: 44px; margin: 8px 0 16px; }
-  #pv .notes { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 28px 32px; font-size: 28px; line-height: 1.5; white-space: pre-wrap; }
+  #pv .legend { margin-top: 8px; font-size: 20px; color: var(--dim); }
+  #pv .legend strong { color: var(--light); }
+  #pv .notes { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 24px 32px; margin-top: 12px; }
+  #pv .notes p { margin-bottom: 16px; line-height: 1.35; }
+  #pv .notes p:last-child { margin-bottom: 0; }
+  #pv .notes .say strong { font-size: 34px; font-weight: 700; color: var(--light); }
+  #pv .notes .do em { font-size: 24px; font-style: italic; font-weight: 400; color: var(--dim); }
   #pv .next { margin-top: 20px; font-size: 22px; color: var(--dim); }
   #pv .btns { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
   #pv button { font: 700 18px var(--font); color: var(--light); background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 22px; cursor: pointer; }
@@ -306,9 +312,8 @@
   <section class="slide light" id="s2" data-title="La empresa: fintech de transferencias de dinero">
     <div class="rise">
       <p class="eyebrow">La empresa</p>
-      <h2>BrasPer es una <span class="hl">FINTECH</span> de transferencias de dinero entre Brasil y Perú.</h2>
+      <h2>BrasPer es una <span class="hl">FINTECH</span> de transferencias de dinero.</h2>
     </div>
-    <p class="plain rise" style="--d:.15s">Enviar dinero a tu familia en otro país.</p>
     <div class="route rise" style="--d:.3s">
       <div class="pill">Brasil<small>reales · PIX</small></div>
       <div class="arrow"></div>
@@ -341,7 +346,7 @@
       <div class="k down">Menos operatividad</div>
       <div class="k up">Más captación</div>
       <div class="k up">Más comercial</div>
-      <div class="k up">Más cierres de negocio</div>
+      <div class="k up">Más tiempo para vender</div>
     </div>
   </section>
 
@@ -355,34 +360,33 @@
         <div class="step key" data-n="3"><h2>Aprueba.</h2><p>La asesora · human in the loop</p></div>
         <div class="step" data-n="4"><h2>Recibe tu boleta.</h2><p>En la app</p></div>
       </div>
-      <p class="lead rise" style="--d:.3s">La IA opera. La asesora <span class="hl">aprueba el pago</span>.</p>
+      <p class="lead rise" style="--d:.3s">La IA opera. La asesora <span class="hl">aprueba</span>.</p>
     </div>
     <div class="showcase">
       <div class="pane" data-n="1">
-        <span class="tag">Web · cotiza</span>
+        <span class="tag">Web</span>
         <div class="browser">
           <div class="top"><i></i><i></i><i></i><span>brasper.jordybryan.com</span></div>
           <img src="img/web-home.jpg" alt="Calculadora de la web de BRASPER: 1000 PEN se convierten en 1441,90 BRL">
         </div>
       </div>
       <div class="pane" data-n="2">
-        <span class="tag">WhatsApp · atiende la IA</span>
+        <span class="tag">WhatsApp</span>
         <div class="phone"><img src="img/whatsapp-chat.png" alt="Agente de IA de BRASPER en WhatsApp con el resumen de la operación"></div>
       </div>
       <div class="pane" data-n="3">
-        <span class="tag hot">Asesora · única acción humana</span>
+        <span class="tag hot">Única acción humana</span>
         <div class="approve">
           <p class="ord">Orden BR-0001 · en validación</p>
           <div class="row"><span>Envía</span><b>514.16 PEN</b></div>
           <div class="row"><span>Recibe</span><b>720.95 BRL</b></div>
           <div class="row"><span>Tasa</span><b>1 PEN = 1.4419 BRL</b></div>
           <div class="btn">Aprobar pago</div>
-          <p class="only">Lo único que hace la asesora</p>
           <small>Ilustración con datos de demostración</small>
         </div>
       </div>
       <div class="pane" data-n="4">
-        <span class="tag">App · recibe tu boleta</span>
+        <span class="tag">App</span>
         <div class="phone"><img src="img/05-status-receipt.png" alt="App BRASPER con la operación completada y la boleta en PDF"></div>
       </div>
     </div>
@@ -392,30 +396,30 @@
   <section class="slide dark" id="s5" data-title="Demo: el flujo del cliente, pantalla por pantalla">
     <div class="head">
       <h2>Hemos <span class="hl">transformado el proceso</span> con IA.</h2>
-      <p>Inteligencia que genera <b>una mejor experiencia</b> en el proceso.</p>
+      <p>Inteligencia que genera <b>una mejor experiencia</b>.</p>
     </div>
     <div class="showcase">
       <div class="pane" data-n="1">
-        <span class="tag">Web · el cliente cotiza</span>
+        <span class="tag">Web</span>
         <div class="shot web"><div class="top"><i></i><i></i><i></i><span>brasper.jordybryan.com</span></div><img src="img/flujo-web-cotizar.jpg" alt="Web de BRASPER: el cliente ingresa 500 PEN y ve cuántos reales recibirá"></div>
         <div class="phone"><img src="img/flujo-web-movil.jpg" alt="La misma web en el celular"></div>
       </div>
       <div class="pane" data-n="2">
-        <span class="tag">WhatsApp y app · la IA cotiza</span>
+        <span class="tag">WhatsApp y app</span>
         <div class="phone"><img src="img/flujo-wa-cotizacion.png" alt="El agente de IA en WhatsApp responde con la cotización"></div>
         <div class="phone app"><img src="img/flujo-app-agente.png" alt="El asistente de IA de la app muestra la tasa"></div>
       </div>
       <div class="pane" data-n="3">
-        <span class="tag">Se registra la orden · el cliente paga</span>
+        <span class="tag">Orden creada</span>
         <div class="phone"><img src="img/flujo-wa-pagar.png" alt="WhatsApp: operación BR-0001 registrada con las instrucciones de pago"></div>
         <div class="shot wide"><div class="top"><i></i><i></i><i></i><span>brasper.jordybryan.com</span></div><img src="img/flujo-web-seguimiento.jpg" alt="Web: seguimiento de la operación BR-0029, pago en revisión"></div>
       </div>
       <div class="pane" data-n="4">
-        <span class="tag hot">Asesora · única acción humana</span>
+        <span class="tag hot">Única acción humana</span>
         <div class="shot back hot"><img src="img/flujo-backoffice-aprobar.jpg" alt="Backoffice THE VIEW: la asesora revisa el comprobante y aprueba el pago"><div class="ring"></div></div>
       </div>
       <div class="pane" data-n="5">
-        <span class="tag">Pago verificado · boleta en PDF</span>
+        <span class="tag">Pago verificado</span>
         <div class="phone"><img src="img/flujo-wa-boleta.png" alt="WhatsApp: pago verificado y comprobante en PDF"></div>
         <div class="phone app"><img src="img/flujo-app-boleta.png" alt="App: operación completada con el comprobante"></div>
       </div>
@@ -436,18 +440,18 @@
       <div class="cols rise" style="--d:.1s"><span></span><span>Hoy</span><span></span><span>Con IA</span></div>
       <div class="cmp rise" style="--d:.2s">
         <div class="name">Eficiencia</div>
-        <div class="v old">4 pasos<small>manuales por venta</small></div><div class="arrow"></div>
+        <div class="v old">4 pasos<small>manuales</small></div><div class="arrow"></div>
         <div class="v new">1 paso<small>aprobar el pago</small></div>
       </div>
       <div class="cmp rise" style="--d:.4s">
         <div class="name">Productividad</div>
-        <div class="v old">≈3 h 15 min<small>de operativa por venta</small></div><div class="arrow"></div>
+        <div class="v old">≈3 h 15 min<small>por venta</small></div><div class="arrow"></div>
         <div class="v new">0<small>lo hace la IA</small></div>
       </div>
       <div class="cmp rise" style="--d:.6s">
         <div class="name">Velocidad de impacto</div>
         <div class="v old">≈24 h<small>para concretar una venta</small></div><div class="arrow"></div>
-        <div class="v new">≈10 min<small>para concretar una venta</small></div>
+        <div class="v new">≈10 min</div>
       </div>
     </div>
     <p class="foot">Estimaciones del equipo, por validar con BrasPer.</p>
@@ -460,10 +464,10 @@
     <p class="claim rise" style="--d:.3s">Con nuestra solución <span class="hl">es posible</span>.</p>
     <div class="meter rise" style="--d:.45s">
       <div class="track"></div><div class="fill"></div>
-      <p class="lab l">Hoy ≈67 al día</p><p class="lab r">Meta 1000+</p>
+      <p class="lab l">Hoy ≈67 al día</p><p class="lab r">Meta</p>
     </div>
-    <div class="keys rise" style="--d:.6s"><span>Eficiencia</span><span>Productividad</span><span>Diferencial frente a la competencia</span></div>
-    <p class="close rise" style="--d:.75s">BrasPer capta y cierra. La IA opera.</p>
+    <div class="keys rise" style="--d:.6s"><span>Eficiencia</span><span>Productividad</span><span>Diferencial competitivo</span></div>
+    <p class="close rise" style="--d:.75s">La IA opera. BrasPer vende.</p>
   </section>
 
   <!-- 8 -->
@@ -526,6 +530,7 @@
   </div>
   <p class="now" id="pNow">Diapositiva 1 de 9</p>
   <h1 id="pTitle"></h1>
+  <p class="legend"><strong>Negrita</strong> = lo que dices · <em>cursiva</em> = instrucciones para ti</p>
   <div class="notes" id="pNotes"></div>
   <p class="next" id="pNext"></p>
   <div class="btns">
@@ -540,16 +545,77 @@
   'use strict';
 
   // Speaker notes and time budget per slide (seconds). Total = 383 s (6:23), with slack for the 7 minutes.
-  // Story arc for investors: vision, market and traction, the enemy (manual operations), the product, proof, the opportunity, the call to action.
+  // In the notes, a line that starts with "» " is what you SAY (shown in bold); any other line is an INSTRUCTION (shown in italics).
   var PLAN = [
-    { secs: 8,   notes: 'VISIÓN. Camina al centro, pausa de 2 s.\n\n“Buenas tardes, soy [Nombre]. Somos una FINTECH de transferencias de dinero, y hoy les muestro cómo la IA AUTOMATIZA su operación.”\n\nRitmo: apertura lenta y firme; el resto, más rápido.' },
-    { secs: 25,  notes: 'MERCADO Y TRACCIÓN. [RÁPIDO]\n\n“BrasPer es una FINTECH de transferencias de dinero entre Brasil y Perú: enviar dinero a tu familia en otro país. Cerró 3776 transferencias en el segundo trimestre, un 24,7 % más, y quiere llegar a 1000 ventas al día. Esta solución es para BrasPer.”\n\nLos números suben solos (cuenta animada): no los leas todos, señala el 1000.\nFuente: README de BRASPER-IATHON; la meta de 1000 ventas diarias salió del feedback del jurado, confírmala con BrasPer.' },
-    { secs: 40,  notes: 'EL ENEMIGO: LA OPERATIVIDAD.\n\n“Hoy las asesoras OPERAN: cotizan, piden la captura, digitan. De 131 chats al día, solo el 51 % llega a transferencia.”\n\n[Pausa: ve cómo “Manual” se tacha.] “Pasamos de MANUAL a AUTOMATIZACIÓN CON IA. Y eso significa MENOS OPERATIVIDAD, MÁS CAPTACIÓN, MÁS COMERCIAL, MÁS CIERRES DE NEGOCIO.”\n\nEl dibujo muestra 4 asesoras (el README habla de 4 vendedores); si el equipo prefiere otro número, cámbialo.' },
-    { secs: 55,  notes: 'EL PRODUCTO. Cuatro pulsaciones de → (la primera sale sola).\n\n“TRANSFORMAMOS LA OPERATIVIDAD con IA, en todos los canales.”\n→ COTIZA: “En la web.”\n→ CONVERSA: “En WhatsApp atiende la IA; hoy ya existe un WhatsApp manual, nosotros proponemos IA que ACELERA el proceso.”\n→ APRUEBA [pausa, señala el botón]: “Esta es la ÚNICA ACCIÓN de la asesora: APROBAR EL PAGO, la orden. Human in the loop.”\n→ RECIBE TU BOLETA: “Y en la app sigue su operación hasta recibir su boleta.”\n\nMomento “una cosa más”: baja la voz en “la única acción”.' },
-    { secs: 140, notes: 'DEMO: 70 % speech, 30 % apoyo visual. Son pantallas reales de los repositorios del equipo, en 5 pasos; pulsa → para pasar de uno a otro (el primero sale solo), unos 25 s por paso.\n\n1. COTIZA (web): “El cliente llega a la web, pone cuánto quiere enviar y ve al instante cuánto recibirá. También funciona en el celular.”\n2. CONVERSA (WhatsApp y app): “Si prefiere conversar, el agente de IA le da la misma cotización en WhatsApp o en la app. OMNICANAL: hoy ya existe un WhatsApp manual; nosotros proponemos IA que ACELERA el proceso.”\n3. REGISTRA Y PAGA: “Se crea la orden, ya con número, y recibe cómo pagar. En la web sigue su estado.”\n4. APRUEBA [señala el aro naranja]: “La asesora revisa el comprobante y aprueba: su ÚNICA ACCIÓN. Human in the loop.”\n5. RECIBE: “Pago verificado y su boleta en PDF, en WhatsApp o en la app.”\n\nCierra con: “Hemos TRANSFORMADO EL PROCESO con IA: una MEJOR EXPERIENCIA para el cliente y para el equipo de BrasPer.”\n\nFuentes de las capturas: repos web (jordyalania/brasper-global-connect), WhatsApp (davidrodriguez2712/iaton-proyecto), backoffice (Melani232000/the-view) y app (binnicordova/iathon-fintech). Datos de demostración.' },
-    { secs: 45,  notes: 'LA PRUEBA. [RÁPIDO en las leyendas pequeñas; fuerte en los tres números]\n\n“La OPERATIVA INTERNA pasa de horas a minutos. EFICIENCIA: de 4 pasos manuales a 1. PRODUCTIVIDAD: unas 3 horas 15 de operativa por venta pasan a cero. VELOCIDAD DE IMPACTO: de unas 24 horas a unos 10 minutos para concretar una venta.”\n\nDi “de 4 pasos a 1” solo aquí, una vez. Productividad = negociación (≈3 h) + digitación (≈15 min), del diagnóstico. Son estimaciones del equipo, por validar con BrasPer.' },
-    { secs: 40,  notes: 'LA OPORTUNIDAD (para el inversionista).\n\n“Más de 1000 ventas por día, con nuestra solución, es posible. Hoy hace unas 67. La IA opera; BrasPer capta y cierra. Más eficiencia, más productividad, y una experiencia que es nuestro DIFERENCIAL frente a la competencia: una fintech que escala sin sumar operativa.”\n\n67 ventas al día = 51,1 % de 131 chats. No prometemos llegar a 1000: decimos que es posible. Si preguntan por costo: de ≈S/ 6800 a ≈S/ 300 al mes (estimación).' },
-    { secs: 30,  notes: 'LLAMADA A LA ACCIÓN.\n\n“Pruébenlo ahora: escaneen la web, el WhatsApp o la app. Lo construimos cuatro personas, el Equipo 5.5: David, el agente de WhatsApp; Binni, la app; Jordy, la web; Melani, el backoffice. Gracias.”\n\nEquipo y QR en la misma diapositiva; déjala durante las preguntas.\nAntes de subir: prueba los tres QR con un teléfono físico.' }
+    { secs: 8, notes: [
+      'Camina al centro. Pausa de 2 s.',
+      '» Buenas tardes, soy [Nombre], del Equipo 5.5.',
+      '» Mejoramos con IA la operación de BrasPer.',
+      'Apertura lenta y firme; el resto, más rápido.'
+    ] },
+    { secs: 25, notes: [
+      'Rápido. Los números suben solos: no los leas todos, señala el 1000.',
+      '» BrasPer es una FINTECH. Mueve dinero entre Brasil y Perú.',
+      '» Cerró 3776 transferencias en el segundo trimestre: 24,7 % más.',
+      '» Su meta: 1000 ventas al día.',
+      '» Esta solución es para BrasPer.',
+      'Fuente: README de BRASPER-IATHON. La meta de 1000 ventas diarias salió del feedback del jurado: confírmala con BrasPer.'
+    ] },
+    { secs: 40, notes: [
+      '» Hoy las asesoras OPERAN: cotizan, piden la captura, digitan.',
+      '» De 131 chats al día, solo el 51 % llega a transferencia.',
+      'Pausa: mira cómo se tacha “Manual”.',
+      '» Pasamos de manual a automatización con IA.',
+      '» Menos operatividad. Más captación. Más tiempo para vender.',
+      'El dibujo muestra 4 asesoras (el README habla de 4 vendedores). Cámbialo si el equipo prefiere otro número.'
+    ] },
+    { secs: 55, notes: [
+      'Cuatro pulsaciones de →. La primera sale sola.',
+      '» Transformamos la operatividad, en todos los canales.',
+      'Paso 1, COTIZA (sale solo).',
+      '» En la web, cotiza.',
+      'Pulsa →: CONVERSA.',
+      '» En WhatsApp atiende la IA. Hoy ya existe un WhatsApp manual; nosotros lo aceleramos con IA.',
+      'Pulsa →: APRUEBA. Pausa y señala el botón verde.',
+      '» Esta es la única acción de la asesora: aprobar el pago. Human in the loop.',
+      'Pulsa →: RECIBE TU BOLETA.',
+      '» En la app sigue su operación hasta recibir su boleta.',
+      'Baja la voz en “la única acción”.'
+    ] },
+    { secs: 140, notes: [
+      'Son pantallas reales de los repositorios del equipo, en 5 pasos de unos 25 s. Pulsa → para avanzar; el primero sale solo.',
+      'Paso 1, COTIZA (web).',
+      '» El cliente pone cuánto envía y ve cuánto recibirá. También en el celular.',
+      'Pulsa →: CONVERSA (WhatsApp y app).',
+      '» La IA da la misma cotización por WhatsApp o en la app. Omnicanal.',
+      'Pulsa →: REGISTRA Y PAGA.',
+      '» Se crea la orden con su número y recibe cómo pagar. En la web sigue su estado.',
+      'Pulsa →: APRUEBA. Señala el aro naranja.',
+      '» La asesora revisa el comprobante y aprueba. Su única acción.',
+      'Pulsa →: RECIBE.',
+      '» Pago verificado y boleta en PDF, por WhatsApp o en la app.',
+      '» Transformamos el proceso con IA: mejor experiencia para el cliente y para el equipo de BrasPer.',
+      'Fuentes: repos de web, WhatsApp, backoffice y app. Datos de demostración.'
+    ] },
+    { secs: 45, notes: [
+      'Rápido en las leyendas pequeñas; fuerte en los tres números.',
+      '» La operativa interna pasa de horas a minutos.',
+      '» Eficiencia: de 4 pasos manuales a 1.',
+      '» Productividad: de unas 3 horas 15 por venta a cero.',
+      '» Velocidad: de unas 24 horas a unos 10 minutos para concretar una venta.',
+      'Di “de 4 a 1” solo aquí. Productividad = negociación (≈3 h) + digitación (≈15 min), del diagnóstico. Son estimaciones del equipo, por validar con BrasPer.'
+    ] },
+    { secs: 40, notes: [
+      '» Con nuestra solución, más de 1000 ventas por día es posible. Hoy hace unas 67.',
+      '» La IA opera; BrasPer vende. Más eficiencia, más productividad y una experiencia que nos diferencia de la competencia.',
+      '67 ventas al día = 51,1 % de 131 chats. No prometas llegar a 1000: di que es posible.',
+      'Si preguntan por costo: de ≈S/ 6800 a ≈S/ 300 al mes (estimación).'
+    ] },
+    { secs: 30, notes: [
+      '» Pruébenlo ahora: escaneen la web, el WhatsApp o la app.',
+      '» Lo construimos cuatro personas, el Equipo 5.5: David, agente de WhatsApp; Binni, app; Jordy, web; Melani, backoffice. Gracias.',
+      'Deja esta diapositiva durante las preguntas. Antes de subir, prueba los tres QR con un teléfono físico.'
+    ] }
   ];
   var TOTAL = PLAN.reduce(function (a, p) { return a + p.secs; }, 0);
 
@@ -694,7 +760,14 @@
     if (!isPresenter || cur < 0) return;
     document.getElementById('pNow').textContent = 'Diapositiva ' + (cur + 1) + ' de ' + N + ' · ' + PLAN[cur].secs + ' s' + (STEPS[cur] ? ' · paso ' + step + ' de ' + STEPS[cur] : '');
     document.getElementById('pTitle').textContent = slides[cur].getAttribute('data-title');
-    document.getElementById('pNotes').textContent = PLAN[cur].notes;
+    var box = document.getElementById('pNotes');
+    box.textContent = '';
+    PLAN[cur].notes.forEach(function (line) {
+      var p = document.createElement('p');
+      if (line.indexOf('» ') === 0) { p.className = 'say'; var b = document.createElement('strong'); b.textContent = line.slice(2); p.appendChild(b); }
+      else { p.className = 'do'; var i = document.createElement('em'); i.textContent = line; p.appendChild(i); }
+      box.appendChild(p);
+    });
     document.getElementById('pNext').textContent = cur + 1 < N ? 'Sigue: ' + slides[cur + 1].getAttribute('data-title') : 'Última diapositiva';
     var rows = PLAN.map(function (p, k) {
       return '<tr' + (k === cur ? ' class="cur"' : '') + '><td>' + (k + 1) + '</td><td>' + slides[k].getAttribute('data-title') + '</td><td>' + mmss(targetAt(k)) + '</td><td>' + p.secs + ' s</td></tr>';
