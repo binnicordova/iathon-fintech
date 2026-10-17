@@ -105,14 +105,14 @@
   #s3 { justify-content: space-between; gap: 24px; }
   #s3 h2 { font-size: 76px; line-height: 1.1; letter-spacing: -2px; }
   #s3 .team-row { display: flex; flex-direction: row; justify-content: space-between; align-items: flex-end; }
-  #s3 .person { width: 340px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-  #s3 .bubble { background: #1F8F55; color: #F4F4F1; border-radius: 24px 24px 24px 6px; padding: 12px 24px; font-size: 28px; font-weight: 500; white-space: nowrap; }
+  #s3 .person { width: 250px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  #s3 .bubble { background: #1F8F55; color: #F4F4F1; border-radius: 24px 24px 24px 6px; padding: 12px 20px; font-size: 26px; font-weight: 500; white-space: nowrap; }
   #s3 .bubble.typing { display: flex; gap: 8px; align-items: center; padding: 22px 28px; background: var(--card); border: 1px solid var(--line); }
   #s3 .bubble.typing i { width: 14px; height: 14px; border-radius: 50%; background: var(--dim); display: block; animation: blink 1.2s infinite; }
   #s3 .bubble.typing i:nth-child(2) { animation-delay: .2s; } #s3 .bubble.typing i:nth-child(3) { animation-delay: .4s; }
   @keyframes blink { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
-  #s3 .head { width: 84px; height: 84px; border-radius: 50%; background: var(--orange); }
-  #s3 .torso { width: 170px; height: 76px; border-radius: 85px 85px 0 0; background: var(--orange); opacity: .85; }
+  #s3 .head { width: 76px; height: 76px; border-radius: 50%; background: var(--orange); }
+  #s3 .torso { width: 150px; height: 68px; border-radius: 75px 75px 0 0; background: var(--orange); opacity: .85; }
   #s3 .stat { font-size: 32px; color: var(--dim); }
   #s3 .stat b { color: var(--light); }
   #s3 .north { display: flex; flex-direction: row; align-items: center; gap: 28px; }
@@ -140,7 +140,7 @@
   #s4 .step h2 { font-size: 68px; line-height: 1.05; }
   #s4 .step p { font-size: 26px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--blue-tint); margin-top: 4px; line-height: 1.3; }
   #s4 .step.key.on h2 { color: #FFD9A8; }
-  #s4 .lead { font-size: 40px; font-weight: 700; line-height: 1.2; }
+  #s4 .lead { font-size: 36px; font-weight: 700; line-height: 1.2; }
   #s4 .showcase { position: relative; flex: 1; height: 824px; }
   #s4 .pane { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; transform: translateX(120px) scale(.9); pointer-events: none; transition: opacity .5s ease, transform .7s cubic-bezier(.2,.7,.2,1); }
   #s4 .pane.on { opacity: 1; transform: none; }
@@ -231,7 +231,7 @@
   #s7 .meter .lab { position: absolute; top: 94px; font-size: 28px; font-weight: 700; }
   #s7 .meter .lab.l { left: 0; } #s7 .meter .lab.r { right: 0; }
   #s7 .keys { display: flex; flex-direction: row; gap: 20px; flex-wrap: wrap; }
-  #s7 .keys span { font-size: 38px; font-weight: 700; background: var(--light); color: var(--blue-deep); border-radius: 999px; padding: 12px 34px; }
+  #s7 .keys span { font-size: 34px; font-weight: 700; background: var(--light); color: var(--blue-deep); border-radius: 999px; padding: 12px 30px; }
   #s7 .close { font-size: 44px; font-weight: 700; }
 
   /* 8 team and QR codes */
@@ -279,11 +279,23 @@
   #pv h1 { font-size: 44px; margin: 8px 0 16px; }
   #pv .legend { margin-top: 8px; font-size: 20px; color: var(--dim); }
   #pv .legend strong { color: var(--light); }
+  #pv .legend mark { background: rgba(255,159,67,.28); color: #FFD9A8; padding: 0 .12em; border-radius: 4px; }
   #pv .notes { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 24px 32px; margin-top: 12px; }
   #pv .notes p { margin-bottom: 16px; line-height: 1.35; }
   #pv .notes p:last-child { margin-bottom: 0; }
   #pv .notes .say strong { font-size: 34px; font-weight: 700; color: var(--light); }
+  #pv .notes .say mark { background: rgba(255,159,67,.28); color: #FFD9A8; padding: 0 .12em; border-radius: 6px; border-bottom: 3px solid var(--orange); }
   #pv .notes .do em { font-size: 24px; font-style: italic; font-weight: 400; color: var(--dim); }
+  #pv .notes .k-cuerpo em { color: #9DBEFF; }
+  #pv .notes .k-voz em { color: #FFB86B; }
+  #pv .notes .k-senal em { color: #7DD3A0; }
+  #pv .notes .k-ojo em { color: #F2B8B5; }
+  #pv .notes .k-fuente em { font-size: 20px; }
+  #pv .meta { font-size: 20px; color: var(--dim); margin-top: 4px; line-height: 1.4; }
+  #pv .speed { font-size: 18px; color: var(--dim); display: flex; align-items: center; gap: 8px; }
+  #pv .speed select { font: 700 18px var(--font); color: var(--light); background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+  #pv .sec { font-size: 22px; margin-top: 36px; color: var(--blue); letter-spacing: 2px; text-transform: uppercase; }
+  #pv .plan.sig td:first-child { color: var(--light); font-weight: 700; }
   #pv .next { margin-top: 20px; font-size: 22px; color: var(--dim); }
   #pv .btns { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
   #pv button { font: 700 18px var(--font); color: var(--light); background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 22px; cursor: pointer; }
@@ -331,10 +343,12 @@
   <section class="slide dark" id="s3" data-title="De manual a automatización con IA">
     <h2 class="rise">Las asesoras <span class="hl o">operan</span>. Deberían <span class="hl" style="--hd:1.2s">vender</span>.</h2>
     <div class="team-row">
-      <div class="person rise" style="--d:.1s"><div class="bubble">¿Me cotizas?</div><div class="head"></div><div class="torso"></div></div>
-      <div class="person rise" style="--d:.2s"><div class="bubble">Te envío la captura</div><div class="head"></div><div class="torso"></div></div>
-      <div class="person rise" style="--d:.3s"><div class="bubble typing"><i></i><i></i><i></i></div><div class="head"></div><div class="torso"></div></div>
-      <div class="person rise" style="--d:.4s"><div class="bubble">¿Ya llegó?</div><div class="head"></div><div class="torso"></div></div>
+      <div class="person rise" style="--d:0.1s"><div class="bubble">¿Cotización?</div><div class="head"></div><div class="torso"></div></div>
+      <div class="person rise" style="--d:0.18s"><div class="bubble">Mi captura</div><div class="head"></div><div class="torso"></div></div>
+      <div class="person rise" style="--d:0.26s"><div class="bubble typing"><i></i><i></i><i></i></div><div class="head"></div><div class="torso"></div></div>
+      <div class="person rise" style="--d:0.34s"><div class="bubble">¿Ya llegó?</div><div class="head"></div><div class="torso"></div></div>
+      <div class="person rise" style="--d:0.42s"><div class="bubble">¿Tasa de hoy?</div><div class="head"></div><div class="torso"></div></div>
+      <div class="person rise" style="--d:0.5s"><div class="bubble">Mi boleta</div><div class="head"></div><div class="torso"></div></div>
     </div>
     <p class="stat rise" style="--d:.5s"><b>131 chats al día</b> y solo el <b>51 %</b> llega a transferencia.</p>
     <div class="north rise" style="--d:.6s">
@@ -360,7 +374,7 @@
         <div class="step key" data-n="3"><h2>Aprueba.</h2><p>La asesora · human in the loop</p></div>
         <div class="step" data-n="4"><h2>Recibe tu boleta.</h2><p>En la app</p></div>
       </div>
-      <p class="lead rise" style="--d:.3s">La IA opera. La asesora <span class="hl">aprueba</span>.</p>
+      <p class="lead rise" style="--d:.3s">La IA conversa. El código calcula. La asesora <span class="hl">aprueba</span>.</p>
     </div>
     <div class="showcase">
       <div class="pane" data-n="1">
@@ -466,8 +480,8 @@
       <div class="track"></div><div class="fill"></div>
       <p class="lab l">Hoy ≈67 al día</p><p class="lab r">Meta</p>
     </div>
-    <div class="keys rise" style="--d:.6s"><span>Eficiencia</span><span>Productividad</span><span>Diferencial competitivo</span></div>
-    <p class="close rise" style="--d:.75s">La IA opera. BrasPer vende.</p>
+    <div class="keys rise" style="--d:.6s"><span>Eficiencia</span><span>Productividad</span><span>Menor costo</span><span>Diferencial competitivo</span></div>
+    <p class="close rise" style="--d:.75s">Ya funciona. Se integra a su Dashboard.</p>
   </section>
 
   <!-- 8 -->
@@ -524,13 +538,15 @@
   <div class="top">
     <div class="clock" id="pClock">00:00<small id="pTarget">objetivo 07:00</small></div>
     <div class="btns" style="margin:0">
+      <label class="speed">Ritmo <select id="pSpeed"><option value="1">×1</option><option value="1.25">×1,25</option><option value="1.5" selected>×1,5</option></select></label>
       <button id="pTimer" class="primary">Iniciar reloj</button>
       <button id="pReset">Reiniciar</button>
     </div>
   </div>
   <p class="now" id="pNow">Diapositiva 1 de 9</p>
   <h1 id="pTitle"></h1>
-  <p class="legend"><strong>Negrita</strong> = lo que dices · <em>cursiva</em> = instrucciones para ti</p>
+  <p class="meta" id="pMeta"></p>
+  <p class="legend"><strong>Negrita</strong> = lo que dices · <mark>resaltado</mark> = dilo con voz fuerte · <em>cursiva</em> = instrucciones para ti (Cuerpo, Voz, Señal, Pantalla, Ojo)</p>
   <div class="notes" id="pNotes"></div>
   <p class="next" id="pNext"></p>
   <div class="btns">
@@ -538,85 +554,114 @@
     <button id="pForward" class="primary">Siguiente →</button>
   </div>
   <table class="plan" id="pPlan"></table>
+  <h2 class="sec">Señales con tu compañero</h2>
+  <table class="plan sig">
+    <tr><td>Palma abierta hacia la pantalla</td><td>Siguiente: pulsa →</td></tr>
+    <tr><td>Dos dedos hacia abajo</td><td>Atrás: pulsa ←</td></tr>
+    <tr><td>Puño cerrado</td><td>Espera: no avances</td></tr>
+    <tr><td>Mano en el pecho y mirada a tu compañero</td><td>Te releva: sigue con la lámina mientras tú te quedas en silencio</td></tr>
+  </table>
+  <p class="legend">Antes de subir, tu compañero se sienta con el teclado o el control y ensayan las cuatro señales.</p>
+  <h2 class="sec">Criterios del jurado (solo para ti)</h2>
+  <table class="plan" id="pCrit"></table>
 </main>
 
 <script>
 (function () {
   'use strict';
 
-  // Speaker notes and time budget per slide (seconds). Total = 383 s (6:23), with slack for the 7 minutes.
-  // In the notes, a line that starts with "» " is what you SAY (shown in bold); any other line is an INSTRUCTION (shown in italics).
+  // Speaker notes, time budget (seconds), stage zone and jury criteria per slide. Total = 383 s (6:23), with slack for the 7 minutes.
+  // Notes: a line that starts with "» " is what you SAY (bold); words between *asterisks* get a strong voice (highlighted).
+  // Any other line is an INSTRUCTION (italics): Cuerpo (body), Voz (voice), Señal (signal to the teammate), Pantalla (screen), Ojo (watch out), Fuente (source).
   var PLAN = [
-    { secs: 8, notes: [
-      'Camina al centro. Pausa de 2 s.',
+    { secs: 8, zone: 'Centro', crit: ['Storytelling'], notes: [
+      'Cuerpo: entra al centro, de frente al jurado. Pausa de 2 s antes de hablar.',
       '» Buenas tardes, soy [Nombre], del Equipo 5.5.',
-      '» Mejoramos con IA la operación de BrasPer.',
-      'Apertura lenta y firme; el resto, más rápido.'
+      '» *Mejoramos con IA* la operación de BrasPer.',
+      'Voz: desde aquí, ritmo ×1,5. Esta apertura, firme y clara.'
     ] },
-    { secs: 25, notes: [
-      'Rápido. Los números suben solos: no los leas todos, señala el 1000.',
-      '» BrasPer es una FINTECH. Mueve dinero entre Brasil y Perú.',
-      '» Cerró 3776 transferencias en el segundo trimestre: 24,7 % más.',
-      '» Su meta: 1000 ventas al día.',
+    { secs: 25, zone: 'Izquierda', crit: ['Comprensión'], notes: [
+      'Cuerpo: camina a la izquierda y abre la mano hacia la pantalla.',
+      'Voz: rápido; sube el tono solo en el 1000.',
+      '» BrasPer es una *FINTECH*: mueve dinero entre Brasil y Perú.',
+      '» Cerró 3776 transferencias en el segundo trimestre, 24,7 % más.',
+      '» Su meta: *1000 ventas al día*.',
       '» Esta solución es para BrasPer.',
-      'Fuente: README de BRASPER-IATHON. La meta de 1000 ventas diarias salió del feedback del jurado: confírmala con BrasPer.'
+      'Pantalla: los números suben solos; no los leas, señala el 1000.',
+      'Fuente: README de BRASPER-IATHON. La meta de 1000 ventas diarias salió del feedback: confírmala con BrasPer.'
     ] },
-    { secs: 40, notes: [
-      '» Hoy las asesoras OPERAN: cotizan, piden la captura, digitan.',
-      '» De 131 chats al día, solo el 51 % llega a transferencia.',
-      'Pausa: mira cómo se tacha “Manual”.',
-      '» Pasamos de manual a automatización con IA.',
+    { secs: 40, zone: 'Centro', crit: ['Comprensión'], notes: [
+      'Cuerpo: vuelve al centro y señala con la mano a las asesoras de la pantalla.',
+      '» Hoy las asesoras *operan*: hacen a mano cada venta. Cotizan, piden la captura, digitan.',
+      '» De *131 chats* al día, solo el *51 %* llega a transferencia.',
+      'Voz: golpe de voz en 131 y en 51 %. Después, pausa de 2 s.',
+      'Pantalla: mira cómo se tacha “Manual”.',
+      '» Pasamos de manual a *automatización con IA*.',
       '» Menos operatividad. Más captación. Más tiempo para vender.',
-      'El dibujo muestra 4 asesoras (el README habla de 4 vendedores). Cámbialo si el equipo prefiere otro número.'
+      'Cuerpo: cuenta las tres ideas con los dedos.',
+      'Ojo: el dibujo muestra 6 asesoras (dotación confirmada: 6 en ventas y 3 en contabilidad; el README antiguo hablaba de 4).'
     ] },
-    { secs: 55, notes: [
-      'Cuatro pulsaciones de →. La primera sale sola.',
-      '» Transformamos la operatividad, en todos los canales.',
-      'Paso 1, COTIZA (sale solo).',
+    { secs: 55, zone: 'Derecha', crit: ['Innovación', 'IA'], notes: [
+      'Cuerpo: camina junto a la pantalla, a la derecha.',
+      'Señal: el primer paso sale solo. Con cada palma abierta tuya, tu compañero pulsa →.',
+      '» *Transformamos la operatividad*, en todos los canales.',
+      'Paso 1 (sale solo): COTIZA.',
       '» En la web, cotiza.',
-      'Pulsa →: CONVERSA.',
-      '» En WhatsApp atiende la IA. Hoy ya existe un WhatsApp manual; nosotros lo aceleramos con IA.',
-      'Pulsa →: APRUEBA. Pausa y señala el botón verde.',
-      '» Esta es la única acción de la asesora: aprobar el pago. Human in the loop.',
-      'Pulsa →: RECIBE TU BOLETA.',
+      'Señal o →: CONVERSA.',
+      '» En WhatsApp conversa con una IA. Hoy ya existe un WhatsApp manual; nosotros lo *aceleramos*.',
+      'Señal o →: APRUEBA. Pausa y señala el botón verde.',
+      '» *La IA conversa. El código calcula. La asesora aprueba.* Es su única acción: human in the loop.',
+      'Señal o →: RECIBE TU BOLETA.',
       '» En la app sigue su operación hasta recibir su boleta.',
-      'Baja la voz en “la única acción”.'
+      'Voz: baja el volumen y ve más despacio en “su única acción”.'
     ] },
-    { secs: 140, notes: [
-      'Son pantallas reales de los repositorios del equipo, en 5 pasos de unos 25 s. Pulsa → para avanzar; el primero sale solo.',
-      'Paso 1, COTIZA (web).',
+    { secs: 140, zone: 'Derecha', crit: ['Storytelling', 'Viabilidad'], notes: [
+      'Cuerpo: quédate cerca de la pantalla y señala cada captura con la mano abierta.',
+      'Señal: cinco pasos de unos 25 s. Con cada palma abierta tuya, tu compañero pulsa →. El primero sale solo.',
+      'Paso 1: COTIZA (web).',
       '» El cliente pone cuánto envía y ve cuánto recibirá. También en el celular.',
-      'Pulsa →: CONVERSA (WhatsApp y app).',
-      '» La IA da la misma cotización por WhatsApp o en la app. Omnicanal.',
-      'Pulsa →: REGISTRA Y PAGA.',
+      'Señal o →: CONVERSA (WhatsApp y app).',
+      '» La IA da la misma cotización por WhatsApp o en la app. *Omnicanal*.',
+      'Señal o →: REGISTRA Y PAGA.',
       '» Se crea la orden con su número y recibe cómo pagar. En la web sigue su estado.',
-      'Pulsa →: APRUEBA. Señala el aro naranja.',
-      '» La asesora revisa el comprobante y aprueba. Su única acción.',
-      'Pulsa →: RECIBE.',
+      'Señal o →: APRUEBA. Señala el aro naranja.',
+      '» La asesora revisa el comprobante y aprueba. *Su única acción.*',
+      'Señal o →: RECIBE.',
       '» Pago verificado y boleta en PDF, por WhatsApp o en la app.',
-      '» Transformamos el proceso con IA: mejor experiencia para el cliente y para el equipo de BrasPer.',
-      'Fuentes: repos de web, WhatsApp, backoffice y app. Datos de demostración.'
+      '» Transformamos el proceso con IA: *mejor experiencia* para el cliente y para el equipo de BrasPer.',
+      'Voz: en esta lámina la voz va firme y pausada; 70 % tu voz, 30 % pantalla.',
+      'Fuente: repos de web, WhatsApp, backoffice y app. Datos de demostración.'
     ] },
-    { secs: 45, notes: [
-      'Rápido en las leyendas pequeñas; fuerte en los tres números.',
+    { secs: 45, zone: 'Centro', crit: ['Impacto'], notes: [
+      'Cuerpo: vuelve al centro; muestra los tres números con tres dedos.',
+      'Voz: rápido en las leyendas pequeñas; golpe de voz en cada número.',
       '» La operativa interna pasa de horas a minutos.',
-      '» Eficiencia: de 4 pasos manuales a 1.',
-      '» Productividad: de unas 3 horas 15 por venta a cero.',
-      '» Velocidad: de unas 24 horas a unos 10 minutos para concretar una venta.',
-      'Di “de 4 a 1” solo aquí. Productividad = negociación (≈3 h) + digitación (≈15 min), del diagnóstico. Son estimaciones del equipo, por validar con BrasPer.'
+      '» *Eficiencia*: de 4 pasos manuales a 1.',
+      '» *Productividad*: de unas 3 horas 15 por venta a cero.',
+      '» *Velocidad*: de unas 24 horas a unos 10 minutos para concretar una venta.',
+      'Ojo: di “de 4 a 1” solo aquí. Productividad = negociación (≈3 h) + digitación (≈15 min), del diagnóstico. Estimaciones del equipo, por validar con BrasPer.'
     ] },
-    { secs: 40, notes: [
-      '» Con nuestra solución, más de 1000 ventas por día es posible. Hoy hace unas 67.',
-      '» La IA opera; BrasPer vende. Más eficiencia, más productividad y una experiencia que nos diferencia de la competencia.',
-      '67 ventas al día = 51,1 % de 131 chats. No prometas llegar a 1000: di que es posible.',
-      'Si preguntan por costo: de ≈S/ 6800 a ≈S/ 300 al mes (estimación).'
+    { secs: 40, zone: 'Izquierda', crit: ['Impacto', 'Viabilidad'], notes: [
+      'Cuerpo: camina a la izquierda y abre los brazos: es la lámina grande.',
+      '» Con nuestra solución, *más de 1000 ventas por día* es posible. Hoy hace unas 67.',
+      '» Más eficiencia, más productividad, menos costo y una experiencia que nos *diferencia* de la competencia.',
+      '» Y ya funciona: se integra a su Dashboard.',
+      'Ojo: 67 ventas al día = 51,1 % de 131 chats. No prometas llegar a 1000: di que es posible.',
+      'Ojo: la rúbrica pide costo-beneficio. El README estima ≈S/ 6800 → ≈S/ 300 al mes, pero eso supone 4 vendedores; con 6 las cuentas cambian. Úsalo solo si lo validan.'
     ] },
-    { secs: 30, notes: [
+    { secs: 30, zone: 'Centro', crit: ['Storytelling', 'Viabilidad'], notes: [
+      'Cuerpo: da un paso hacia el jurado y abre los brazos: los invitas a escanear.',
       '» Pruébenlo ahora: escaneen la web, el WhatsApp o la app.',
-      '» Lo construimos cuatro personas, el Equipo 5.5: David, agente de WhatsApp; Binni, app; Jordy, web; Melani, backoffice. Gracias.',
-      'Deja esta diapositiva durante las preguntas. Antes de subir, prueba los tres QR con un teléfono físico.'
+      '» Lo construimos cuatro personas, el Equipo 5.5: David, agente de WhatsApp; Binni, app; Jordy, web; Melani, backoffice. *Gracias.*',
+      'Cuerpo: cada uno levanta la mano cuando dices su nombre.',
+      'Ojo: deja esta lámina durante las preguntas. Antes de subir, prueba los tres QR con un teléfono físico.'
     ] }
   ];
+  var CRITERIA = [
+    { k: 'Comprensión', w: 15 }, { k: 'Innovación', w: 15 }, { k: 'IA', w: 20 },
+    { k: 'Viabilidad', w: 15 }, { k: 'Impacto', w: 20 }, { k: 'Storytelling', w: 15 }
+  ];
+  var BASE_WPM = 150;   // an ordinary speaking pace in Spanish; the speed below multiplies it
   var TOTAL = PLAN.reduce(function (a, p) { return a + p.secs; }, 0);
 
   var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
@@ -756,23 +801,55 @@
   function resetTimer() { writeStart(0); tick(); }
 
   /* ---------- presenter view ---------- */
+  var speed = 1.5;
+  function speechWords(k) {
+    return PLAN[k].notes.filter(function (l) { return l.indexOf('» ') === 0; })
+      .map(function (l) { return l.slice(2).replace(/\*/g, ''); }).join(' ').split(/\s+/).filter(Boolean).length;
+  }
+  function speechSecs(k) { return speechWords(k) / (BASE_WPM * speed / 60); }
+  function fmtSpeed(v) { return '×' + String(v).replace('.', ','); }
+
   function renderPresenter() {
     if (!isPresenter || cur < 0) return;
     document.getElementById('pNow').textContent = 'Diapositiva ' + (cur + 1) + ' de ' + N + ' · ' + PLAN[cur].secs + ' s' + (STEPS[cur] ? ' · paso ' + step + ' de ' + STEPS[cur] : '');
     document.getElementById('pTitle').textContent = slides[cur].getAttribute('data-title');
+    var crit = PLAN[cur].crit.map(function (k) { var c = CRITERIA.filter(function (x) { return x.k === k; })[0]; return k + ' (' + c.w + ')'; }).join(', ');
+    document.getElementById('pMeta').textContent = 'Zona: ' + PLAN[cur].zone + ' · Jurado: ' + crit + ' · Hablas ' + speechWords(cur) + ' palabras ≈ ' + Math.round(speechSecs(cur)) + ' s a ' + fmtSpeed(speed) + ', de ' + PLAN[cur].secs + ' s: el resto son pausas y gestos';
     var box = document.getElementById('pNotes');
     box.textContent = '';
     PLAN[cur].notes.forEach(function (line) {
       var p = document.createElement('p');
-      if (line.indexOf('» ') === 0) { p.className = 'say'; var b = document.createElement('strong'); b.textContent = line.slice(2); p.appendChild(b); }
-      else { p.className = 'do'; var i = document.createElement('em'); i.textContent = line; p.appendChild(i); }
+      if (line.indexOf('» ') === 0) {
+        p.className = 'say';
+        var b = document.createElement('strong');
+        line.slice(2).split('*').forEach(function (part, idx) {
+          if (idx % 2) { var m = document.createElement('mark'); m.textContent = part; b.appendChild(m); }
+          else b.appendChild(document.createTextNode(part));
+        });
+        p.appendChild(b);
+      } else {
+        var lab = (line.match(/^(Cuerpo|Voz|Señal|Pantalla|Ojo|Fuente)/) || [])[1];
+        p.className = 'do' + (lab ? ' k-' + lab.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() : '');
+        var i = document.createElement('em');
+        i.textContent = line;
+        p.appendChild(i);
+      }
       box.appendChild(p);
     });
     document.getElementById('pNext').textContent = cur + 1 < N ? 'Sigue: ' + slides[cur + 1].getAttribute('data-title') : 'Última diapositiva';
-    var rows = PLAN.map(function (p, k) {
-      return '<tr' + (k === cur ? ' class="cur"' : '') + '><td>' + (k + 1) + '</td><td>' + slides[k].getAttribute('data-title') + '</td><td>' + mmss(targetAt(k)) + '</td><td>' + p.secs + ' s</td></tr>';
-    }).join('');
+
+    var totalWords = 0, totalSecs = 0;
+    var rows = '<tr><td>#</td><td>Lámina</td><td>Inicio</td><td>Tiempo</td><td>Palabras</td><td>Zona</td></tr>' + PLAN.map(function (p, k) {
+      totalWords += speechWords(k); totalSecs += speechSecs(k);
+      return '<tr' + (k === cur ? ' class="cur"' : '') + '><td>' + (k + 1) + '</td><td>' + slides[k].getAttribute('data-title') + '</td><td>' + mmss(targetAt(k)) + '</td><td>' + p.secs + ' s</td><td>' + speechWords(k) + ' ≈ ' + Math.round(speechSecs(k)) + ' s</td><td>' + p.zone + '</td></tr>';
+    }).join('') + '<tr><td></td><td>Total</td><td></td><td>' + TOTAL + ' s</td><td>' + totalWords + ' ≈ ' + Math.round(totalSecs) + ' s a ' + fmtSpeed(speed) + '</td><td></td></tr>';
     document.getElementById('pPlan').innerHTML = rows;
+
+    document.getElementById('pCrit').innerHTML = '<tr><td>Criterio</td><td>Peso</td><td>Láminas</td></tr>' + CRITERIA.map(function (c) {
+      var on = [];
+      PLAN.forEach(function (p, k) { if (p.crit.indexOf(c.k) >= 0) on.push(k + 1); });
+      return '<tr><td>' + c.k + '</td><td>' + c.w + '</td><td>' + (on.length ? on.join(', ') : 'sin cubrir') + '</td></tr>';
+    }).join('');
   }
 
   /* ---------- fullscreen ---------- */
@@ -844,6 +921,7 @@
   document.getElementById('pForward').onclick = function () { command('advance'); };
   document.getElementById('pTimer').onclick = startTimer;
   document.getElementById('pReset').onclick = resetTimer;
+  document.getElementById('pSpeed').onchange = function () { speed = parseFloat(this.value); renderPresenter(); };
 
   /* ---------- start ---------- */
   if (isPresenter) document.body.classList.add('presenter');
